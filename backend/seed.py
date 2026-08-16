@@ -68,6 +68,13 @@ def seed_data():
         "විල්බාගෙදර"
     ]
 
+    print("\nRemoving old GN Divisions...")
+    try:
+        deleted_count, _ = GNDivision.objects.exclude(name__in=gn_divisions).delete()
+        print(f"Deleted {deleted_count} old GN divisions.")
+    except Exception as e:
+        print(f"Could not delete some old GN divisions (they might be in use): {e}")
+
     print("\nAdding GN Divisions...")
     for gn in gn_divisions:
         obj, created = GNDivision.objects.get_or_create(name=gn)
