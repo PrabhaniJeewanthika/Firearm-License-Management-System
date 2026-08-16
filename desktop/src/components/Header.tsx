@@ -10,14 +10,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="main-header">
-      <div className="header-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <span className="gov-branch">{t('header.republic')}</span>
-          <div className="security-badge">
-            <span className="security-dot"></span>
-            <span>{t('header.secureSystem')}</span>
-          </div>
-        </div>
+      <div className="header-meta" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
         
         {/* Language Switcher */}
         <div className="language-switcher" style={{ display: 'flex', gap: '8px' }}>
