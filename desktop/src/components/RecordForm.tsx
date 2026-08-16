@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 
 interface GNDivision {
@@ -27,6 +28,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
   onSaveSuccess,
   onCancelEdit,
 }) => {
+  const { t } = useTranslation();
   // Form State
   const [fullName, setFullName] = useState('');
   const [nic, setNic] = useState('');
@@ -162,16 +164,16 @@ const RecordForm: React.FC<RecordFormProps> = ({
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!fullName.trim()) newErrors.full_name = 'සම්පූර්ණ නම ඇතුළත් කරන්න.';
-    if (!nic.trim()) newErrors.nic = 'ජාතික හැඳුනුම්පත් අංකය ඇතුළත් කරන්න.';
-    if (!firearmNumber.trim()) newErrors.firearm_number = 'ගිනිඅවි අංකය ඇතුළත් කරන්න.';
-    if (!gnDivision) newErrors.gn_division = 'ග්‍රාම නිලධාරී කොට්ඨාසය තෝරන්න.';
-    if (!firearmType) newErrors.firearm_type = 'ගිනිඅවි වර්ගය තෝරන්න.';
+    if (!fullName.trim()) newErrors.full_name = t('errors.fullName');
+    if (!nic.trim()) newErrors.nic = t('errors.nic');
+    if (!firearmNumber.trim()) newErrors.firearm_number = t('errors.firearmNumber');
+    if (!gnDivision) newErrors.gn_division = t('errors.gnDivision');
+    if (!firearmType) newErrors.firearm_type = t('errors.firearmType');
 
     // Phone validation (SL format: 07XXXXXXXX)
     const phoneRegex = /^(?:0)\d{9}$/;
     if (telephone && !phoneRegex.test(telephone)) {
-      newErrors.telephone = 'වලංගු දුරකථන අංකයක් ඇතුළත් කරන්න. (උදා: 0771234567)';
+      newErrors.telephone = t('errors.phone');
     }
 
     // DOB future date validation
@@ -179,10 +181,10 @@ const RecordForm: React.FC<RecordFormProps> = ({
       const dobDate = new Date(dateOfBirth);
       const today = new Date();
       if (dobDate > today) {
-        newErrors.date_of_birth = 'උපන්දිනය අනාගත දිනයක් විය නොහැක.';
+        newErrors.date_of_birth = t('errors.dobFuture');
       }
     } else {
-      newErrors.date_of_birth = 'උපන්දිනය ඇතුළත් කරන්න.';
+      newErrors.date_of_birth = t('errors.dobReq');
     }
 
     setErrors(newErrors);
@@ -191,7 +193,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
   const resetForm = (askConfirmation = true) => {
     if (askConfirmation && (fullName || nic || firearmNumber || photoPreview)) {
-      const confirmClear = window.confirm('සුරැකී නොමැති වෙනස්කම් ඉවත් කිරීමට ඔබට විශ්වාසද?');
+      const confirmClear = window.confirm(t('errors.confirmClear'));
       if (!confirmClear) return;
     }
 
@@ -284,7 +286,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
         await api.put(`/records/${editingRecord.id}/`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        setSubmitSuccess('වාර්තාව සාර්ථකව යාවත්කාලීන කරන ලදී.');
+        setSubmitSuccess(t('errors.updateSuccess'));
         setTimeout(() => {
           onSaveSuccess();
         }, 1000);
@@ -292,7 +294,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
         await api.post('/records/', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        setSubmitSuccess('වාර්තාව සාර්ථකව සුරකින ලදී.');
+        setSubmitSuccess(t('errors.saveSuccess'));
         resetForm(false);
         setTimeout(() => {
           onSaveSuccess();
@@ -303,14 +305,14 @@ const RecordForm: React.FC<RecordFormProps> = ({
       if (err.response?.data) {
         const data = err.response.data;
         if (data.nic) {
-          setSubmitError('මෙම NIC අංකය දැනටමත් පද්ධතියේ ඇත.');
+          setSubmitError(t('errors.duplicateNIC'));
         } else if (data.firearm_number) {
-          setSubmitError('මෙම ගිනිඅවි අංකය දැනටමත් පද්ධතියේ ඇත.');
+          setSubmitError(t('errors.duplicateFirearm'));
         } else {
-          setSubmitError('වාර්තාව සුරැකීමට නොහැකි විය. නැවත උත්සාහ කරන්න.');
+          setSubmitError(t('errors.saveFailed'));
         }
       } else {
-        setSubmitError('දත්ත සේවාව සමඟ සම්බන්ධ වීමට නොහැකි විය.');
+        setSubmitError(t('errors.apiError'));
       }
     } finally {
       setIsSubmitting(false);
@@ -321,9 +323,9 @@ const RecordForm: React.FC<RecordFormProps> = ({
     <div className="card" ref={formRef}>
       <div className="card-header-area">
         <div className="card-title">
-          {editingRecord ? '01 වාර්තාව සංස්කරණය' : '01 නව බලපත්‍රලාභී වාර්තාව'}
+          {editingRecord ? t('tabs.editRecord') : t('tabs.newRecord')}
         </div>
-        <div className="card-subtitle">* ලකුණ සහිත තොරතුරු අනිවාර්යයි</div>
+        <div className="card-subtitle">{t('form.mandatory')}</div>
       </div>
 
       {submitError && (
@@ -343,12 +345,12 @@ const RecordForm: React.FC<RecordFormProps> = ({
         {/* Section 1: Personal Details */}
         <div className="form-section-header">
           <span className="section-num">01</span>
-          <span className="section-title">පුද්ගලික තොරතුරු (Personal Information)</span>
+          <span className="section-title">{t('form.section1').replace('01 ', '')}</span>
         </div>
 
         {/* Photo Upload Section */}
         <div className="form-group">
-          <label className="form-label">ඡායාරූපය ඇතුළත් කරන්න (JPG / PNG)</label>
+          <label className="form-label">{t('form.photoLabel')}</label>
           <div className="photo-uploader">
             {photoPreview ? (
               <img src={photoPreview} alt="Preview" className="photo-preview" />
@@ -372,7 +374,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 onClick={() => fileInputRef.current?.click()}
                 style={{ padding: '6px 12px', fontSize: '12px' }}
               >
-                {photoPreview ? 'ඡායාරූපය වෙනස් කරන්න' : 'ඡායාරූපයක් තෝරන්න'}
+                {photoPreview ? t('form.changePhoto') : t('form.choosePhoto')}
               </button>
               {photoPreview && (
                 <button
@@ -381,7 +383,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                   onClick={removePhoto}
                   style={{ padding: '6px 12px', fontSize: '12px', marginTop: '4px' }}
                 >
-                  ඡායාරූපය ඉවත් කරන්න
+                  {t('form.removePhoto')}
                 </button>
               )}
             </div>
@@ -390,19 +392,18 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
         <div className="form-grid-2">
           <div className="form-group form-grid-full">
-            <label className="form-label">සම්පූර්ණ නම *</label>
+            <label className="form-label">{t('form.fullName')}</label>
             <input
               type="text"
               className="form-input"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              placeholder="උදා: කේ. ඒ. පෙරේරා"
             />
             {errors.full_name && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.full_name}</span>}
           </div>
 
           <div className="form-group">
-            <label className="form-label">ජාතික හැඳුනුම්පත් අංකය *</label>
+            <label className="form-label">{t('form.nic')}</label>
             <input
               type="text"
               className="form-input"
@@ -414,7 +415,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
           </div>
 
           <div className="form-group">
-            <label className="form-label">දුරකථන අංකය</label>
+            <label className="form-label">{t('form.telephone')}</label>
             <input
               type="text"
               className="form-input"
@@ -426,7 +427,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
           </div>
 
           <div className="form-group">
-            <label className="form-label">වට්ස්ඇප් අංකය (WhatsApp)</label>
+            <label className="form-label">{t('form.whatsapp')}</label>
             <input
               type="text"
               className="form-input"
@@ -437,23 +438,22 @@ const RecordForm: React.FC<RecordFormProps> = ({
           </div>
 
           <div className="form-group form-grid-full">
-            <label className="form-label">ලිපිනය</label>
+            <label className="form-label">{t('form.address')}</label>
             <textarea
               className="form-textarea"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="සම්පූර්ණ ලිපිනය ඇතුළත් කරන්න"
             />
           </div>
 
           <div className="form-group">
-            <label className="form-label">ග්‍රාම නිලධාරී කොට්ඨාසය *</label>
+            <label className="form-label">{t('form.gnDivision')}</label>
             <select
               className="form-select"
               value={gnDivision}
               onChange={(e) => setGnDivision(e.target.value)}
             >
-              <option value="">තෝරන්න</option>
+              <option value="">{t('form.select')}</option>
               {gnDivisions.map((gn) => (
                 <option key={gn.id} value={gn.id}>
                   {gn.name}
@@ -467,12 +467,12 @@ const RecordForm: React.FC<RecordFormProps> = ({
         {/* Section 2: Birthdate and Age */}
         <div className="form-section-header">
           <span className="section-num">02</span>
-          <span className="section-title">උපන්දිනය සහ වයස් තොරතුරු (DOB & Age Info)</span>
+          <span className="section-title">{t('form.section2').replace('02 ', '')}</span>
         </div>
         
         <div className="form-grid-2">
           <div className="form-group">
-            <label className="form-label">උපන්දිනය *</label>
+            <label className="form-label">{t('form.dob')}</label>
             <input
               type="date"
               className="form-input"
@@ -483,7 +483,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
           </div>
 
           <div className="form-group">
-            <label className="form-label">අවුරුදු 65 සම්පූර්ණ වන දිනය</label>
+            <label className="form-label">{t('form.age65')}</label>
             <input
               type="date"
               className="form-input"
@@ -491,25 +491,25 @@ const RecordForm: React.FC<RecordFormProps> = ({
               readOnly
               style={{ backgroundColor: 'var(--bg-color)', cursor: 'not-allowed', fontWeight: '600', color: 'var(--state-maroon)' }}
             />
-            <span className="sub-text">උපන්දිනය අනුව මෙම දිනය ස්වයංක්‍රීයව ගණනය වේ.</span>
+            <span className="sub-text">{t('form.ageHint')}</span>
           </div>
         </div>
 
         {/* Section 3: Firearm and License Info */}
         <div className="form-section-header">
           <span className="section-num">03</span>
-          <span className="section-title">ගිනිඅවි සහ බලපත්‍ර තොරතුරු (Firearm & License Info)</span>
+          <span className="section-title">{t('form.section3').replace('03 ', '')}</span>
         </div>
         
         <div className="form-grid-2">
           <div className="form-group">
-            <label className="form-label">ගිනිඅවි වර්ගය *</label>
+            <label className="form-label">{t('form.firearmType')}</label>
             <select
               className="form-select"
               value={firearmType}
               onChange={(e) => setFirearmType(e.target.value)}
             >
-              <option value="">තෝරන්න</option>
+            <option value="">{t('form.select')}</option>
               {firearmTypes.map((ft) => (
                 <option key={ft.id} value={ft.id}>
                   {ft.name_si}
@@ -520,30 +520,28 @@ const RecordForm: React.FC<RecordFormProps> = ({
           </div>
 
           <div className="form-group">
-            <label className="form-label">ගිනිඅවි අංකය *</label>
+            <label className="form-label">{t('form.firearmNumber')}</label>
             <input
               type="text"
               className="form-input"
               value={firearmNumber}
               onChange={(e) => setFirearmNumber(e.target.value)}
-              placeholder="ගිනිඅවි අංකය ඇතුළත් කරන්න"
             />
             {errors.firearm_number && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.firearm_number}</span>}
           </div>
 
           <div className="form-group">
-            <label className="form-label">මුලින්ම බලපත්‍ර ලද වර්ෂය</label>
+            <label className="form-label">{t('form.firstLicenseYear')}</label>
             <input
               type="number"
               className="form-input"
               value={firstLicensedYear}
               onChange={(e) => setFirstLicensedYear(e.target.value)}
-              placeholder="YYYY"
             />
           </div>
 
           <div className="form-group form-grid-full">
-            <label className="form-label">බලපත්‍ර අලුත් කිරීම *</label>
+            <label className="form-label">{t('form.renewal')}</label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
               {[2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030].map(year => {
                 const yearStr = String(year);
@@ -577,7 +575,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                               [yearStr]: { ...prev[yearStr], renewed: false, reason: e.target.value }
                             }));
                           }}
-                          placeholder="අලුත් නොකිරීමට හේතුව මෙහි ඇතුළත් කරන්න (Reason for not renewing)"
+                          placeholder={t('form.reasonPlaceholder')}
                           style={{ maxWidth: '100%', borderColor: 'var(--danger-color)' }}
                         />
                       </div>
@@ -592,27 +590,27 @@ const RecordForm: React.FC<RecordFormProps> = ({
         {/* Section 4: Current Status and Other Info */}
         <div className="form-section-header">
           <span className="section-num">04</span>
-          <span className="section-title">වර්තමාන තත්ත්වය සහ වෙනත් තොරතුරු (Current Status & Other Info)</span>
+          <span className="section-title">{t('form.section4').replace('04 ', '')}</span>
         </div>
 
         <div className="form-grid-2">
           <div className="form-group">
-            <label className="form-label">වර්තමාන තත්ත්වය</label>
+            <label className="form-label">{t('form.currentStatus')}</label>
             <select
               className="form-select"
               value={currentStatus}
               onChange={(e) => setCurrentStatus(e.target.value)}
             >
-              <option value="active">සක්‍රීය</option>
-              <option value="deceased">මියගොස් ඇත</option>
-              <option value="transferred">පවරා ඇත</option>
-              <option value="not_renewed">බලපත්‍රය අලුත් කර නැත</option>
-              <option value="other">වෙනත්</option>
+              <option value="active">{t('status.active')}</option>
+              <option value="deceased">{t('status.deceased')}</option>
+              <option value="transferred">{t('status.transferred')}</option>
+              <option value="not_renewed">{t('status.not_renewed')}</option>
+              <option value="other">{t('status.other')}</option>
             </select>
           </div>
 
           <div className="form-group">
-            <label className="form-label">තත්ත්වය වෙනස් වූ දිනය</label>
+            <label className="form-label">{t('form.statusDate')}</label>
             <input
               type="date"
               className="form-input"
@@ -622,38 +620,35 @@ const RecordForm: React.FC<RecordFormProps> = ({
           </div>
 
           <div className="form-group form-grid-full">
-            <label className="form-label">තත්ත්වය පිළිබඳ විස්තර සහ සටහන්</label>
+            <label className="form-label">{t('form.statusRemarks')}</label>
             <textarea
               className="form-textarea"
               value={statusRemarks}
               onChange={(e) => setStatusRemarks(e.target.value)}
-              placeholder="තත්ත්වය වෙනස් වීමට අදාළ විස්තර ඇතුළත් කරන්න..."
             />
           </div>
 
           <div className="form-group form-grid-full">
-            <label className="form-label">ගිනිඅවිය පැවරීම පිළිබඳ විස්තර</label>
+            <label className="form-label">{t('form.transferDetails')}</label>
             <textarea
               className="form-textarea"
               value={transferDetails}
               onChange={(e) => setTransferDetails(e.target.value)}
-              placeholder="පැවරීම සම්බන්ධ නිල විස්තර සහ සටහන් ඇතුළත් කරන්න..."
             />
           </div>
 
           <div className="form-group form-grid-full">
-            <label className="form-label">වෙනත් විශේෂ තොරතුරු</label>
+            <label className="form-label">{t('form.specialInfo')}</label>
             <textarea
               className="form-textarea"
               value={specialInformation}
               onChange={(e) => setSpecialInformation(e.target.value)}
-              placeholder="අවශ්‍ය වෙනත් නිල තොරතුරු මෙහි ඇතුළත් කරන්න..."
             />
           </div>
 
           <div className="form-group form-grid-full">
             <label className="form-label">
-              පඬුවස්නුවරින් පිටත පදිංචි, මෙම බලප්‍රදේශය තුළ ඉඩම් හිමි බලපත්‍රලාභියෙක්ද?
+              {t('form.outsideResident')}
             </label>
             <div className="radio-group">
               <label className="radio-option">
@@ -663,7 +658,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                   checked={outsideAreaHolder === true}
                   onChange={() => setOutsideAreaHolder(true)}
                 />
-                ඔව්
+                {t('form.yes')}
               </label>
               <label className="radio-option">
                 <input
@@ -672,7 +667,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                   checked={outsideAreaHolder === false}
                   onChange={() => setOutsideAreaHolder(false)}
                 />
-                නැත
+                {t('form.no')}
               </label>
             </div>
           </div>
@@ -681,21 +676,19 @@ const RecordForm: React.FC<RecordFormProps> = ({
         {outsideAreaHolder && (
           <div className="form-grid-2" style={{ backgroundColor: 'var(--bg-color)', padding: '24px', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '24px' }}>
             <div className="form-group form-grid-full">
-              <label className="form-label">වර්තමාන පදිංචි ලිපිනය</label>
+              <label className="form-label">{t('form.outsideAddress')}</label>
               <textarea
                 className="form-textarea"
                 value={outsideResidentialAddress}
                 onChange={(e) => setOutsideResidentialAddress(e.target.value)}
-                placeholder="වර්තමාන පදිංචි ලිපිනය ඇතුළත් කරන්න"
               />
             </div>
             <div className="form-group form-grid-full">
-              <label className="form-label">මෙම බලප්‍රදේශය තුළ ඉඩම් / ස්ථාන විස්තර</label>
+              <label className="form-label">{t('form.landDetails')}</label>
               <textarea
                 className="form-textarea"
                 value={landLocationDetails}
                 onChange={(e) => setLandLocationDetails(e.target.value)}
-                placeholder="මෙම බලප්‍රදේශය තුළ පිහිටි ඉඩම් හෝ ස්ථාන විස්තර ඇතුළත් කරන්න"
               />
             </div>
           </div>
@@ -710,14 +703,14 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 className="btn btn-secondary"
                 onClick={onCancelEdit}
               >
-                සංස්කරණය අවලංගු කරන්න
+                {t('actions.cancel')}
               </button>
               <button
                 type="submit"
                 className="btn btn-primary"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'යාවත්කාලීන වෙමින් පවතී...' : 'වාර්තාව යාවත්කාලීන කරන්න'}
+                {isSubmitting ? t('actions.updating') : t('actions.update')}
               </button>
             </>
           ) : (
@@ -727,14 +720,14 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 className="btn btn-secondary"
                 onClick={() => resetForm(true)}
               >
-                මකන්න
+                {t('actions.clear')}
               </button>
               <button
                 type="submit"
                 className="btn btn-primary"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'සුරැකෙමින් පවතී...' : 'වාර්තාව සුරකින්න'}
+                {isSubmitting ? t('actions.saving') : t('actions.save')}
               </button>
             </>
           )}

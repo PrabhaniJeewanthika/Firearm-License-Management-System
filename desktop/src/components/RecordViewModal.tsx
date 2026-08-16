@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface GNDivisionDetail {
   id: number;
@@ -47,32 +48,33 @@ interface RecordViewModalProps {
   record: RecordData | null;
   onClose: () => void;
 }
-
 const RecordViewModal: React.FC<RecordViewModalProps> = ({
   isOpen,
   record,
   onClose,
 }) => {
+  const { t } = useTranslation();
+
   if (!isOpen || !record) return null;
 
   const getRenewalStatusText = (status: string | null) => {
     switch (status) {
-      case 'renewed': return 'අලුත් කර ඇත';
+      case 'renewed': return 'අලුත් කර ඇත'; // You can add translation keys here if needed
       case 'pending': return 'අලුත් කිරීමට නියමිතයි';
-      case 'not_renewed': return 'අලුත් කර නැත';
-      case 'other': return 'වෙනත්';
-      default: return 'නොදනී';
+      case 'not_renewed': return t('status.not_renewed');
+      case 'other': return t('status.other');
+      default: return '-';
     }
   };
 
   const getCurrentStatusText = (status: string) => {
     switch (status) {
-      case 'active': return 'සක්‍රීය';
-      case 'deceased': return 'මියගොස් ඇත';
-      case 'transferred': return 'පවරා ඇත';
-      case 'not_renewed': return 'බලපත්‍රය අලුත් කර නැත';
-      case 'other': return 'වෙනත්';
-      default: return 'නොදනී';
+      case 'active': return t('status.active');
+      case 'deceased': return t('status.deceased');
+      case 'transferred': return t('status.transferred');
+      case 'not_renewed': return t('status.not_renewed');
+      case 'other': return t('status.other');
+      default: return '-';
     }
   };
 
@@ -80,7 +82,7 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({
     <div className="modal-overlay">
       <div className="modal-content">
         <div className="modal-header">
-          <h2>බලපත්‍රලාභියාගේ සම්පූර්ණ තොරතුරු</h2>
+          <h2>{t('view.recordDetails')}</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>&times;</button>
         </div>
         <div className="modal-body">
@@ -101,144 +103,145 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({
           </div>
 
           {/* Personal Information */}
-          <div className="form-section-divider">පුද්ගලික තොරතුරු (Personal Information)</div>
+          {/* Personal Information */}
+          <div className="form-section-divider">{t('form.section1').replace('01 ', '')}</div>
           <div className="detail-grid">
             <div className="detail-item detail-value-full">
-              <div className="detail-label">සම්පූර්ණ නම</div>
+              <div className="detail-label">{t('form.fullName').replace(' *', '')}</div>
               <div className="detail-value">{record.full_name}</div>
             </div>
             <div className="detail-item">
-              <div className="detail-label">ජාතික හැඳුනුම්පත් අංකය (NIC)</div>
+              <div className="detail-label">{t('form.nic').replace(' *', '')}</div>
               <div className="detail-value">{record.nic}</div>
             </div>
             <div className="detail-item">
-              <div className="detail-label">දුරකථන අංකය</div>
+              <div className="detail-label">{t('form.telephone')}</div>
               <div className="detail-value">{record.telephone}</div>
             </div>
             <div className="detail-item detail-value-full">
-              <div className="detail-label">ලිපිනය</div>
+              <div className="detail-label">{t('form.address')}</div>
               <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{record.address}</div>
             </div>
             <div className="detail-item">
-              <div className="detail-label">ග්‍රාම නිලධාරී කොට්ඨාසය</div>
-              <div className="detail-value">{record.gn_division_detail?.name || 'නොදනී'}</div>
+              <div className="detail-label">{t('form.gnDivision').replace(' *', '')}</div>
+              <div className="detail-value">{record.gn_division_detail?.name || '-'}</div>
             </div>
             <div className="detail-item">
-              <div className="detail-label">උපන්දිනය</div>
+              <div className="detail-label">{t('form.dob').replace(' *', '')}</div>
               <div className="detail-value">{record.date_of_birth}</div>
             </div>
             <div className="detail-item">
-              <div className="detail-label">අවුරුදු 65 සම්පූර්ණ වන දිනය</div>
+              <div className="detail-label">{t('form.age65')}</div>
               <div className="detail-value" style={{ fontWeight: 'bold', color: '#b45309' }}>
-                {record.sixty_fifth_birthday || 'නොදනී'}
+                {record.sixty_fifth_birthday || '-'}
               </div>
             </div>
           </div>
 
           {/* Firearm Information */}
-          <div className="form-section-divider">ගිනිඅවි තොරතුරු (Firearm Information)</div>
+          <div className="form-section-divider">{t('form.section3').replace('03 ', '')}</div>
           <div className="detail-grid">
             <div className="detail-item">
-              <div className="detail-label">ගිනිඅවි වර්ගය</div>
-              <div className="detail-value">{record.firearm_type_detail?.name_si || 'නොදනී'}</div>
+              <div className="detail-label">{t('form.firearmType').replace(' *', '')}</div>
+              <div className="detail-value">{record.firearm_type_detail?.name_si || '-'}</div>
             </div>
             <div className="detail-item">
-              <div className="detail-label">ගිනිඅවි අංකය</div>
+              <div className="detail-label">{t('form.firearmNumber').replace(' *', '')}</div>
               <div className="detail-value">{record.firearm_number}</div>
             </div>
             <div className="detail-item">
-              <div className="detail-label">මුලින්ම බලපත්‍ර ලද වර්ෂය</div>
+              <div className="detail-label">{t('form.firstLicenseYear')}</div>
               <div className="detail-value">{record.first_licensed_year}</div>
             </div>
           </div>
 
           {/* License Renewal */}
-          <div className="form-section-divider">බලපත්‍ර අලුත් කිරීම (License Renewal)</div>
+          <div className="form-section-divider">{t('form.renewal').replace(' *', '')}</div>
           <div className="detail-grid">
             <div className="detail-item">
-              <div className="detail-label">අලුත් කළ වර්ෂය</div>
+              <div className="detail-label">{t('view.renewedYear')}</div>
               <div className="detail-value">{record.renewal_year || '-'}</div>
             </div>
             <div className="detail-item">
-              <div className="detail-label">අලුත් කළ දිනය</div>
+              <div className="detail-label">{t('view.renewedDate')}</div>
               <div className="detail-value">{record.renewal_date || '-'}</div>
             </div>
             <div className="detail-item">
-              <div className="detail-label">අලුත් කිරීමේ තත්ත්වය</div>
+              <div className="detail-label">{t('view.renewStatus')}</div>
               <div className="detail-value">{getRenewalStatusText(record.renewal_status)}</div>
             </div>
             <div className="detail-item detail-value-full">
-              <div className="detail-label">සටහන්</div>
+              <div className="detail-label">{t('view.notes')}</div>
               <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{record.renewal_remarks || '-'}</div>
             </div>
             <div className="detail-item detail-value-full">
-              <div className="detail-label">බලපත්‍රය අලුත් නොකිරීම සම්බන්ධ තොරතුරු</div>
+              <div className="detail-label">{t('view.notRenewedReason')}</div>
               <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{record.non_renewal_information || '-'}</div>
             </div>
           </div>
 
           {/* Current Status */}
-          <div className="form-section-divider">බලපත්‍රහිමියාගේ වර්තමාන තත්ත්වය (Current Status)</div>
+          <div className="form-section-divider">{t('form.section4').replace('04 ', '')}</div>
           <div className="detail-grid">
             <div className="detail-item">
-              <div className="detail-label">වර්තමාන තත්ත්වය</div>
+              <div className="detail-label">{t('form.currentStatus')}</div>
               <div className="detail-value" style={{ fontWeight: '600' }}>{getCurrentStatusText(record.current_status)}</div>
             </div>
             <div className="detail-item">
-              <div className="detail-label">තත්ත්වය වෙනස් වූ දිනය</div>
+              <div className="detail-label">{t('form.statusDate')}</div>
               <div className="detail-value">{record.status_date || '-'}</div>
             </div>
             <div className="detail-item detail-value-full">
-              <div className="detail-label">තත්ත්වය පිළිබඳ විස්තර / සටහන්</div>
+              <div className="detail-label">{t('form.statusRemarks')}</div>
               <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{record.status_remarks || '-'}</div>
             </div>
           </div>
 
           {/* Firearm Transfer */}
-          <div className="form-section-divider">ගිනිඅවිය පැවරීම පිළිබඳ විස්තර (Transfer Details)</div>
+          <div className="form-section-divider">{t('view.transferDetails')}</div>
           <div className="detail-grid">
             <div className="detail-item">
-              <div className="detail-label">පැවරූ දිනය</div>
+              <div className="detail-label">{t('view.transferDate')}</div>
               <div className="detail-value">{record.transfer_date || '-'}</div>
             </div>
             <div className="detail-item">
-              <div className="detail-label">පෙර බලපත්‍ර හිමියා</div>
+              <div className="detail-label">{t('view.prevHolder')}</div>
               <div className="detail-value">{record.previous_holder || '-'}</div>
             </div>
             <div className="detail-item">
-              <div className="detail-label">නව බලපත්‍ර හිමියා / නිල යොමුව</div>
+              <div className="detail-label">{t('view.newHolder')}</div>
               <div className="detail-value">{record.new_holder_reference || '-'}</div>
             </div>
             <div className="detail-item detail-value-full">
-              <div className="detail-label">පැවරීම පිළිබඳ විස්තර සහ සටහන්</div>
+              <div className="detail-label">{t('form.transferDetails')}</div>
               <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{record.transfer_details || '-'}</div>
             </div>
           </div>
 
           {/* Special Information */}
-          <div className="form-section-divider">වෙනත් විශේෂ තොරතුරු (Special Information)</div>
+          <div className="form-section-divider">{t('form.specialInfo')}</div>
           <div className="detail-grid">
             <div className="detail-item detail-value-full">
-              <div className="detail-label">විශේෂ තොරතුරු</div>
+              <div className="detail-label">{t('form.specialInfo')}</div>
               <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{record.special_information || '-'}</div>
             </div>
           </div>
 
           {/* Out of Area Residents */}
-          <div className="form-section-divider">ප්‍රදේශයෙන් පිටත පදිංචිකරුවන් (Out-of-Area Residents)</div>
+          <div className="form-section-divider">{t('form.outsideResident')}</div>
           <div className="detail-grid">
             <div className="detail-item detail-value-full">
-              <div className="detail-label">පඬුවස්නුවරින් පිටත පදිංචි, මෙම බලප්‍රදේශය තුළ ඉඩම් හිමි බලපත්‍රලාභියෙක්ද?</div>
-              <div className="detail-value">{record.outside_area_holder ? 'ඔව්' : 'නැත'}</div>
+              <div className="detail-label">{t('form.outsideResident')}</div>
+              <div className="detail-value">{record.outside_area_holder ? t('form.yes') : t('form.no')}</div>
             </div>
             {record.outside_area_holder && (
               <>
                 <div className="detail-item detail-value-full">
-                  <div className="detail-label">වර්තමාන පදිංචි ලිපිනය</div>
+                  <div className="detail-label">{t('form.outsideAddress')}</div>
                   <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{record.outside_residential_address || '-'}</div>
                 </div>
                 <div className="detail-item detail-value-full">
-                  <div className="detail-label">මෙම බලප්‍රදේශය තුළ ඉඩම් / ස්ථාන විස්තර</div>
+                  <div className="detail-label">{t('form.landDetails')}</div>
                   <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{record.land_location_details || '-'}</div>
                 </div>
               </>
@@ -248,7 +251,7 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({
         </div>
         <div className="modal-footer">
           <button className="btn btn-secondary" onClick={onClose}>
-            වසන්න
+            {t('view.close')}
           </button>
         </div>
       </div>

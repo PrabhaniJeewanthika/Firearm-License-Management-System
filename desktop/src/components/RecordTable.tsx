@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface GNDivisionDetail {
   id: number;
@@ -49,6 +50,7 @@ const RecordTable: React.FC<RecordTableProps> = ({
   onDelete,
   onNewRecordTabClick,
 }) => {
+  const { t } = useTranslation();
   const totalPages = Math.max(1, Math.ceil(totalCount / pageSize));
 
   const handlePrevPage = () => {
@@ -72,9 +74,9 @@ const RecordTable: React.FC<RecordTableProps> = ({
   return (
     <div className="card" style={{ padding: '0px', overflow: 'hidden' }}>
       <div style={{ padding: '20px 24px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--primary-color)' }}>සුරැකි වාර්තා (Saved Records)</h3>
+        <h3 style={{ fontSize: '18px', fontWeight: '700', color: 'var(--primary-color)' }}>{t('tabs.savedRecords')}</h3>
         <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-secondary)' }}>
-          මුළු වාර්තා: {totalCount}
+          {t('summary.totalLicenses')}: {totalCount}
         </span>
       </div>
 
@@ -82,20 +84,20 @@ const RecordTable: React.FC<RecordTableProps> = ({
         {records.length === 0 ? (
           <div className="empty-state" style={{ padding: '60px 20px' }}>
             <div style={{ fontSize: '48px', marginBottom: '16px' }}>📂</div>
-            <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '4px' }}>තවම වාර්තා නොමැත</div>
-            <div style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '20px' }}>පළමු බලපත්‍රලාභී වාර්තාව දැන් එක් කරන්න.</div>
-            <button className="btn btn-primary" onClick={onNewRecordTabClick}>＋ නව වාර්තාවක්</button>
+            <div style={{ fontSize: '16px', fontWeight: '600', color: 'var(--text-primary)', marginBottom: '4px' }}>{t('table.noRecords')}</div>
+            <div style={{ fontSize: '13px', color: '#94a3b8', marginBottom: '20px' }}></div>
+            <button className="btn btn-primary" onClick={onNewRecordTabClick}>＋ {t('tabs.newRecord')}</button>
           </div>
         ) : (
           <table className="records-table">
             <thead>
               <tr>
-                <th>බලපත්‍රලාභියා (Licensee)</th>
-                <th>NIC / දුරකථන</th>
-                <th>ගිනිඅවිය (Firearm)</th>
-                <th>GN කොට්ඨාසය</th>
-                <th>65 සම්පූර්ණ වන දිනය</th>
-                <th style={{ textAlign: 'center' }}>ක්‍රියා</th>
+                <th>{t('form.fullName').replace(' *', '')}</th>
+                <th>NIC / {t('form.telephone')}</th>
+                <th>{t('form.firearmType').replace(' *', '')}</th>
+                <th>{t('form.gnDivision').replace(' *', '')}</th>
+                <th>{t('form.age65')}</th>
+                <th style={{ textAlign: 'center' }}>{t('table.actions')}</th>
               </tr>
             </thead>
             <tbody>
@@ -130,14 +132,14 @@ const RecordTable: React.FC<RecordTableProps> = ({
                     <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
                       <button
                         className="action-btn edit"
-                        title="සංස්කරණය"
+                        title={t('actions.edit')}
                         onClick={() => onEdit(record)}
                       >
                         ✎
                       </button>
                       <button
                         className="action-btn delete"
-                        title="ඉවත් කරන්න"
+                        title={t('actions.delete')}
                         onClick={() => onDelete(record.id)}
                       >
                         ⌫

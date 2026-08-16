@@ -1,6 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const LoadingSpinner: React.FC = () => {
+  const { t } = useTranslation();
   return (
     <div className="loading-spinner">
       <div style={{
@@ -18,7 +20,7 @@ const LoadingSpinner: React.FC = () => {
           100% { transform: rotate(360deg); }
         }
       `}</style>
-      <span>දත්ත ලබා ගනිමින් පවතී...</span>
+      <span>{t('actions.saving')}</span>
     </div>
   );
 };

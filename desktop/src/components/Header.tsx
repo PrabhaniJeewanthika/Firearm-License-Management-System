@@ -1,21 +1,54 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 const Header: React.FC = () => {
+  const { t, i18n } = useTranslation();
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+  };
+
   return (
     <header className="main-header">
-      <div className="header-meta">
-        <span className="gov-branch">ශ්‍රී ලංකා ජනරජය | Republic of Sri Lanka</span>
-        <div className="security-badge">
-          <span className="security-dot"></span>
-          <span>ආරක්ෂිත ඩිජිටල් පද්ධතිය (Secure System)</span>
+      <div className="header-meta" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <span className="gov-branch">{t('header.republic')}</span>
+          <div className="security-badge">
+            <span className="security-dot"></span>
+            <span>{t('header.secureSystem')}</span>
+          </div>
+        </div>
+        
+        {/* Language Switcher */}
+        <div className="language-switcher" style={{ display: 'flex', gap: '8px' }}>
+          <button 
+            onClick={() => changeLanguage('si')}
+            className={`btn ${i18n.language === 'si' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ padding: '4px 12px', fontSize: '12px' }}
+          >
+            සිංහල
+          </button>
+          <button 
+            onClick={() => changeLanguage('ta')}
+            className={`btn ${i18n.language === 'ta' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ padding: '4px 12px', fontSize: '12px' }}
+          >
+            தமிழ்
+          </button>
+          <button 
+            onClick={() => changeLanguage('en')}
+            className={`btn ${i18n.language === 'en' ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ padding: '4px 12px', fontSize: '12px' }}
+          >
+            English
+          </button>
         </div>
       </div>
       
-
-      <h1>පඬුවස්නුවර ප්‍රාදේශීය ලේකම් කාර්යාලය</h1>
-      <div className="header-subtitle">ගිනිඅවි බලපත්‍ර දත්ත කළමනාකරණ පද්ධතිය</div>
+      <h1>{t('header.secretariat')}</h1>
+      <div className="header-subtitle">{t('header.title')}</div>
       <p className="header-desc">
-        නිල බලපත්‍රලාභීන්ගේ තොරතුරු නිවැරදිව කළමනාකරණය කිරීම සඳහා ස්ථාපිත ආරක්ෂිත දත්ත ගොනුව.
+        {t('header.description')}
       </p>
     </header>
   );

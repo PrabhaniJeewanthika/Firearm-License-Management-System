@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -14,6 +15,7 @@ import LoadingSpinner from './components/LoadingSpinner';
 import api from './services/api';
 
 const App: React.FC = () => {
+  const { t } = useTranslation();
   // Navigation State
   const [activeTab, setActiveTab] = useState<'form' | 'table'>('form');
 
@@ -176,12 +178,12 @@ const App: React.FC = () => {
     if (!deleteRecordId) return;
     try {
       await api.delete(`/records/${deleteRecordId}/`);
-      toast.success('වාර්තාව සාර්ථකව මකා දමන ලදී.');
+      toast.success(t('errors.deleteSuccess'));
       setDeleteRecordId(null);
       fetchRecordsAndSummary(currentPage, search, filters);
     } catch (err) {
       console.error('Delete error:', err);
-      toast.error('වාර්තාව මකා දැමීමට නොහැකි විය.');
+      toast.error(t('errors.deleteFailed'));
     }
   };
 
@@ -213,7 +215,7 @@ const App: React.FC = () => {
   // Excel CSV Export Logic with Sinhala character support (BOM prefix)
   const handleExportToExcel = async () => {
     try {
-      toast.info('වාර්තා අපනයනය කරමින් පවතී...');
+      toast.info(t('errors.exporting'));
       
       // Fetch all records for full export
       const res = await api.get('/records/', {
@@ -224,7 +226,7 @@ const App: React.FC = () => {
       
       const allRecords = res.data.results || res.data;
       if (allRecords.length === 0) {
-        toast.warning('අපනයනය කිරීමට වාර්තා කිසිවක් නොමැත.');
+        toast.warning(t('errors.noRecordsToExport'));
         return;
       }
 
@@ -263,15 +265,15 @@ const App: React.FC = () => {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.setAttribute("href", url);
-      link.setAttribute("download", `ගිනිඅවි_බලපත්‍ර_වාර්තා_${new Date().toISOString().split('T')[0]}.csv`);
+      link.setAttribute("download", `Firearm_Licenses_${new Date().toISOString().split('T')[0]}.csv`);
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       
-      toast.success('Excel වාර්තාව සාර්ථකව බාගත කරන ලදී.');
+      toast.success(t('errors.exportSuccess'));
     } catch (err) {
       console.error(err);
-      toast.error('වාර්තා අපනයනය කිරීමට නොහැකි විය.');
+      toast.error(t('errors.exportFailed'));
     }
   };
 
@@ -286,10 +288,10 @@ const App: React.FC = () => {
       {apiError ? (
         <div className="card" style={{ textAlign: 'center', padding: '40px 20px', borderColor: '#fca5a5' }}>
           <p style={{ fontSize: '15px', fontWeight: '600', color: 'var(--danger-color)', marginBottom: '16px' }}>
-            දත්ත සේවාව සමඟ සම්බන්ධ වීමට නොහැකි විය.
+            {t('errors.apiError')}
           </p>
           <button className="btn btn-primary" onClick={handleRetry}>
-            නැවත උත්සාහ කරන්න
+            {t('actions.retry')}
           </button>
         </div>
       ) : (
@@ -304,13 +306,13 @@ const App: React.FC = () => {
                 className={`tab-btn ${activeTab === 'form' ? 'active' : ''}`}
                 onClick={() => setActiveTab('form')}
               >
-                {editingRecord ? 'වාර්තාව සංස්කරණය' : 'නව වාර්තාවක්'}
+                {editingRecord ? t('tabs.editRecord') : t('tabs.newRecord')}
               </button>
               <button
                 className={`tab-btn ${activeTab === 'table' ? 'active' : ''}`}
                 onClick={() => setActiveTab('table')}
               >
-                සුරැකි වාර්තා
+                {t('tabs.savedRecords')}
                 <span className="tab-badge">{totalCount}</span>
               </button>
             </div>
@@ -377,8 +379,8 @@ const App: React.FC = () => {
 
           {/* Footer Section */}
           <footer className="footer-section">
-            <p>පඬුවස්නුවර ප්‍රාදේශීය ලේකම් කාර්යාලය</p>
-            <span>නිල දත්ත ගොනුව පද්ධතිය තුළ සුරක්ෂිතව තබා ඇත.</span>
+            <p>{t('footer.department')}</p>
+            <span>{t('footer.dataSecurity')}</span>
           </footer>
         </>
       )}

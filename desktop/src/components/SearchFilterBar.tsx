@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface GNDivision {
   id: number;
@@ -38,6 +39,8 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
   onSearchSubmit,
   onReset,
 }) => {
+  const { t } = useTranslation();
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       onSearchSubmit();
@@ -53,7 +56,7 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
           <input
             type="text"
             className="form-input"
-            placeholder="නම / NIC / ගිනිඅවි අංකය / දුරකථන අංකයෙන් සොයන්න..."
+            placeholder={t('search.placeholder')}
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -66,13 +69,13 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
 
       <div className="search-filter-grid">
         <div className="form-group">
-          <label className="form-label">ග්‍රාම නිලධාරී කොට්ඨාසය</label>
+          <label className="form-label">{t('form.gnDivision').replace(' *', '')}</label>
           <select
             className="form-select"
             value={filters.gn_division}
             onChange={(e) => onFilterChange('gn_division', e.target.value)}
           >
-            <option value="">සියල්ල (All)</option>
+            <option value="">{t('search.allGN')}</option>
             {gnDivisions.map((gn) => (
               <option key={gn.id} value={gn.id}>
                 {gn.name}
@@ -82,13 +85,13 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
         </div>
 
         <div className="form-group">
-          <label className="form-label">ගිනිඅවි වර්ගය</label>
+          <label className="form-label">{t('form.firearmType').replace(' *', '')}</label>
           <select
             className="form-select"
             value={filters.firearm_type}
             onChange={(e) => onFilterChange('firearm_type', e.target.value)}
           >
-            <option value="">සියල්ල (All)</option>
+            <option value="">{t('search.allTypes')}</option>
             {firearmTypes.map((ft) => (
               <option key={ft.id} value={ft.id}>
                 {ft.name_si}
@@ -98,7 +101,7 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
         </div>
 
         <div className="form-group">
-          <label className="form-label">බලපත්‍ර අලුත් කිරීමේ තත්ත්වය</label>
+          <label className="form-label">{t('form.renewal').replace(' *', '')}</label>
           <select
             className="form-select"
             value={filters.renewal_status}
@@ -108,42 +111,42 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
             <option value="renewed">අලුත් කර ඇත</option>
             <option value="pending">අලුත් කිරීමට නියමිතයි</option>
             <option value="not_renewed">අලුත් කර නැත</option>
-            <option value="other">වෙනත්</option>
+            <option value="other">{t('status.other')}</option>
           </select>
         </div>
 
         <div className="form-group">
-          <label className="form-label">වර්තමාන තත්ත්වය</label>
+          <label className="form-label">{t('form.currentStatus')}</label>
           <select
             className="form-select"
             value={filters.current_status}
             onChange={(e) => onFilterChange('current_status', e.target.value)}
           >
-            <option value="">සියල්ල (All)</option>
-            <option value="active">සක්‍රීය</option>
-            <option value="deceased">මියගොස් ඇත</option>
-            <option value="transferred">පවරා ඇත</option>
-            <option value="not_renewed">බලපත්‍රය අලුත් කර නැත</option>
-            <option value="other">වෙනත්</option>
+            <option value="">{t('search.allStatus')}</option>
+            <option value="active">{t('status.active')}</option>
+            <option value="deceased">{t('status.deceased')}</option>
+            <option value="transferred">{t('status.transferred')}</option>
+            <option value="not_renewed">{t('status.not_renewed')}</option>
+            <option value="other">{t('status.other')}</option>
           </select>
         </div>
 
         <div className="form-group">
-          <label className="form-label">පිටත ප්‍රදේශයක පදිංචිකරුවෙක්ද?</label>
+          <label className="form-label">{t('form.outsideResident')}</label>
           <select
             className="form-select"
             value={filters.outside_area_holder}
             onChange={(e) => onFilterChange('outside_area_holder', e.target.value)}
           >
             <option value="">සියල්ල (All)</option>
-            <option value="true">ඔව්</option>
-            <option value="false">නැත</option>
+            <option value="true">{t('form.yes')}</option>
+            <option value="false">{t('form.no')}</option>
           </select>
         </div>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '12px' }}>
-        <button className="btn btn-secondary" onClick={onReset}>පෙරහන් ඉවත් කරන්න</button>
+        <button className="btn btn-secondary" onClick={onReset}>{t('search.reset')}</button>
       </div>
     </div>
   );
