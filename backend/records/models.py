@@ -16,6 +16,7 @@ class LicenseRecord(models.Model):
     date_of_birth = models.DateField()
     sixty_fifth_birthday = models.DateField(null=True, blank=True)
     telephone = models.CharField(max_length=20)
+    whatsapp_number = models.CharField(max_length=20, null=True, blank=True)
 
     # Firearm Information
     firearm_type = models.ForeignKey(FirearmType, on_delete=models.PROTECT, related_name='records')
@@ -27,6 +28,7 @@ class LicenseRecord(models.Model):
     renewal_date = models.DateField(null=True, blank=True)
     renewal_status = models.CharField(max_length=50, null=True, blank=True)
     renewal_remarks = models.TextField(null=True, blank=True)
+    renewal_history = models.JSONField(default=dict, blank=True, null=True)
 
     # Non-renewal details
     non_renewal_information = models.TextField(null=True, blank=True)
