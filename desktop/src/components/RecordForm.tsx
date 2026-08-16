@@ -327,13 +327,13 @@ const RecordForm: React.FC<RecordFormProps> = ({
       </div>
 
       {submitError && (
-        <div style={{ backgroundColor: '#fee2e2', border: '1px solid #fca5a5', color: '#991b1b', padding: '12px', borderRadius: '6px', marginBottom: '20px', fontSize: '13px', fontWeight: '500' }}>
+        <div style={{ backgroundColor: 'var(--danger-color)', color: '#fff', padding: '12px 16px', borderRadius: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: '600', boxShadow: 'var(--shadow-sm)' }}>
           {submitError}
         </div>
       )}
 
       {submitSuccess && (
-        <div style={{ backgroundColor: '#dcfce7', border: '1px solid #86efac', color: '#166534', padding: '12px', borderRadius: '6px', marginBottom: '20px', fontSize: '13px', fontWeight: '500' }}>
+        <div style={{ backgroundColor: 'var(--success-color)', color: '#fff', padding: '12px 16px', borderRadius: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: '600', boxShadow: 'var(--shadow-sm)' }}>
           {submitSuccess}
         </div>
       )}
@@ -353,9 +353,9 @@ const RecordForm: React.FC<RecordFormProps> = ({
             {photoPreview ? (
               <img src={photoPreview} alt="Preview" className="photo-preview" />
             ) : (
-              <div className="photo-placeholder" style={{ fontSize: '24px' }}>
-                📷
-                <span style={{ fontSize: '10px', marginTop: '4px', fontWeight: 'bold' }}>JPG / PNG</span>
+              <div className="photo-placeholder">
+                <span style={{ fontSize: '24px' }}></span>
+                <span style={{ marginTop: '8px', fontWeight: '600' }}>JPG / PNG</span>
               </div>
             )}
             <div className="photo-controls">
@@ -489,9 +489,9 @@ const RecordForm: React.FC<RecordFormProps> = ({
               className="form-input"
               value={sixtyFifthBirthday}
               readOnly
-              style={{ backgroundColor: '#f8fafc', cursor: 'not-allowed', fontWeight: 'bold', color: '#b45309' }}
+              style={{ backgroundColor: 'var(--bg-color)', cursor: 'not-allowed', fontWeight: '600', color: 'var(--state-maroon)' }}
             />
-            <span className="sub-text">ⓘ උපන්දිනය අනුව මෙම දිනය ස්වයංක්‍රීයව ගණනය වේ.</span>
+            <span className="sub-text">උපන්දිනය අනුව මෙම දිනය ස්වයංක්‍රීයව ගණනය වේ.</span>
           </div>
         </div>
 
@@ -543,7 +543,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
           </div>
 
           <div className="form-group form-grid-full">
-            <label className="form-label" style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--danger-color)' }}>බලපත්‍ර අලුත් කිරීම *</label>
+            <label className="form-label">බලපත්‍ර අලුත් කිරීම *</label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
               {[2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030].map(year => {
                 const yearStr = String(year);
@@ -578,7 +578,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                             }));
                           }}
                           placeholder="අලුත් නොකිරීමට හේතුව මෙහි ඇතුළත් කරන්න (Reason for not renewing)"
-                          style={{ maxWidth: '400px', backgroundColor: '#fef2f2', border: '1px solid #fca5a5' }}
+                          style={{ maxWidth: '100%', borderColor: 'var(--danger-color)' }}
                         />
                       </div>
                     )}
@@ -679,7 +679,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
         </div>
 
         {outsideAreaHolder && (
-          <div className="form-grid-2" style={{ backgroundColor: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
+          <div className="form-grid-2" style={{ backgroundColor: 'var(--bg-color)', padding: '24px', borderRadius: '12px', border: '1px solid var(--border-color)', marginBottom: '24px' }}>
             <div className="form-group form-grid-full">
               <label className="form-label">වර්තමාන පදිංචි ලිපිනය</label>
               <textarea
@@ -717,7 +717,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 className="btn btn-primary"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'යාවත්කාලීන වෙමින් පවතී...' : '✓ වාර්තාව යාවත්කාලීන කරන්න'}
+                {isSubmitting ? 'යාවත්කාලීන වෙමින් පවතී...' : 'වාර්තාව යාවත්කාලීන කරන්න'}
               </button>
             </>
           ) : (
@@ -734,7 +734,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 className="btn btn-primary"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'සුරැකෙමින් පවතී...' : '✓ වාර්තාව සුරකින්න'}
+                {isSubmitting ? 'සුරැකෙමින් පවතී...' : 'වාර්තාව සුරකින්න'}
               </button>
             </>
           )}

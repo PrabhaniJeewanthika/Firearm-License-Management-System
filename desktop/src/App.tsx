@@ -304,18 +304,18 @@ const App: React.FC = () => {
                 className={`tab-btn ${activeTab === 'form' ? 'active' : ''}`}
                 onClick={() => setActiveTab('form')}
               >
-                ＋ {editingRecord ? 'වාර්තාව සංස්කරණය' : 'නව වාර්තාවක්'}
+                {editingRecord ? 'වාර්තාව සංස්කරණය' : 'නව වාර්තාවක්'}
               </button>
               <button
                 className={`tab-btn ${activeTab === 'table' ? 'active' : ''}`}
                 onClick={() => setActiveTab('table')}
               >
-                ▦ සුරැකි වාර්තා
+                සුරැකි වාර්තා
                 <span className="tab-badge">{totalCount}</span>
               </button>
             </div>
             <button className="btn-export" onClick={handleExportToExcel}>
-              ⇩ Excel Export
+              Excel Export
             </button>
           </div>
 

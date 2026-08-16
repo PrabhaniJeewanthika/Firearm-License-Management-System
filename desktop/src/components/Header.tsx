@@ -4,16 +4,18 @@ const Header: React.FC = () => {
   return (
     <header className="main-header">
       <div className="header-meta">
-        <span className="gov-branch">පඬුවස්නුවර ප්‍රාදේශීය ලේකම් කාර්යාලය</span>
+        <span className="gov-branch">ශ්‍රී ලංකා ජනරජය | Republic of Sri Lanka</span>
         <div className="security-badge">
           <span className="security-dot"></span>
-          <span>Device-local & Secure ඩිජිටල් වාර්තා පද්ධතිය</span>
+          <span>ආරක්ෂිත ඩිජිටල් පද්ධතිය (Secure System)</span>
         </div>
       </div>
-      <h1>ගිනිඅවි බලපත්‍ර දත්ත කළමනාකරණ පද්ධතිය</h1>
-      <div className="header-subtitle">බලපත්‍ර දත්ත කළමනාකරණ අංශය</div>
+      
+
+      <h1>පඬුවස්නුවර ප්‍රාදේශීය ලේකම් කාර්යාලය</h1>
+      <div className="header-subtitle">ගිනිඅවි බලපත්‍ර දත්ත කළමනාකරණ පද්ධතිය</div>
       <p className="header-desc">
-        බලපත්‍රලාභීන්ගේ තොරතුරු නිවැරදිව සටහන් කර, සොයා බලන්න සහ Excel වාර්තාවක් ලෙස ලබාගන්න.
+        නිල බලපත්‍රලාභීන්ගේ තොරතුරු නිවැරදිව කළමනාකරණය කිරීම සඳහා ස්ථාපිත ආරක්ෂිත දත්ත ගොනුව.
       </p>
     </header>
   );
