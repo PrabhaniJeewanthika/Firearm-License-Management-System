@@ -35,6 +35,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [sixtyFifthBirthday, setSixtyFifthBirthday] = useState('');
   const [telephone, setTelephone] = useState('');
+  const [whatsappNumber, setWhatsappNumber] = useState('');
 
   const [firearmType, setFirearmType] = useState('');
   const [firearmNumber, setFirearmNumber] = useState('');
@@ -45,6 +46,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
   const [renewalStatus, setRenewalStatus] = useState('');
   const [renewalRemarks, setRenewalRemarks] = useState('');
   const [nonRenewalInformation, setNonRenewalInformation] = useState('');
+  const [renewalHistory, setRenewalHistory] = useState<Record<string, { renewed: boolean; reason: string }>>({});
 
   const [currentStatus, setCurrentStatus] = useState('active');
   const [statusDate, setStatusDate] = useState('');
@@ -85,6 +87,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
       setDateOfBirth(editingRecord.date_of_birth || '');
       setSixtyFifthBirthday(editingRecord.sixty_fifth_birthday || '');
       setTelephone(editingRecord.telephone || '');
+      setWhatsappNumber(editingRecord.whatsapp_number || '');
 
       setFirearmType(editingRecord.firearm_type ? String(editingRecord.firearm_type) : '');
       setFirearmNumber(editingRecord.firearm_number || '');
@@ -95,6 +98,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
       setRenewalStatus(editingRecord.renewal_status || '');
       setRenewalRemarks(editingRecord.renewal_remarks || '');
       setNonRenewalInformation(editingRecord.non_renewal_information || '');
+      setRenewalHistory(editingRecord.renewal_history || {});
 
       setCurrentStatus(editingRecord.current_status || 'active');
       setStatusDate(editingRecord.status_date || '');
@@ -198,6 +202,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
     setDateOfBirth('');
     setSixtyFifthBirthday('');
     setTelephone('');
+    setWhatsappNumber('');
     setFirearmType('');
     setFirearmNumber('');
     setFirstLicensedYear('');
@@ -206,6 +211,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
     setRenewalStatus('');
     setRenewalRemarks('');
     setNonRenewalInformation('');
+    setRenewalHistory({});
     setCurrentStatus('active');
     setStatusDate('');
     setStatusRemarks('');
@@ -251,6 +257,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
     formData.append('gn_division', gnDivision);
     formData.append('date_of_birth', dateOfBirth);
     formData.append('telephone', telephone);
+    formData.append('whatsapp_number', whatsappNumber);
     formData.append('firearm_type', firearmType);
     formData.append('firearm_number', firearmNumber);
     formData.append('first_licensed_year', firstLicensedYear || '0');
@@ -259,6 +266,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
     formData.append('renewal_status', renewalStatus || '');
     formData.append('renewal_remarks', renewalRemarks);
     formData.append('non_renewal_information', nonRenewalInformation);
+    formData.append('renewal_history', JSON.stringify(renewalHistory));
     formData.append('current_status', currentStatus);
     formData.append('status_date', statusDate || '');
     formData.append('status_remarks', statusRemarks);
@@ -417,6 +425,17 @@ const RecordForm: React.FC<RecordFormProps> = ({
             {errors.telephone && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.telephone}</span>}
           </div>
 
+          <div className="form-group">
+            <label className="form-label">වට්ස්ඇප් අංකය (WhatsApp)</label>
+            <input
+              type="text"
+              className="form-input"
+              value={whatsappNumber}
+              onChange={(e) => setWhatsappNumber(e.target.value)}
+              placeholder="07X XXXXXXX"
+            />
+          </div>
+
           <div className="form-group form-grid-full">
             <label className="form-label">ලිපිනය</label>
             <textarea
@@ -523,29 +542,50 @@ const RecordForm: React.FC<RecordFormProps> = ({
             />
           </div>
 
-          <div className="form-group">
-            <label className="form-label">බලපත්‍ර අලුත් කිරීම (Renewal Status)</label>
-            <select
-              className="form-select"
-              value={renewalStatus}
-              onChange={(e) => setRenewalStatus(e.target.value)}
-            >
-              <option value="">තෝරන්න</option>
-              <option value="renewed">අලුත් කර ඇත</option>
-              <option value="pending">අලුත් කිරීමට නියමිතයි</option>
-              <option value="not_renewed">අලුත් කර නැත</option>
-              <option value="other">වෙනත්</option>
-            </select>
-          </div>
-
           <div className="form-group form-grid-full">
-            <label className="form-label">බලපත්‍රය අලුත් නොකිරීම සම්බන්ධ තොරතුරු</label>
-            <textarea
-              className="form-textarea"
-              value={nonRenewalInformation}
-              onChange={(e) => setNonRenewalInformation(e.target.value)}
-              placeholder="අලුත් නොකිරීම සම්බන්ධ නිල තොරතුරු ඇතුළත් කරන්න..."
-            />
+            <label className="form-label" style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--danger-color)' }}>බලපත්‍ර අලුත් කිරීම *</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
+              {[2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030].map(year => {
+                const yearStr = String(year);
+                const isRenewed = renewalHistory[yearStr]?.renewed ?? false;
+                const reason = renewalHistory[yearStr]?.reason ?? '';
+                return (
+                  <div key={year} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '15px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={isRenewed}
+                        onChange={(e) => {
+                          setRenewalHistory(prev => ({
+                            ...prev,
+                            [yearStr]: { ...prev[yearStr], renewed: e.target.checked, reason: e.target.checked ? '' : prev[yearStr]?.reason || '' }
+                          }));
+                        }}
+                        style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                      />
+                      {year}
+                    </label>
+                    {!isRenewed && (
+                      <div style={{ marginLeft: '32px' }}>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={reason}
+                          onChange={(e) => {
+                            setRenewalHistory(prev => ({
+                              ...prev,
+                              [yearStr]: { ...prev[yearStr], renewed: false, reason: e.target.value }
+                            }));
+                          }}
+                          placeholder="අලුත් නොකිරීමට හේතුව මෙහි ඇතුළත් කරන්න (Reason for not renewing)"
+                          style={{ maxWidth: '400px', backgroundColor: '#fef2f2', border: '1px solid #fca5a5' }}
+                        />
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
