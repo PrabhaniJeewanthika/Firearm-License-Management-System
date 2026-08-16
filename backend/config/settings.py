@@ -22,8 +22,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-for-dev')
 
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-allowed_hosts = os.getenv('ALLOWED_HOSTS')
-ALLOWED_HOSTS = allowed_hosts.split(',') if allowed_hosts else ['*']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 INSTALLED_APPS = [
@@ -125,7 +124,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'static'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Removed strict whitenoise manifest storage to prevent 500 errors
 
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
@@ -134,10 +133,8 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # CORS Settings
-CORS_ALLOW_ALL_ORIGINS = os.getenv('CORS_ALLOW_ALL_ORIGINS', 'True') == 'True'
-cors_allowed_origins = os.getenv('CORS_ALLOWED_ORIGINS')
-if cors_allowed_origins:
-    CORS_ALLOWED_ORIGINS = cors_allowed_origins.split(',')
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 # DRF Settings
 REST_FRAMEWORK = {
