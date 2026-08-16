@@ -43,6 +43,13 @@ INSTALLED_APPS = [
     'accounts',
     'core',
     'records',
+    'firearms',
+    'licenses',
+    'notifications',
+    'renewals',
+    'reports',
+    'transfers',
+    'documents',
 ]
 
 MIDDLEWARE = [
