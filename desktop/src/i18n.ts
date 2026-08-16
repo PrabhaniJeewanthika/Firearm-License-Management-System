@@ -16,6 +16,7 @@ const resources = {
         newRecord: "New Record",
         editRecord: "Edit Record",
         savedRecords: "Saved Records",
+        settings: "Settings",
         exportExcel: "Excel Export"
       },
       summary: {
@@ -120,6 +121,20 @@ const resources = {
       view: {
         recordDetails: "Licensee Details",
         close: "Close"
+      },
+      admin: {
+        manageGNDivisions: "Manage GN Divisions",
+        newGNDivision: "Add New GN Division",
+        gnPlaceholder: "Enter GN Division Name",
+        addBtn: "Add Division",
+        existingGNDivisions: "Existing GN Divisions",
+        noGnDivisions: "No GN Divisions available. Please add some.",
+        addSuccess: "GN Division added successfully.",
+        addError: "Failed to add GN Division.",
+        addErrorDuplicate: "This GN Division already exists.",
+        deleteConfirmText: "Are you sure you want to delete this GN Division?",
+        deleteSuccess: "GN Division deleted successfully.",
+        deleteError: "Failed to delete. It might be used by existing records."
       }
     }
   },
@@ -136,6 +151,7 @@ const resources = {
         newRecord: "නව වාර්තාවක්",
         editRecord: "වාර්තාව සංස්කරණය",
         savedRecords: "සුරැකි වාර්තා",
+        settings: "සැකසුම් (Settings)",
         exportExcel: "Excel Export"
       },
       summary: {
@@ -240,6 +256,20 @@ const resources = {
       view: {
         recordDetails: "බලපත්‍රලාභී විස්තර",
         close: "වහන්න"
+      },
+      admin: {
+        manageGNDivisions: "ග්‍රාම නිලධාරී වසම් කළමනාකරණය",
+        newGNDivision: "නව ග්‍රාම නිලධාරී වසමක් එකතු කරන්න",
+        gnPlaceholder: "වසමේ නම ඇතුළත් කරන්න",
+        addBtn: "එකතු කරන්න",
+        existingGNDivisions: "දැනට ඇති වසම්",
+        noGnDivisions: "කිසිදු වසමක් නොමැත. කරුණාකර අලුතින් එකතු කරන්න.",
+        addSuccess: "ග්‍රාම නිලධාරී වසම සාර්ථකව එකතු කරන ලදී.",
+        addError: "වසම එකතු කිරීමට නොහැකි විය.",
+        addErrorDuplicate: "මෙම වසම දැනටමත් පද්ධතියේ ඇත.",
+        deleteConfirmText: "මෙම වසම මකා දැමීමට ඔබට විශ්වාසද?",
+        deleteSuccess: "වසම සාර්ථකව මකා දමන ලදී.",
+        deleteError: "මකා දැමීමට නොහැකි විය. සමහරවිට මෙය වාර්තා සඳහා භාවිතා කර ඇත."
       }
     }
   },
@@ -256,6 +286,7 @@ const resources = {
         newRecord: "புதிய பதிவு",
         editRecord: "பதிவை திருத்து",
         savedRecords: "சேமிக்கப்பட்ட பதிவுகள்",
+        settings: "அமைப்புகள் (Settings)",
         exportExcel: "Excel ஏற்றுமதி"
       },
       summary: {
@@ -360,6 +391,20 @@ const resources = {
       view: {
         recordDetails: "உரிமதாரர் விவரங்கள்",
         close: "மூடு"
+      },
+      admin: {
+        manageGNDivisions: "கிராம உத்தியோகத்தர் பிரிவுகளை நிர்வகிக்கவும்",
+        newGNDivision: "புதிய பிரிவைச் சேர்க்கவும்",
+        gnPlaceholder: "பிரிவின் பெயரை உள்ளிடவும்",
+        addBtn: "சேர்",
+        existingGNDivisions: "தற்போதுள்ள பிரிவுகள்",
+        noGnDivisions: "பிரிவுகள் எதுவும் இல்லை. தயவுசெய்து சேர்க்கவும்.",
+        addSuccess: "பிரிவு வெற்றிகரமாக சேர்க்கப்பட்டது.",
+        addError: "பிரிவைச் சேர்க்க முடியவில்லை.",
+        addErrorDuplicate: "இந்த பிரிவு ஏற்கனவே உள்ளது.",
+        deleteConfirmText: "இந்த பிரிவை நிச்சயமாக நீக்க விரும்புகிறீர்களா?",
+        deleteSuccess: "பிரிவு வெற்றிகரமாக நீக்கப்பட்டது.",
+        deleteError: "நீக்க முடியவில்லை. இது பதிவுகளால் பயன்படுத்தப்படலாம்."
       }
     }
   }

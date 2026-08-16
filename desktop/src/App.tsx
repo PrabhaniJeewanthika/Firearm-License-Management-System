@@ -11,13 +11,14 @@ import RecordTable from './components/RecordTable';
 import RecordViewModal from './components/RecordViewModal';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
 import LoadingSpinner from './components/LoadingSpinner';
+import AdminPanel from './components/AdminPanel';
 
 import api from './services/api';
 
 const App: React.FC = () => {
   const { t } = useTranslation();
   // Navigation State
-  const [activeTab, setActiveTab] = useState<'form' | 'table'>('form');
+  const [activeTab, setActiveTab] = useState<'form' | 'table' | 'admin'>('form');
 
   // Data State
   const [records, setRecords] = useState<any[]>([]);
@@ -315,6 +316,12 @@ const App: React.FC = () => {
                 {t('tabs.savedRecords')}
                 <span className="tab-badge">{totalCount}</span>
               </button>
+              <button
+                className={`tab-btn ${activeTab === 'admin' ? 'active' : ''}`}
+                onClick={() => setActiveTab('admin')}
+              >
+                {t('tabs.settings')}
+              </button>
             </div>
             <button className="btn-export" onClick={handleExportToExcel}>
               Excel Export
@@ -330,7 +337,7 @@ const App: React.FC = () => {
               onSaveSuccess={handleSaveSuccess}
               onCancelEdit={handleCancelEdit}
             />
-          ) : (
+          ) : activeTab === 'table' ? (
             <>
               {/* Search & Filters */}
               <SearchFilterBar
@@ -361,7 +368,12 @@ const App: React.FC = () => {
                 />
               )}
             </>
-          )}
+          ) : activeTab === 'admin' ? (
+            <AdminPanel 
+              gnDivisions={gnDivisions} 
+              onDataChanged={fetchLookups} 
+            />
+          ) : null}
 
           {/* View Details Modal */}
           <RecordViewModal

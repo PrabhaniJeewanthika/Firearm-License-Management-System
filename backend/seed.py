@@ -28,59 +28,6 @@ def seed_data():
         if created:
             print(f"Added: {obj.name_si}")
 
-    # Add some sample GN Divisions (Users can add more later via admin panel)
-    gn_divisions = [
-        "කොස්දෙණිය",
-        "කණපොතුහැර",
-        "බැද්දේගම",
-        "මොරගනේ",
-        "කනෝයාය",
-        "ගොන්නව",
-        "පාලාවිටිය",
-        "අංගමුව",
-        "හේනේගෙදර",
-        "වැටැහැපිටිය",
-        "විජයඋදාගම",
-        "කටුමුළුව",
-        "හිඳව",
-        "උඩුගම්පොලගෙදර",
-        "අඩුක්කනේ",
-        "කනෝගම",
-        "තිස්සව",
-        "රනෝරාව",
-        "දුනුපොත",
-        "ගලගෙදර",
-        "ගල්ලැහැපිටිය",
-        "මගුලාගම",
-        "කඳුබොඩ",
-        "රත්මල්ල",
-        "බෝධිමුල්ල",
-        "අනුක්කන්හේන",
-        "හංවැල්ල",
-        "දෙමටව",
-        "නෙලිබෑව",
-        "නින්දවෙල",
-        "වැලිවැහැර",
-        "කොළඹගම",
-        "මැදගම",
-        "කන්දෙගෙදර",
-        "මාවීහේන",
-        "විල්බාගෙදර"
-    ]
-
-    print("\nRemoving old GN Divisions...")
-    try:
-        deleted_count, _ = GNDivision.objects.exclude(name__in=gn_divisions).delete()
-        print(f"Deleted {deleted_count} old GN divisions.")
-    except Exception as e:
-        print(f"Could not delete some old GN divisions (they might be in use): {e}")
-
-    print("\nAdding GN Divisions...")
-    for gn in gn_divisions:
-        obj, created = GNDivision.objects.get_or_create(name=gn)
-        if created:
-            print(f"Added: {obj.name}")
-
     print("\nData seeding completed successfully!")
 
 if __name__ == '__main__':
