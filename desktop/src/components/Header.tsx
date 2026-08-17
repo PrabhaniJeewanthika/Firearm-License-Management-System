@@ -1,8 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../context/AuthContext';
+import './Header.css';
 
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation();
+  const { logout } = useAuth();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -13,29 +16,33 @@ const Header: React.FC = () => {
       <div className="header-meta" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
         
         {/* Language Switcher */}
-        <div className="language-switcher" style={{ display: 'flex', gap: '8px' }}>
+        <div className="language-selector">
           <button 
-            onClick={() => changeLanguage('si')}
-            className={`btn ${i18n.language === 'si' ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ padding: '4px 12px', fontSize: '12px' }}
+            className={`lang-btn ${i18n.language === 'en' ? 'active' : ''}`}
+            onClick={() => changeLanguage('en')}
           >
-            සිංහල
+            EN
           </button>
           <button 
+            className={`lang-btn ${i18n.language === 'si' ? 'active' : ''}`}
+            onClick={() => changeLanguage('si')}
+          >
+            සිං
+          </button>
+          <button 
+            className={`lang-btn ${i18n.language === 'ta' ? 'active' : ''}`}
             onClick={() => changeLanguage('ta')}
-            className={`btn ${i18n.language === 'ta' ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ padding: '4px 12px', fontSize: '12px' }}
           >
             தமிழ்
           </button>
-          <button 
-            onClick={() => changeLanguage('en')}
-            className={`btn ${i18n.language === 'en' ? 'btn-primary' : 'btn-secondary'}`}
-            style={{ padding: '4px 12px', fontSize: '12px' }}
-          >
-            English
-          </button>
         </div>
+        <button 
+          className="btn btn-outline" 
+          onClick={logout}
+          style={{ padding: '6px 12px', fontSize: '14px', marginLeft: '15px' }}
+        >
+          {t('actions.logout') || 'Logout'}
+        </button>
       </div>
       
       <h1>{t('header.secretariat')}</h1>

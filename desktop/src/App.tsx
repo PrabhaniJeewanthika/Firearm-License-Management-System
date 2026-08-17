@@ -12,10 +12,13 @@ import RecordViewModal from './components/RecordViewModal';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
 import LoadingSpinner from './components/LoadingSpinner';
 import AdminPanel from './components/AdminPanel';
+import Login from './components/Login';
 
+import { useAuth } from './context/AuthContext';
 import api from './services/api';
 
 const App: React.FC = () => {
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const { t } = useTranslation();
   // Navigation State
   const [activeTab, setActiveTab] = useState<'form' | 'table' | 'admin'>('form');
@@ -278,8 +281,25 @@ const App: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    fetchRecordsAndSummary(currentPage, search, filters);
+  }, [currentPage, search, filters]); // Re-fetch when these change
+
+  if (authLoading) {
+    return <LoadingSpinner />;
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <>
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+        <Login />
+      </>
+    );
+  }
+
   return (
-    <div className="container">
+    <div className="app-container">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
 
       {/* Header */}
