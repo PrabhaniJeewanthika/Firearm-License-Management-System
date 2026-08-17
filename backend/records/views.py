@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.request import Request
 from django.db.models import Q
 from .models import LicenseRecord
@@ -10,7 +10,7 @@ from .serializers import LicenseRecordSerializer
 class LicenseRecordViewSet(viewsets.ModelViewSet):
     queryset = LicenseRecord.objects.all()
     serializer_class = LicenseRecordSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     request: Request  # type: ignore[assignment]
 
     def get_queryset(self):  # type: ignore[override]
@@ -60,7 +60,7 @@ class LicenseRecordViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 class SummaryView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         active_records = LicenseRecord.objects.filter(is_archived=False)
