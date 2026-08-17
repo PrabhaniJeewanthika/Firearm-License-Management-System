@@ -19,6 +19,18 @@ const resources = {
         settings: "Settings",
         exportExcel: "Excel Export"
       },
+      login: {
+        title: "Sri Lanka Police",
+        subtitle: "Firearm License Management System",
+        username: "Username",
+        usernamePlaceholder: "Enter username",
+        password: "Password",
+        passwordPlaceholder: "Enter password",
+        loginBtn: "Login",
+        errorEmpty: "Please enter username and password",
+        errorInvalid: "Invalid username or password",
+        success: "Login successful!"
+      },
       summary: {
         totalLicenses: "Total Licenses",
         gnDivisions: "GN Divisions",
@@ -151,8 +163,20 @@ const resources = {
         newRecord: "නව වාර්තාවක්",
         editRecord: "වාර්තාව සංස්කරණය",
         savedRecords: "සුරැකි වාර්තා",
-        settings: "සැකසුම් (Settings)",
-        exportExcel: "Excel Export"
+        settings: "සැකසුම්",
+        exportExcel: "Excel වාර්තා"
+      },
+      login: {
+        title: "ශ්‍රී ලංකා පොලීසිය",
+        subtitle: "ගිනිඅවි බලපත්‍ර කළමනාකරණ පද්ධතිය",
+        username: "පරිශීලක නාමය",
+        usernamePlaceholder: "පරිශීලක නාමය ඇතුලත් කරන්න",
+        password: "මුරපදය",
+        passwordPlaceholder: "මුරපදය ඇතුලත් කරන්න",
+        loginBtn: "ඇතුළු වන්න",
+        errorEmpty: "කරුණාකර පරිශීලක නාමය සහ මුරපදය ලබා දෙන්න",
+        errorInvalid: "පරිශීලක නාමය හෝ මුරපදය වැරදියි",
+        success: "සාර්ථකව ඇතුළු විය!"
       },
       summary: {
         totalLicenses: "මුළු බලපත්‍ර",
