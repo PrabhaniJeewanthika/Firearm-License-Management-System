@@ -30,13 +30,7 @@ interface RecordData {
   renewal_status: string | null;
   renewal_remarks: string | null;
   non_renewal_information: string | null;
-  current_status: string;
-  status_date: string | null;
-  status_remarks: string | null;
-  transfer_date: string | null;
-  previous_holder: string | null;
-  new_holder_reference: string | null;
-  transfer_details: string | null;
+  current_status_info?: any;
   special_information: string | null;
   outside_area_holder: boolean;
   outside_residential_address: string | null;
@@ -67,16 +61,7 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({
     }
   };
 
-  const getCurrentStatusText = (status: string) => {
-    switch (status) {
-      case 'active': return t('status.active');
-      case 'deceased': return t('status.deceased');
-      case 'transferred': return t('status.transferred');
-      case 'not_renewed': return t('status.not_renewed');
-      case 'other': return t('status.other');
-      default: return '-';
-    }
-  };
+
 
   return (
     <div className="modal-overlay">
@@ -183,39 +168,32 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({
           {/* Current Status */}
           <div className="form-section-divider">{t('form.section4').replace('04 ', '')}</div>
           <div className="detail-grid">
-            <div className="detail-item">
-              <div className="detail-label">{t('form.currentStatus')}</div>
-              <div className="detail-value" style={{ fontWeight: '600' }}>{getCurrentStatusText(record.current_status)}</div>
-            </div>
-            <div className="detail-item">
-              <div className="detail-label">{t('form.statusDate')}</div>
-              <div className="detail-value">{record.status_date || '-'}</div>
-            </div>
-            <div className="detail-item detail-value-full">
-              <div className="detail-label">{t('form.statusRemarks')}</div>
-              <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{record.status_remarks || '-'}</div>
-            </div>
-          </div>
-
-          {/* Firearm Transfer */}
-          <div className="form-section-divider">{t('view.transferDetails')}</div>
-          <div className="detail-grid">
-            <div className="detail-item">
-              <div className="detail-label">{t('view.transferDate')}</div>
-              <div className="detail-value">{record.transfer_date || '-'}</div>
-            </div>
-            <div className="detail-item">
-              <div className="detail-label">{t('view.prevHolder')}</div>
-              <div className="detail-value">{record.previous_holder || '-'}</div>
-            </div>
-            <div className="detail-item">
-              <div className="detail-label">{t('view.newHolder')}</div>
-              <div className="detail-value">{record.new_holder_reference || '-'}</div>
-            </div>
-            <div className="detail-item detail-value-full">
-              <div className="detail-label">{t('form.transferDetails')}</div>
-              <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{record.transfer_details || '-'}</div>
-            </div>
+            {['deceased', 'transferred', 'other'].map((statusKey) => {
+              const info = record.current_status_info?.[statusKey];
+              if (!info || !info.selected) return null;
+              return (
+                <React.Fragment key={statusKey}>
+                  <div className="detail-item detail-value-full" style={{ backgroundColor: 'var(--bg-color)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                    <div className="detail-label" style={{ fontSize: '15px', color: 'var(--state-maroon)', marginBottom: '12px' }}>{t(`status.${statusKey}`)}</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px' }}>
+                      <div>
+                        <div className="detail-label" style={{ fontSize: '12px' }}>{t('form.statusModificationDate')}</div>
+                        <div className="detail-value">{info.date || '-'}</div>
+                      </div>
+                      <div>
+                        <div className="detail-label" style={{ fontSize: '12px' }}>{t('form.statusReason')}</div>
+                        <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{info.reason || '-'}</div>
+                      </div>
+                    </div>
+                  </div>
+                </React.Fragment>
+              );
+            })}
+            {(!record.current_status_info || !['deceased', 'transferred', 'other'].some(k => record.current_status_info?.[k]?.selected)) && (
+               <div className="detail-item detail-value-full">
+                  <div className="detail-value" style={{ fontWeight: '600' }}>{t('status.active')}</div>
+               </div>
+            )}
           </div>
 
           {/* Special Information */}

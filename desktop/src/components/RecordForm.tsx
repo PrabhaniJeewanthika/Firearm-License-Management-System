@@ -50,14 +50,11 @@ const RecordForm: React.FC<RecordFormProps> = ({
   const [nonRenewalInformation, setNonRenewalInformation] = useState('');
   const [renewalHistory, setRenewalHistory] = useState<Record<string, { renewed: boolean; reason: string }>>({});
 
-  const [currentStatus, setCurrentStatus] = useState('active');
-  const [statusDate, setStatusDate] = useState('');
-  const [statusRemarks, setStatusRemarks] = useState('');
-
-  const [transferDate, setTransferDate] = useState('');
-  const [previousHolder, setPreviousHolder] = useState('');
-  const [newHolderReference, setNewHolderReference] = useState('');
-  const [transferDetails, setTransferDetails] = useState('');
+  const [currentStatusInfo, setCurrentStatusInfo] = useState({
+    deceased: { selected: false, date: '', reason: '' },
+    transferred: { selected: false, date: '', reason: '' },
+    other: { selected: false, date: '', reason: '' }
+  });
 
   const [specialInformation, setSpecialInformation] = useState('');
 
@@ -102,14 +99,24 @@ const RecordForm: React.FC<RecordFormProps> = ({
       setNonRenewalInformation(editingRecord.non_renewal_information || '');
       setRenewalHistory(editingRecord.renewal_history || {});
 
-      setCurrentStatus(editingRecord.current_status || 'active');
-      setStatusDate(editingRecord.status_date || '');
-      setStatusRemarks(editingRecord.status_remarks || '');
-
-      setTransferDate(editingRecord.transfer_date || '');
-      setPreviousHolder(editingRecord.previous_holder || '');
-      setNewHolderReference(editingRecord.new_holder_reference || '');
-      setTransferDetails(editingRecord.transfer_details || '');
+      const csi = editingRecord.current_status_info || {};
+      setCurrentStatusInfo({
+        deceased: {
+          selected: csi.deceased?.selected || false,
+          date: csi.deceased?.date || '',
+          reason: csi.deceased?.reason || ''
+        },
+        transferred: {
+          selected: csi.transferred?.selected || false,
+          date: csi.transferred?.date || '',
+          reason: csi.transferred?.reason || ''
+        },
+        other: {
+          selected: csi.other?.selected || false,
+          date: csi.other?.date || '',
+          reason: csi.other?.reason || ''
+        }
+      });
 
       setSpecialInformation(editingRecord.special_information || '');
 
@@ -214,13 +221,11 @@ const RecordForm: React.FC<RecordFormProps> = ({
     setRenewalRemarks('');
     setNonRenewalInformation('');
     setRenewalHistory({});
-    setCurrentStatus('active');
-    setStatusDate('');
-    setStatusRemarks('');
-    setTransferDate('');
-    setPreviousHolder('');
-    setNewHolderReference('');
-    setTransferDetails('');
+    setCurrentStatusInfo({
+      deceased: { selected: false, date: '', reason: '' },
+      transferred: { selected: false, date: '', reason: '' },
+      other: { selected: false, date: '', reason: '' }
+    });
     setSpecialInformation('');
     setOutsideAreaHolder(false);
     setOutsideResidentialAddress('');
@@ -269,13 +274,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
     formData.append('renewal_remarks', renewalRemarks);
     formData.append('non_renewal_information', nonRenewalInformation);
     formData.append('renewal_history', JSON.stringify(renewalHistory));
-    formData.append('current_status', currentStatus);
-    formData.append('status_date', statusDate || '');
-    formData.append('status_remarks', statusRemarks);
-    formData.append('transfer_date', transferDate || '');
-    formData.append('previous_holder', previousHolder);
-    formData.append('new_holder_reference', newHolderReference);
-    formData.append('transfer_details', transferDetails);
+    formData.append('current_status_info', JSON.stringify(currentStatusInfo));
     formData.append('special_information', specialInformation);
     formData.append('outside_area_holder', String(outsideAreaHolder));
     formData.append('outside_residential_address', outsideResidentialAddress);
@@ -594,47 +593,64 @@ const RecordForm: React.FC<RecordFormProps> = ({
         </div>
 
         <div className="form-grid-2">
-          <div className="form-group">
+          <div className="form-group form-grid-full">
             <label className="form-label">{t('form.currentStatus')}</label>
-            <select
-              className="form-select"
-              value={currentStatus}
-              onChange={(e) => setCurrentStatus(e.target.value)}
-            >
-              <option value="active">{t('status.active')}</option>
-              <option value="deceased">{t('status.deceased')}</option>
-              <option value="transferred">{t('status.transferred')}</option>
-              <option value="not_renewed">{t('status.not_renewed')}</option>
-              <option value="other">{t('status.other')}</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">{t('form.statusDate')}</label>
-            <input
-              type="date"
-              className="form-input"
-              value={statusDate}
-              onChange={(e) => setStatusDate(e.target.value)}
-            />
-          </div>
-
-          <div className="form-group form-grid-full">
-            <label className="form-label">{t('form.statusRemarks')}</label>
-            <textarea
-              className="form-textarea"
-              value={statusRemarks}
-              onChange={(e) => setStatusRemarks(e.target.value)}
-            />
-          </div>
-
-          <div className="form-group form-grid-full">
-            <label className="form-label">{t('form.transferDetails')}</label>
-            <textarea
-              className="form-textarea"
-              value={transferDetails}
-              onChange={(e) => setTransferDetails(e.target.value)}
-            />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
+              {['deceased', 'transferred', 'other'].map((statusKey) => {
+                const info = currentStatusInfo[statusKey as keyof typeof currentStatusInfo];
+                return (
+                  <div key={statusKey} style={{ display: 'flex', flexDirection: 'column', gap: '8px', padding: '16px', backgroundColor: 'var(--bg-color)', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '15px', cursor: 'pointer', fontWeight: '600', color: 'var(--text-main)' }}>
+                      <input
+                        type="checkbox"
+                        checked={info.selected}
+                        onChange={(e) => {
+                          setCurrentStatusInfo(prev => ({
+                            ...prev,
+                            [statusKey]: { ...prev[statusKey as keyof typeof currentStatusInfo], selected: e.target.checked }
+                          }));
+                        }}
+                        style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: 'var(--state-maroon)' }}
+                      />
+                      {t(`status.${statusKey}`)}
+                    </label>
+                    {info.selected && (
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px', marginTop: '12px', marginLeft: '32px' }}>
+                        <div className="form-group" style={{ marginBottom: 0 }}>
+                          <label className="form-label" style={{ fontSize: '13px' }}>{t('form.statusModificationDate')}</label>
+                          <input
+                            type="date"
+                            className="form-input"
+                            value={info.date}
+                            onChange={(e) => {
+                              setCurrentStatusInfo(prev => ({
+                                ...prev,
+                                [statusKey]: { ...prev[statusKey as keyof typeof currentStatusInfo], date: e.target.value }
+                              }));
+                            }}
+                          />
+                        </div>
+                        <div className="form-group" style={{ marginBottom: 0 }}>
+                          <label className="form-label" style={{ fontSize: '13px' }}>{t('form.statusReason')}</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={info.reason}
+                            onChange={(e) => {
+                              setCurrentStatusInfo(prev => ({
+                                ...prev,
+                                [statusKey]: { ...prev[statusKey as keyof typeof currentStatusInfo], reason: e.target.value }
+                              }));
+                            }}
+                            placeholder={t('form.reasonPlaceholder')}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           <div className="form-group form-grid-full">

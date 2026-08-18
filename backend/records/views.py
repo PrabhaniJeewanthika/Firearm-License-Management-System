@@ -27,7 +27,17 @@ class LicenseRecordViewSet(viewsets.ModelViewSet):
             
         current_status = self.request.query_params.get('current_status')
         if current_status:
-            queryset = queryset.filter(current_status=current_status)
+            # Query the JSONField
+            if current_status == 'active':
+                # Active means deceased and transferred are NOT true
+                queryset = queryset.exclude(current_status_info__deceased__selected=True)
+                queryset = queryset.exclude(current_status_info__transferred__selected=True)
+            elif current_status == 'deceased':
+                queryset = queryset.filter(current_status_info__deceased__selected=True)
+            elif current_status == 'transferred':
+                queryset = queryset.filter(current_status_info__transferred__selected=True)
+            elif current_status == 'other':
+                queryset = queryset.filter(current_status_info__other__selected=True)
             
         renewal_status = self.request.query_params.get('renewal_status')
         if renewal_status:
@@ -66,10 +76,15 @@ class SummaryView(APIView):
         active_records = LicenseRecord.objects.filter(is_archived=False)
         
         total = active_records.count()
-        active = active_records.filter(current_status='active').count()
         not_renewed = active_records.filter(renewal_status='not_renewed').count()
-        transferred = active_records.filter(current_status='transferred').count()
-        deceased = active_records.filter(current_status='deceased').count()
+        
+        transferred = active_records.filter(current_status_info__transferred__selected=True).count()
+        deceased = active_records.filter(current_status_info__deceased__selected=True).count()
+        
+        # Active is total minus those who are deceased or transferred
+        active = total - transferred - deceased
+        if active < 0:
+            active = 0
 
         return Response({
             "total": total,

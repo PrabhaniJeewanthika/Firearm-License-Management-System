@@ -33,16 +33,8 @@ class LicenseRecord(models.Model):
     # Non-renewal details
     non_renewal_information = models.TextField(null=True, blank=True)
 
-    # Current Status
-    current_status = models.CharField(max_length=50, default='active')
-    status_date = models.DateField(null=True, blank=True)
-    status_remarks = models.TextField(null=True, blank=True)
-
-    # Firearm Transfer
-    transfer_date = models.DateField(null=True, blank=True)
-    previous_holder = models.CharField(max_length=255, null=True, blank=True)
-    new_holder_reference = models.CharField(max_length=255, null=True, blank=True)
-    transfer_details = models.TextField(null=True, blank=True)
+    # Current Status & Transfer Info
+    current_status_info = models.JSONField(default=dict, blank=True, null=True)
 
     # Special Information
     special_information = models.TextField(null=True, blank=True)
