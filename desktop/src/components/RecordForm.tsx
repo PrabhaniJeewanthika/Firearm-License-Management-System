@@ -16,6 +16,7 @@ interface FirearmType {
 interface RecordFormProps {
   gnDivisions: GNDivision[];
   firearmTypes: FirearmType[];
+  customSections?: any[];
   editingRecord: any | null;
   onSaveSuccess: () => void;
   onCancelEdit: () => void;
@@ -24,6 +25,7 @@ interface RecordFormProps {
 const RecordForm: React.FC<RecordFormProps> = ({
   gnDivisions,
   firearmTypes,
+  customSections = [],
   editingRecord,
   onSaveSuccess,
   onCancelEdit,
@@ -61,6 +63,9 @@ const RecordForm: React.FC<RecordFormProps> = ({
   const [outsideAreaHolder, setOutsideAreaHolder] = useState(false);
   const [outsideResidentialAddress, setOutsideResidentialAddress] = useState('');
   const [landLocationDetails, setLandLocationDetails] = useState('');
+
+  // Dynamic Custom Data State
+  const [customData, setCustomData] = useState<Record<string, any>>({});
 
   // Image Upload State
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -123,6 +128,8 @@ const RecordForm: React.FC<RecordFormProps> = ({
       setOutsideAreaHolder(editingRecord.outside_area_holder || false);
       setOutsideResidentialAddress(editingRecord.outside_residential_address || '');
       setLandLocationDetails(editingRecord.land_location_details || '');
+
+      setCustomData(editingRecord.custom_data || {});
 
       setPhotoFile(null);
       setPhotoPreview(editingRecord.photo || null);
@@ -230,6 +237,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
     setOutsideAreaHolder(false);
     setOutsideResidentialAddress('');
     setLandLocationDetails('');
+    setCustomData({});
     setPhotoFile(null);
     setPhotoPreview(null);
     setErrors({});
@@ -279,6 +287,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
     formData.append('outside_area_holder', String(outsideAreaHolder));
     formData.append('outside_residential_address', outsideResidentialAddress);
     formData.append('land_location_details', landLocationDetails);
+    formData.append('custom_data', JSON.stringify(customData));
 
     try {
       if (editingRecord) {
@@ -711,6 +720,92 @@ const RecordForm: React.FC<RecordFormProps> = ({
             </div>
           </div>
         )}
+
+        {/* Dynamic Custom Sections */}
+        {customSections && customSections.length > 0 && customSections.map((section: any, idx: number) => (
+          <React.Fragment key={section.id}>
+            <div className="form-section-header">
+              <span className="section-num">{String(6 + idx).padStart(2, '0')}</span>
+              <span className="section-title">{section.title_si} / {section.title_en}</span>
+            </div>
+            <div className="form-grid-2">
+              {section.fields?.map((field: any) => {
+                const value = customData[field.id] || (field.field_type === 'checkbox' ? [] : field.field_type === 'boolean' ? false : '');
+                
+                const handleChange = (val: any) => {
+                  setCustomData(prev => ({ ...prev, [field.id]: val }));
+                };
+
+                return (
+                  <div key={field.id} className={`form-group ${['textarea'].includes(field.field_type) ? 'form-grid-full' : ''}`}>
+                    <label className="form-label">
+                      {field.label_si} / {field.label_en} {field.is_required && <span style={{ color: 'red' }}>*</span>}
+                    </label>
+
+                    {field.field_type === 'text' && (
+                      <input type="text" className="form-input" value={value} onChange={e => handleChange(e.target.value)} required={field.is_required} />
+                    )}
+
+                    {field.field_type === 'number' && (
+                      <input type="number" className="form-input" value={value} onChange={e => handleChange(e.target.value)} required={field.is_required} />
+                    )}
+
+                    {field.field_type === 'date' && (
+                      <input type="date" className="form-input" value={value} onChange={e => handleChange(e.target.value)} required={field.is_required} />
+                    )}
+
+                    {field.field_type === 'textarea' && (
+                      <textarea className="form-textarea" value={value} onChange={e => handleChange(e.target.value)} required={field.is_required} />
+                    )}
+
+                    {field.field_type === 'select' && (
+                      <select className="form-select" value={value} onChange={e => handleChange(e.target.value)} required={field.is_required}>
+                        <option value="">{t('form.selectOption')}</option>
+                        {field.options?.map((opt: string) => <option key={opt} value={opt}>{opt}</option>)}
+                      </select>
+                    )}
+
+                    {field.field_type === 'radio' && (
+                      <div className="radio-group">
+                        {field.options?.map((opt: string) => (
+                          <label key={opt} className="radio-option">
+                            <input type="radio" name={`field_${field.id}`} value={opt} checked={value === opt} onChange={e => handleChange(e.target.value)} required={field.is_required} />
+                            {opt}
+                          </label>
+                        ))}
+                      </div>
+                    )}
+
+                    {field.field_type === 'checkbox' && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                        {field.options?.map((opt: string) => (
+                          <label key={opt} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <input
+                              type="checkbox"
+                              checked={value.includes(opt)}
+                              onChange={(e) => {
+                                if (e.target.checked) handleChange([...value, opt]);
+                                else handleChange(value.filter((v: string) => v !== opt));
+                              }}
+                            />
+                            {opt}
+                          </label>
+                        ))}
+                      </div>
+                    )}
+
+                    {field.field_type === 'boolean' && (
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
+                        <input type="checkbox" checked={value} onChange={e => handleChange(e.target.checked)} />
+                        {t('form.yes')}
+                      </label>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </React.Fragment>
+        ))}
 
         {/* Action Buttons */}
         <div className="btn-group">

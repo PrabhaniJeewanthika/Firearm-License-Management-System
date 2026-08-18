@@ -22,6 +22,7 @@ interface RecordData {
   date_of_birth: string;
   sixty_fifth_birthday: string | null;
   telephone: string;
+  whatsapp_number?: string;
   firearm_type_detail?: FirearmTypeDetail;
   firearm_number: string;
   first_licensed_year: number;
@@ -30,30 +31,30 @@ interface RecordData {
   renewal_status: string | null;
   renewal_remarks: string | null;
   non_renewal_information: string | null;
+  renewal_history?: Record<string, { renewed: boolean; reason: string }>;
   current_status_info?: any;
   special_information: string | null;
   outside_area_holder: boolean;
   outside_residential_address: string | null;
   land_location_details: string | null;
+  custom_data?: any;
 }
 
 interface RecordViewModalProps {
   isOpen: boolean;
   record: RecordData | null;
+  customSections?: any[];
   onClose: () => void;
 }
 const RecordViewModal: React.FC<RecordViewModalProps> = ({
   isOpen,
   record,
+  customSections = [],
   onClose,
 }) => {
   const { t } = useTranslation();
 
   if (!isOpen || !record) return null;
-
-
-
-
 
   return (
     <div className="modal-overlay">
@@ -228,6 +229,38 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({
               </>
             )}
           </div>
+
+          {/* Dynamic Custom Sections */}
+          {customSections && customSections.length > 0 && customSections.map((section: any) => {
+            const hasData = section.fields?.some((field: any) => record.custom_data && record.custom_data[field.id] !== undefined && record.custom_data[field.id] !== '' && record.custom_data[field.id] !== null);
+            if (!hasData) return null; // Only show sections where at least one field has data
+
+            return (
+              <React.Fragment key={section.id}>
+                <div className="form-section-divider">{section.title_si} / {section.title_en}</div>
+                <div className="detail-grid">
+                  {section.fields?.map((field: any) => {
+                    let value = record.custom_data?.[field.id];
+                    if (value === undefined || value === null || value === '') return null;
+
+                    if (field.field_type === 'boolean') {
+                      value = value ? t('form.yes') : t('form.no');
+                    } else if (field.field_type === 'checkbox' && Array.isArray(value)) {
+                      value = value.join(', ');
+                    }
+
+                    return (
+                      <div key={field.id} className={`detail-item ${['textarea'].includes(field.field_type) ? 'detail-value-full' : ''}`}>
+                        <div className="detail-label">{field.label_si} / {field.label_en}</div>
+                        <div className="detail-value" style={field.field_type === 'textarea' ? { whiteSpace: 'pre-wrap' } : {}}>{String(value)}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </React.Fragment>
+            );
+          })}
+
 
         </div>
         <div className="modal-footer">

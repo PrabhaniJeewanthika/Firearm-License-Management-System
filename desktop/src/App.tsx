@@ -29,6 +29,7 @@ const App: React.FC = () => {
   // Lookup State
   const [gnDivisions, setGnDivisions] = useState<any[]>([]);
   const [firearmTypes, setFirearmTypes] = useState<any[]>([]);
+  const [customSections, setCustomSections] = useState<any[]>([]);
 
   // Summary State
   const [summary, setSummary] = useState({
@@ -58,15 +59,17 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState(false);
 
-  // Fetch GN divisions and Firearm types once on mount
+  // Fetch GN divisions, Firearm types, and Custom Sections once on mount
   const fetchLookups = async () => {
     try {
-      const [gnRes, ftRes] = await Promise.all([
+      const [gnRes, ftRes, csRes] = await Promise.all([
         api.get('/gn-divisions/'),
         api.get('/firearm-types/'),
+        api.get('/custom-sections/'),
       ]);
       setGnDivisions(gnRes.data.results || gnRes.data);
       setFirearmTypes(ftRes.data.results || ftRes.data);
+      setCustomSections(csRes.data.results || csRes.data);
     } catch (err) {
       console.error('Lookup load error:', err);
       setApiError(true);
@@ -231,13 +234,25 @@ const App: React.FC = () => {
         return;
       }
 
+      // Extract custom field headers and mapping
+      const customFieldHeaders: string[] = [];
+      const customFieldMapping: any[] = [];
+      
+      customSections.forEach((section: any) => {
+        section.fields?.forEach((field: any) => {
+          customFieldHeaders.push(`${field.label_si} (${field.label_en})`);
+          customFieldMapping.push(field);
+        });
+      });
+
       const headers = [
         'සම්පූර්ණ නම (Full Name)', 'ජාතික හැඳුනුම්පත් අංකය (NIC)', 'දුරකථන අංකය (Phone)', 'WhatsApp අංකය',
         'ලිපිනය (Address)', 'ග්‍රාම නිලධාරී කොට්ඨාසය (GN Division)', 'උපන්දිනය (DOB)',
         '65 සම්පූර්ණ වන දිනය (65th Birthday)', 'ගිනිඅවි වර්ගය (Firearm Type)',
         'ගිනිඅවි අංකය (Firearm Number)', 'මුලින්ම බලපත්‍ර ලද වර්ෂය (First Licensed Year)',
         'බලපත්‍ර අලුත් කිරීමේ ඉතිහාසය (Renewal History)', 'වර්තමාන තත්ත්වය (Current Status)',
-        'විශේෂ තොරතුරු (Special Info)', 'පිටත පදිංචි (Outside Resident)', 'පිටත ලිපිනය (Outside Address)', 'ඉඩම් විස්තර (Land Details)'
+        'විශේෂ තොරතුරු (Special Info)', 'පිටත පදිංචි (Outside Resident)', 'පිටත ලිපිනය (Outside Address)', 'ඉඩම් විස්තර (Land Details)',
+        ...customFieldHeaders
       ];
 
       const csvRows = [];
@@ -275,6 +290,14 @@ const App: React.FC = () => {
         }
         let statusText = statusTextArr.length > 0 ? statusTextArr.join(' | ') : 'සක්‍රීය (Active)';
 
+        const customFieldValues = customFieldMapping.map((field: any) => {
+          let value = row.custom_data?.[field.id];
+          if (value === undefined || value === null) value = '';
+          if (field.field_type === 'boolean') value = value ? 'ඔව්' : 'නැත';
+          if (field.field_type === 'checkbox' && Array.isArray(value)) value = value.join(', ');
+          return `"${String(value).replace(/"/g, '""').replace(/\n/g, ' ')}"`;
+        });
+
         const values = [
           `"${(row.full_name || '').replace(/"/g, '""')}"`,
           `"${(row.nic || '').replace(/"/g, '""')}"`,
@@ -293,6 +316,7 @@ const App: React.FC = () => {
           `"${row.outside_area_holder ? 'ඔව්' : 'නැත'}"`,
           `"${(row.outside_residential_address || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
           `"${(row.land_location_details || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+          ...customFieldValues
         ];
         csvRows.push(values.join(','));
       }
@@ -374,6 +398,7 @@ const App: React.FC = () => {
             <RecordForm
               gnDivisions={gnDivisions}
               firearmTypes={firearmTypes}
+              customSections={customSections}
               editingRecord={editingRecord}
               onSaveSuccess={handleSaveSuccess}
               onCancelEdit={handleCancelEdit}
@@ -420,6 +445,7 @@ const App: React.FC = () => {
           <RecordViewModal
             isOpen={selectedRecord !== null}
             record={selectedRecord}
+            customSections={customSections}
             onClose={() => setSelectedRecord(null)}
           />
 
