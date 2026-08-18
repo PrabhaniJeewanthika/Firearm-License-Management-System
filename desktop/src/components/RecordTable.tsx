@@ -101,7 +101,7 @@ const RecordTable: React.FC<RecordTableProps> = ({
               </tr>
             </thead>
             <tbody>
-              {records.map((record) => (
+              {(Array.isArray(records) ? records : []).map((record) => (
                 <tr key={record.id} style={{ cursor: 'pointer' }} onClick={() => onView(record)}>
                   <td onClick={(e) => e.stopPropagation()}>
                     <div className="licensee-cell" onClick={() => onView(record)}>

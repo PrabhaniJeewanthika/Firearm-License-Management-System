@@ -559,7 +559,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
               <div className="form-group form-grid-full" style={{ marginTop: '20px' }}>
                 <label className="form-label">{t('form.renewal')}</label>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
-                  {renewalYears.map(ry => {
+                  {(Array.isArray(renewalYears) ? renewalYears : []).map(ry => {
                     const yearStr = String(ry.year);
                     const isRenewed = renewalHistory[yearStr]?.renewed ?? false;
                     const reason = renewalHistory[yearStr]?.reason ?? '';

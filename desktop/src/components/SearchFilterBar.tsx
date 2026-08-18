@@ -76,7 +76,7 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
             onChange={(e) => onFilterChange('gn_division', e.target.value)}
           >
             <option value="">{t('search.allGN')}</option>
-            {gnDivisions.map((gn) => (
+            {(Array.isArray(gnDivisions) ? gnDivisions : []).map((gn) => (
               <option key={gn.id} value={gn.id}>
                 {gn.name}
               </option>
@@ -92,7 +92,7 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
             onChange={(e) => onFilterChange('firearm_type', e.target.value)}
           >
             <option value="">{t('search.allTypes')}</option>
-            {firearmTypes.map((ft) => (
+            {(Array.isArray(firearmTypes) ? firearmTypes : []).map((ft) => (
               <option key={ft.id} value={ft.id}>
                 {ft.name_si}
               </option>
