@@ -21,3 +21,49 @@ class FirearmType(models.Model):
     def __str__(self):
         return f"{self.name_si} ({self.name_en})"
 
+class CustomFormSection(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    title_si = models.CharField(max_length=255, verbose_name="Section Title (Sinhala)")
+    title_en = models.CharField(max_length=255, verbose_name="Section Title (English)")
+    title_ta = models.CharField(max_length=255, verbose_name="Section Title (Tamil)", blank=True, null=True)
+    order = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.title_si} ({self.title_en})"
+
+class CustomFormField(models.Model):
+    FIELD_TYPES = (
+        ('text', 'Text'),
+        ('textarea', 'Text Area'),
+        ('number', 'Number'),
+        ('date', 'Date'),
+        ('select', 'Dropdown'),
+        ('radio', 'Radio Buttons'),
+        ('checkbox', 'Checkbox (Multiple)'),
+        ('boolean', 'Yes/No (Boolean)')
+    )
+    
+    id = models.BigAutoField(primary_key=True)
+    section = models.ForeignKey(CustomFormSection, related_name='fields', on_delete=models.CASCADE)
+    label_si = models.CharField(max_length=255, verbose_name="Label (Sinhala)")
+    label_en = models.CharField(max_length=255, verbose_name="Label (English)")
+    label_ta = models.CharField(max_length=255, verbose_name="Label (Tamil)", blank=True, null=True)
+    field_type = models.CharField(max_length=50, choices=FIELD_TYPES)
+    options = models.JSONField(blank=True, null=True, help_text="JSON list of options for select/radio/checkbox")
+    is_required = models.BooleanField(default=False)
+    order = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.label_si} - {self.get_field_type_display()}"

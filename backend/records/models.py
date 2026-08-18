@@ -44,6 +44,9 @@ class LicenseRecord(models.Model):
     outside_residential_address = models.TextField(null=True, blank=True)
     land_location_details = models.TextField(null=True, blank=True)
 
+    # Dynamic Custom Data
+    custom_data = models.JSONField(default=dict, blank=True, null=True)
+
     # Timestamps & Archiving
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

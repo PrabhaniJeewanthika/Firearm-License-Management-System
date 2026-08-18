@@ -1,7 +1,7 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from .models import GNDivision, FirearmType
-from .serializers import GNDivisionSerializer, FirearmTypeSerializer
+from .models import GNDivision, FirearmType, CustomFormSection, CustomFormField
+from .serializers import GNDivisionSerializer, FirearmTypeSerializer, CustomFormSectionSerializer, CustomFormFieldSerializer
 from rest_framework.permissions import AllowAny
 
 class GNDivisionViewSet(viewsets.ModelViewSet):
@@ -28,3 +28,24 @@ class FirearmTypeViewSet(viewsets.ModelViewSet):
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+class CustomFormSectionViewSet(viewsets.ModelViewSet):
+    queryset = CustomFormSection.objects.filter(is_active=True).prefetch_related('fields')
+    serializer_class = CustomFormSectionSerializer
+    permission_classes = [AllowAny]
+    
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_active = False
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+class CustomFormFieldViewSet(viewsets.ModelViewSet):
+    queryset = CustomFormField.objects.filter(is_active=True)
+    serializer_class = CustomFormFieldSerializer
+    permission_classes = [AllowAny]
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        instance.is_active = False
+        instance.save()
+        return Response(status=status.HTTP_204_NO_CONTENT)
