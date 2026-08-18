@@ -1,86 +1,21 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import api from '../services/api';
+import re
 
-interface GNDivision {
-  id: number;
-  name: string;
-}
+with open('scratch/RecordForm_original.tsx', 'r', encoding='utf-8') as f:
+    content = f.read()
 
-interface FirearmType {
-  id: number;
-  name_si: string;
-  name_en: string;
-}
+# 1. Add LicenseRenewalYear to Props
+content = content.replace(
+    '  customSections?: any[];\n  editingRecord: any | null;',
+    '  renewalYears: any[];\n  customSections?: any[];\n  editingRecord: any | null;'
+)
 
-interface RecordFormProps {
-  gnDivisions: GNDivision[];
-  firearmTypes: FirearmType[];
-  renewalYears: any[];
-  customSections?: any[];
-  editingRecord: any | null;
-  onSaveSuccess: () => void;
-  onCancelEdit: () => void;
-}
+content = content.replace(
+    '  customSections = [],\n  editingRecord,',
+    '  renewalYears = [],\n  customSections = [],\n  editingRecord,'
+)
 
-const RecordForm: React.FC<RecordFormProps> = ({
-  gnDivisions,
-  firearmTypes,
-  renewalYears = [],
-  customSections = [],
-  editingRecord,
-  onSaveSuccess,
-  onCancelEdit,
-}) => {
-  const { t } = useTranslation();
-  // Form State
-  const [fullName, setFullName] = useState('');
-  const [nic, setNic] = useState('');
-  const [address, setAddress] = useState('');
-  const [gnDivision, setGnDivision] = useState('');
-  const [dateOfBirth, setDateOfBirth] = useState('');
-  const [sixtyFifthBirthday, setSixtyFifthBirthday] = useState('');
-  const [telephone, setTelephone] = useState('');
-  const [whatsappNumber, setWhatsappNumber] = useState('');
-
-  const [firearmType, setFirearmType] = useState('');
-  const [firearmNumber, setFirearmNumber] = useState('');
-  const [firstLicensedYear, setFirstLicensedYear] = useState('');
-
-  const [renewalYear, setRenewalYear] = useState('');
-  const [renewalDate, setRenewalDate] = useState('');
-  const [renewalStatus, setRenewalStatus] = useState('');
-  const [renewalRemarks, setRenewalRemarks] = useState('');
-  const [nonRenewalInformation, setNonRenewalInformation] = useState('');
-  const [renewalHistory, setRenewalHistory] = useState<Record<string, { renewed: boolean; reason: string }>>({});
-
-  const [currentStatusInfo, setCurrentStatusInfo] = useState({
-    deceased: { selected: false, date: '', reason: '' },
-    transferred: { selected: false, date: '', reason: '' },
-    other: { selected: false, date: '', reason: '' }
-  });
-
-  const [specialInformation, setSpecialInformation] = useState('');
-
-  const [outsideAreaHolder, setOutsideAreaHolder] = useState(false);
-  const [outsideResidentialAddress, setOutsideResidentialAddress] = useState('');
-  const [landLocationDetails, setLandLocationDetails] = useState('');
-
-  // Dynamic Custom Data State
-  const [customData, setCustomData] = useState<Record<string, any>>({});
-
-  // Image Upload State
-  const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // Errors State
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [submitError, setSubmitError] = useState('');
-  const [submitSuccess, setSubmitSuccess] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-
+# 2. Add getter and setter helpers inside the component
+helpers = """
   const getFieldValue = (field: any) => {
     if (field.system_name === 'full_name') return fullName;
     if (field.system_name === 'nic') return nic;
@@ -138,328 +73,12 @@ const RecordForm: React.FC<RecordFormProps> = ({
       setCustomData(prev => ({ ...prev, [field.id]: val }));
     }
   };
+"""
 
-  // Scroll to Form Ref
-  const formRef = useRef<HTMLDivElement>(null);
+content = content.replace('  // Scroll to Form Ref', helpers + '\n  // Scroll to Form Ref')
 
-  // Load editing record details
-  useEffect(() => {
-    if (editingRecord) {
-      setFullName(editingRecord.full_name || '');
-      setNic(editingRecord.nic || '');
-      setAddress(editingRecord.address || '');
-      setGnDivision(editingRecord.gn_division ? String(editingRecord.gn_division) : '');
-      setDateOfBirth(editingRecord.date_of_birth || '');
-      setSixtyFifthBirthday(editingRecord.sixty_fifth_birthday || '');
-      setTelephone(editingRecord.telephone || '');
-      setWhatsappNumber(editingRecord.whatsapp_number || '');
-
-      setFirearmType(editingRecord.firearm_type ? String(editingRecord.firearm_type) : '');
-      setFirearmNumber(editingRecord.firearm_number || '');
-      setFirstLicensedYear(editingRecord.first_licensed_year ? String(editingRecord.first_licensed_year) : '');
-
-      setRenewalYear(editingRecord.renewal_year ? String(editingRecord.renewal_year) : '');
-      setRenewalDate(editingRecord.renewal_date || '');
-      setRenewalStatus(editingRecord.renewal_status || '');
-      setRenewalRemarks(editingRecord.renewal_remarks || '');
-      setNonRenewalInformation(editingRecord.non_renewal_information || '');
-      setRenewalHistory(editingRecord.renewal_history || {});
-
-      const csi = editingRecord.current_status_info || {};
-      setCurrentStatusInfo({
-        deceased: {
-          selected: csi.deceased?.selected || false,
-          date: csi.deceased?.date || '',
-          reason: csi.deceased?.reason || ''
-        },
-        transferred: {
-          selected: csi.transferred?.selected || false,
-          date: csi.transferred?.date || '',
-          reason: csi.transferred?.reason || ''
-        },
-        other: {
-          selected: csi.other?.selected || false,
-          date: csi.other?.date || '',
-          reason: csi.other?.reason || ''
-        }
-      });
-
-      setSpecialInformation(editingRecord.special_information || '');
-
-      setOutsideAreaHolder(editingRecord.outside_area_holder || false);
-      setOutsideResidentialAddress(editingRecord.outside_residential_address || '');
-      setLandLocationDetails(editingRecord.land_location_details || '');
-
-      setCustomData(editingRecord.custom_data || {});
-
-      setPhotoFile(null);
-      setPhotoPreview(editingRecord.photo || null);
-      setErrors({});
-      setSubmitError('');
-      setSubmitSuccess('');
-
-      // Scroll to form
-      if (formRef.current) {
-        formRef.current.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else {
-      resetForm(false);
-    }
-  }, [editingRecord]);
-
-  // Real-time calculation of 65th birthday
-  useEffect(() => {
-    if (dateOfBirth) {
-      const parts = dateOfBirth.split('-');
-      if (parts.length === 3) {
-        const year = parseInt(parts[0]);
-        setSixtyFifthBirthday(`${year + 65}-${parts[1]}-${parts[2]}`);
-      }
-    } else {
-      setSixtyFifthBirthday('');
-    }
-  }, [dateOfBirth]);
-
-  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setPhotoFile(file);
-      setPhotoPreview(URL.createObjectURL(file));
-    }
-  };
-
-  const removePhoto = () => {
-    setPhotoFile(null);
-    setPhotoPreview(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const validate = () => {
-    const newErrors: Record<string, string> = {};
-
-    if (!fullName.trim()) newErrors.full_name = t('errors.fullName');
-    if (!nic.trim()) newErrors.nic = t('errors.nic');
-    if (!firearmNumber.trim()) newErrors.firearm_number = t('errors.firearmNumber');
-    if (!gnDivision) newErrors.gn_division = t('errors.gnDivision');
-    if (!firearmType) newErrors.firearm_type = t('errors.firearmType');
-
-    // Phone validation (SL format: 07XXXXXXXX)
-    const phoneRegex = /^(?:0)\d{9}$/;
-    if (telephone && !phoneRegex.test(telephone)) {
-      newErrors.telephone = t('errors.phone');
-    }
-
-    // DOB future date validation
-    if (dateOfBirth) {
-      const dobDate = new Date(dateOfBirth);
-      const today = new Date();
-      if (dobDate > today) {
-        newErrors.date_of_birth = t('errors.dobFuture');
-      }
-    } else {
-      newErrors.date_of_birth = t('errors.dobReq');
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const resetForm = (askConfirmation = true) => {
-    if (askConfirmation && (fullName || nic || firearmNumber || photoPreview)) {
-      const confirmClear = window.confirm(t('errors.confirmClear'));
-      if (!confirmClear) return;
-    }
-
-    setFullName('');
-    setNic('');
-    setAddress('');
-    setGnDivision('');
-    setDateOfBirth('');
-    setSixtyFifthBirthday('');
-    setTelephone('');
-    setWhatsappNumber('');
-    setFirearmType('');
-    setFirearmNumber('');
-    setFirstLicensedYear('');
-    setRenewalYear('');
-    setRenewalDate('');
-    setRenewalStatus('');
-    setRenewalRemarks('');
-    setNonRenewalInformation('');
-    setRenewalHistory({});
-    setCurrentStatusInfo({
-      deceased: { selected: false, date: '', reason: '' },
-      transferred: { selected: false, date: '', reason: '' },
-      other: { selected: false, date: '', reason: '' }
-    });
-    setSpecialInformation('');
-    setOutsideAreaHolder(false);
-    setOutsideResidentialAddress('');
-    setLandLocationDetails('');
-    setCustomData({});
-    setPhotoFile(null);
-    setPhotoPreview(null);
-    setErrors({});
-    setSubmitError('');
-    setSubmitSuccess('');
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitError('');
-    setSubmitSuccess('');
-
-    if (!validate()) {
-      const firstError = Object.values(errors)[0];
-      if (firstError) setSubmitError(firstError);
-      return;
-    }
-
-    setIsSubmitting(true);
-
-    // Create Form Data for file upload
-    const formData = new FormData();
-    if (photoFile) {
-      formData.append('photo', photoFile);
-    }
-    formData.append('full_name', fullName);
-    formData.append('nic', nic);
-    formData.append('address', address);
-    formData.append('gn_division', gnDivision);
-    formData.append('date_of_birth', dateOfBirth);
-    formData.append('telephone', telephone);
-    formData.append('whatsapp_number', whatsappNumber);
-    formData.append('firearm_type', firearmType);
-    formData.append('firearm_number', firearmNumber);
-    formData.append('first_licensed_year', firstLicensedYear || '0');
-    formData.append('renewal_year', renewalYear || '');
-    formData.append('renewal_date', renewalDate || '');
-    formData.append('renewal_status', renewalStatus || '');
-    formData.append('renewal_remarks', renewalRemarks);
-    formData.append('non_renewal_information', nonRenewalInformation);
-    formData.append('renewal_history', JSON.stringify(renewalHistory));
-    formData.append('current_status_info', JSON.stringify(currentStatusInfo));
-    formData.append('special_information', specialInformation);
-    formData.append('outside_area_holder', String(outsideAreaHolder));
-    formData.append('outside_residential_address', outsideResidentialAddress);
-    formData.append('land_location_details', landLocationDetails);
-    formData.append('custom_data', JSON.stringify(customData));
-
-    try {
-      if (editingRecord) {
-        await api.put(`/records/${editingRecord.id}/`, formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
-        setSubmitSuccess(t('errors.updateSuccess'));
-        setTimeout(() => {
-          onSaveSuccess();
-        }, 1000);
-      } else {
-        await api.post('/records/', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        });
-        setSubmitSuccess(t('errors.saveSuccess'));
-        resetForm(false);
-        setTimeout(() => {
-          onSaveSuccess();
-        }, 1000);
-      }
-    } catch (err: any) {
-      console.error(err);
-      if (err.response?.data) {
-        const data = err.response.data;
-        if (data.nic) {
-          setSubmitError(t('errors.duplicateNIC'));
-        } else if (data.firearm_number) {
-          setSubmitError(t('errors.duplicateFirearm'));
-        } else {
-          setSubmitError(t('errors.saveFailed'));
-        }
-      } else {
-        setSubmitError(t('errors.apiError'));
-      }
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="card" ref={formRef}>
-      <div className="card-header-area">
-        <div className="card-title">
-          {editingRecord ? t('tabs.editRecord') : t('tabs.newRecord')}
-        </div>
-        <div className="card-subtitle">{t('form.mandatory')}</div>
-      </div>
-
-      {submitError && (
-        <div style={{ backgroundColor: 'var(--danger-color)', color: '#fff', padding: '12px 16px', borderRadius: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: '600', boxShadow: 'var(--shadow-sm)' }}>
-          {submitError}
-        </div>
-      )}
-
-      {submitSuccess && (
-        <div style={{ backgroundColor: 'var(--success-color)', color: '#fff', padding: '12px 16px', borderRadius: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: '600', boxShadow: 'var(--shadow-sm)' }}>
-          {submitSuccess}
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit}>
-        
-        {/* Section 1: Personal Details */}
-        <div className="form-section-header">
-          <span className="section-num">01</span>
-          <span className="section-title">{t('form.section1').replace('01 ', '')}</span>
-        </div>
-
-        {/* Photo Upload Section */}
-        <div className="form-group">
-          <label className="form-label">{t('form.photoLabel')}</label>
-          <div className="photo-uploader">
-            {photoPreview ? (
-              <img src={photoPreview} alt="Preview" className="photo-preview" />
-            ) : (
-              <div className="photo-placeholder">
-                <span style={{ fontSize: '24px' }}></span>
-                <span style={{ marginTop: '8px', fontWeight: '600' }}>JPG / PNG</span>
-              </div>
-            )}
-            <div className="photo-controls">
-              <input
-                type="file"
-                accept="image/png, image/jpeg, image/jpg"
-                onChange={handlePhotoChange}
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-              />
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => fileInputRef.current?.click()}
-                style={{ padding: '6px 12px', fontSize: '12px' }}
-              >
-                {photoPreview ? t('form.changePhoto') : t('form.choosePhoto')}
-              </button>
-              {photoPreview && (
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={removePhoto}
-                  style={{ padding: '6px 12px', fontSize: '12px', marginTop: '4px' }}
-                >
-                  {t('form.removePhoto')}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        
+# 3. Replace the static sections with dynamic mapping
+dynamic_form = """
         {customSections && customSections.map((section: any, idx: number) => (
           <React.Fragment key={section.id}>
             <div className="form-section-header">
@@ -670,10 +289,21 @@ const RecordForm: React.FC<RecordFormProps> = ({
             )}
           </React.Fragment>
         ))}
+"""
 
-</form>
-    </div>
-  );
-};
+# Find the start of <div className="form-grid-2"> for fullName (line 401 approx)
+import re
+start_idx = content.find('<div className="form-grid-2">')
+end_idx = content.find('{/* Dynamic Custom Sections */}', start_idx)
+# also remove up to the end of Dynamic Custom Sections loop
+end_idx_2 = content.find('</form>', end_idx)
 
-export default RecordForm;
+if start_idx != -1 and end_idx_2 != -1:
+    new_content = content[:start_idx] + dynamic_form + "\n" + content[end_idx_2:]
+    
+    with open('desktop/src/components/RecordForm.tsx', 'w', encoding='utf-8') as f:
+        f.write(new_content)
+        print("Successfully rewrote RecordForm.tsx")
+else:
+    print("Could not find start/end indices")
+

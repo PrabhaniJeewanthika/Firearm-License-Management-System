@@ -5,6 +5,7 @@ import api from '../services/api';
 
 export interface CustomFormField {
   id: number;
+  system_name: string | null;
   label_si: string;
   label_en: string;
   label_ta: string | null;
@@ -12,6 +13,8 @@ export interface CustomFormField {
   options: any;
   is_required: boolean;
   order: number;
+  depends_on?: number | null;
+  depends_on_value?: string | null;
 }
 
 export interface CustomFormSection {
@@ -187,11 +190,14 @@ const FormBuilder: React.FC = () => {
                   <li key={field.id} style={{ display: 'flex', justifyContent: 'space-between', background: 'var(--bg-secondary)', padding: '10px', borderRadius: '4px' }}>
                     <div>
                       <strong>{field.label_si} / {field.label_en}</strong> ({field.field_type}) 
+                      {field.system_name && <span style={{ marginLeft: '10px', fontSize: '12px', background: 'var(--primary-color)', color: 'white', padding: '2px 6px', borderRadius: '4px' }}>Core Field</span>}
                       {field.is_required && <span style={{ color: 'red', marginLeft: '5px' }}>*Required</span>}
                     </div>
-                    <button onClick={() => handleDeleteField(field.id)} className="btn-icon" style={{ color: 'var(--danger-color)', cursor: 'pointer', background: 'none', border: 'none' }}>
-                      Delete
-                    </button>
+                    {!field.system_name && (
+                      <button onClick={() => handleDeleteField(field.id)} className="btn-icon" style={{ color: 'var(--danger-color)', cursor: 'pointer', background: 'none', border: 'none' }}>
+                        Delete
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -218,11 +224,15 @@ const FormBuilder: React.FC = () => {
                       <option value="text">Text (Short)</option>
                       <option value="textarea">Text Area (Long)</option>
                       <option value="number">Number</option>
+                      <option value="phone">Phone Number</option>
+                      <option value="nic">NIC Number</option>
                       <option value="date">Date</option>
                       <option value="select">Dropdown Select</option>
                       <option value="radio">Radio Buttons</option>
                       <option value="checkbox">Checkboxes</option>
                       <option value="boolean">Yes/No Toggle</option>
+                      <option value="image">Image Upload</option>
+                      <option value="autocalc_65">Auto Calculate (65th Birthday)</option>
                     </select>
                   </div>
                   {['select', 'radio', 'checkbox'].includes(newFieldType) && (

@@ -30,6 +30,7 @@ const App: React.FC = () => {
   const [gnDivisions, setGnDivisions] = useState<any[]>([]);
   const [firearmTypes, setFirearmTypes] = useState<any[]>([]);
   const [customSections, setCustomSections] = useState<any[]>([]);
+  const [renewalYears, setRenewalYears] = useState<any[]>([]);
 
   // Summary State
   const [summary, setSummary] = useState({
@@ -59,17 +60,19 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [apiError, setApiError] = useState(false);
 
-  // Fetch GN divisions, Firearm types, and Custom Sections once on mount
+  // Fetch GN divisions, Firearm types, Custom Sections and Renewal Years once on mount
   const fetchLookups = async () => {
     try {
-      const [gnRes, ftRes, csRes] = await Promise.all([
+      const [gnRes, ftRes, csRes, ryRes] = await Promise.all([
         api.get('/gn-divisions/'),
         api.get('/firearm-types/'),
         api.get('/custom-sections/'),
+        api.get('/renewal-years/'),
       ]);
       setGnDivisions(gnRes.data.results || gnRes.data);
       setFirearmTypes(ftRes.data.results || ftRes.data);
       setCustomSections(csRes.data.results || csRes.data);
+      setRenewalYears(ryRes.data.results || ryRes.data);
     } catch (err) {
       console.error('Lookup load error:', err);
       setApiError(true);
@@ -240,8 +243,10 @@ const App: React.FC = () => {
       
       customSections.forEach((section: any) => {
         section.fields?.forEach((field: any) => {
-          customFieldHeaders.push(`${field.label_si} (${field.label_en})`);
-          customFieldMapping.push(field);
+          if (!field.system_name) {
+            customFieldHeaders.push(`${field.label_si} (${field.label_en})`);
+            customFieldMapping.push(field);
+          }
         });
       });
 
@@ -399,6 +404,7 @@ const App: React.FC = () => {
               gnDivisions={gnDivisions}
               firearmTypes={firearmTypes}
               customSections={customSections}
+              renewalYears={renewalYears}
               editingRecord={editingRecord}
               onSaveSuccess={handleSaveSuccess}
               onCancelEdit={handleCancelEdit}
@@ -437,6 +443,7 @@ const App: React.FC = () => {
           ) : activeTab === 'admin' ? (
             <AdminPanel 
               gnDivisions={gnDivisions} 
+              renewalYears={renewalYears}
               onDataChanged={fetchLookups} 
             />
           ) : null}
@@ -445,6 +452,7 @@ const App: React.FC = () => {
           <RecordViewModal
             isOpen={selectedRecord !== null}
             record={selectedRecord}
+            renewalYears={renewalYears}
             customSections={customSections}
             onClose={() => setSelectedRecord(null)}
           />

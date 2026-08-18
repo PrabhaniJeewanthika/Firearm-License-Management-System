@@ -1,5 +1,10 @@
 from rest_framework import serializers
-from .models import GNDivision, FirearmType, CustomFormSection, CustomFormField
+from .models import GNDivision, FirearmType, CustomFormSection, CustomFormField, LicenseRenewalYear
+
+class LicenseRenewalYearSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = LicenseRenewalYear
+        fields = '__all__'
 
 class GNDivisionSerializer(serializers.ModelSerializer):
     class Meta:

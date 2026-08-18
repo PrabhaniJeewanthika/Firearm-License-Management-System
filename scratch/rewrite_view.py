@@ -1,56 +1,20 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import re
 
-interface GNDivisionDetail {
-  id: number;
-  name: string;
-}
+with open('scratch/RecordViewModal_original.tsx', 'r', encoding='utf-8') as f:
+    content = f.read()
 
-interface FirearmTypeDetail {
-  id: number;
-  name_si: string;
-  name_en: string;
-}
+# 1. Add renewalYears to Props
+content = content.replace(
+    '  customSections?: any[];',
+    '  renewalYears?: any[];\n  customSections?: any[];'
+)
+content = content.replace(
+    '  customSections = [],',
+    '  renewalYears = [],\n  customSections = [],'
+)
 
-interface RecordData {
-  id: number;
-  photo: string | null;
-  full_name: string;
-  nic: string;
-  address: string;
-  gn_division_detail?: GNDivisionDetail;
-  date_of_birth: string;
-  sixty_fifth_birthday: string | null;
-  telephone: string;
-  whatsapp_number?: string;
-  firearm_type_detail?: FirearmTypeDetail;
-  firearm_number: string;
-  first_licensed_year: number;
-  renewal_year: number | null;
-  renewal_date: string | null;
-  renewal_status: string | null;
-  renewal_remarks: string | null;
-  non_renewal_information: string | null;
-  renewal_history?: Record<string, { renewed: boolean; reason: string }>;
-  current_status_info?: any;
-  special_information: string | null;
-  outside_area_holder: boolean;
-  outside_residential_address: string | null;
-  land_location_details: string | null;
-  custom_data?: any;
-}
-
-interface RecordViewModalProps {
-  record: any | null;
-  isOpen: boolean;
-  onClose: () => void;
-  renewalYears?: any[];
-  customSections?: any[];
-}
-
-const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClose, renewalYears = [], customSections = [] }) => {
-  const { t } = useTranslation();
-
+# 2. Add helper
+helpers = """
   const getFieldValue = (field: any) => {
     if (!record) return null;
     if (field.system_name === 'gn_division') return record.gn_division_detail?.name;
@@ -79,35 +43,13 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
     }
     return null;
   };
+"""
 
-  if (!isOpen || !record) return null;
+content = content.replace('  if (!isOpen || !record) return null;', helpers + '\n  if (!isOpen || !record) return null;')
 
-  return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <div className="modal-header">
-          <h2>{t('view.recordDetails')}</h2>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>&times;</button>
-        </div>
-        <div className="modal-body">
-          {/* Photo Section */}
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
-            {record.photo ? (
-              <img
-                src={record.photo}
-                alt="License Holder"
-                style={{ width: '150px', height: '150px', borderRadius: '8px', objectFit: 'cover', border: '2px solid #cbd5e1' }}
-              />
-            ) : (
-              <div style={{ width: '150px', height: '150px', borderRadius: '8px', backgroundColor: '#fafaf9', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '2px dashed #cbd5e1', fontSize: '48px' }}>
-                👤
-                <span style={{ fontSize: '11px', color: '#78716c', marginTop: '8px', fontWeight: '600' }}>ඡායාරූපයක් නොමැත</span>
-              </div>
-            )}
-          </div>
-
-          {/* Personal Information */}
-           {customSections && customSections.map((section: any) => {
+# 3. Dynamic block
+dynamic_view = """
+          {customSections && customSections.map((section: any) => {
             return (
               <React.Fragment key={section.id}>
                 <div className="form-section-divider">{section.title_si} / {section.title_en}</div>
@@ -209,17 +151,16 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
               </React.Fragment>
             );
           })}
+"""
 
+start_idx = content.find('{/* Section 1: Personal Info */}')
+end_idx = content.find('        </div>\n        <div className="modal-footer">')
 
-        </div>
-        <div className="modal-footer">
-          <button className="btn btn-secondary" onClick={onClose}>
-            {t('view.close')}
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
+if start_idx != -1 and end_idx != -1:
+    new_content = content[:start_idx] + dynamic_view + "\n" + content[end_idx:]
+    with open('desktop/src/components/RecordViewModal.tsx', 'w', encoding='utf-8') as f:
+        f.write(new_content)
+        print("Successfully rewrote RecordViewModal.tsx")
+else:
+    print("Could not find indices")
 
-export default RecordViewModal;
