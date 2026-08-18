@@ -63,19 +63,29 @@ const App: React.FC = () => {
   // Fetch GN divisions, Firearm types, Custom Sections and Renewal Years once on mount
   const fetchLookups = async () => {
     try {
-      const [gnRes, ftRes, csRes, ryRes] = await Promise.all([
+      const results = await Promise.allSettled([
         api.get('/gn-divisions/'),
         api.get('/firearm-types/'),
         api.get('/custom-sections/'),
         api.get('/renewal-years/'),
       ]);
-      setGnDivisions(gnRes.data.results || gnRes.data);
-      setFirearmTypes(ftRes.data.results || ftRes.data);
-      setCustomSections(csRes.data.results || csRes.data);
-      setRenewalYears(ryRes.data.results || ryRes.data);
+
+      if (results[0].status === 'fulfilled') {
+        setGnDivisions(results[0].value.data.results || results[0].value.data);
+      }
+      if (results[1].status === 'fulfilled') {
+        setFirearmTypes(results[1].value.data.results || results[1].value.data);
+      }
+      if (results[2].status === 'fulfilled') {
+        setCustomSections(results[2].value.data.results || results[2].value.data);
+      }
+      if (results[3].status === 'fulfilled') {
+        setRenewalYears(results[3].value.data.results || results[3].value.data);
+      } else {
+        console.warn('Could not load renewal years. Make sure backend is deployed.');
+      }
     } catch (err) {
       console.error('Lookup load error:', err);
-      setApiError(true);
     }
   };
 
