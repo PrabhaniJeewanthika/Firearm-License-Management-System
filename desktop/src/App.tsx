@@ -216,7 +216,7 @@ const App: React.FC = () => {
   // Excel CSV Export Logic with Sinhala character support (BOM prefix)
   const handleExportToExcel = async () => {
     try {
-      toast.info(t('errors.exporting'));
+      toast.info(t('table.exporting'));
       
       // Fetch all records for full export
       const res = await api.get('/records/', {
@@ -227,7 +227,7 @@ const App: React.FC = () => {
       
       const allRecords = res.data.results || res.data;
       if (allRecords.length === 0) {
-        toast.warning(t('errors.noRecordsToExport'));
+        toast.warning(t('table.exportEmpty'));
         return;
       }
 
@@ -308,10 +308,10 @@ const App: React.FC = () => {
       link.click();
       document.body.removeChild(link);
       
-      toast.success(t('errors.exportSuccess'));
+      toast.success(t('table.exportSuccess'));
     } catch (err) {
       console.error(err);
-      toast.error(t('errors.exportFailed'));
+      toast.error(t('table.exportFailed'));
     }
   };
 
