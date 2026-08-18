@@ -671,7 +671,37 @@ const RecordForm: React.FC<RecordFormProps> = ({
           </React.Fragment>
         ))}
 
-</form>
+        <div style={{ display: 'flex', gap: '12px', marginTop: '32px', borderTop: '1px solid var(--border-color)', paddingTop: '20px' }}>
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={isSubmitting}
+            style={{ minWidth: '120px' }}
+          >
+            {isSubmitting ? 'සුරකිමින්...' : 'සුරකින්න (Save)'}
+          </button>
+          
+          {editingRecord ? (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={onCancelEdit}
+              disabled={isSubmitting}
+            >
+              අවලංගු කරන්න (Cancel)
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => resetForm(true)}
+              disabled={isSubmitting}
+            >
+              මකන්න (Clear)
+            </button>
+          )}
+        </div>
+      </form>
     </div>
   );
 };
