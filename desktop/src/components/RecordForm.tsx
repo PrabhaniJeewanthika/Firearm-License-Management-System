@@ -614,22 +614,24 @@ const RecordForm: React.FC<RecordFormProps> = ({
                       />
                       {t(`status.${statusKey}`)}
                     </label>
-                    {info.selected && statusKey !== 'deceased' && (
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px', marginTop: '12px', marginLeft: '32px' }}>
-                        <div className="form-group" style={{ marginBottom: 0 }}>
-                          <label className="form-label" style={{ fontSize: '13px' }}>{t('form.statusModificationDate')}</label>
-                          <input
-                            type="date"
-                            className="form-input"
-                            value={info.date}
-                            onChange={(e) => {
-                              setCurrentStatusInfo(prev => ({
-                                ...prev,
-                                [statusKey]: { ...prev[statusKey as keyof typeof currentStatusInfo], date: e.target.value }
-                              }));
-                            }}
-                          />
-                        </div>
+                    {info.selected && (
+                      <div style={{ display: 'grid', gridTemplateColumns: statusKey === 'deceased' ? '1fr' : '1fr 2fr', gap: '16px', marginTop: '12px', marginLeft: '32px' }}>
+                        {statusKey !== 'deceased' && (
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <label className="form-label" style={{ fontSize: '13px' }}>{t('form.statusModificationDate')}</label>
+                            <input
+                              type="date"
+                              className="form-input"
+                              value={info.date}
+                              onChange={(e) => {
+                                setCurrentStatusInfo(prev => ({
+                                  ...prev,
+                                  [statusKey]: { ...prev[statusKey as keyof typeof currentStatusInfo], date: e.target.value }
+                                }));
+                              }}
+                            />
+                          </div>
+                        )}
                         <div className="form-group" style={{ marginBottom: 0 }}>
                           <label className="form-label" style={{ fontSize: '13px' }}>{t('form.statusReason')}</label>
                           <input

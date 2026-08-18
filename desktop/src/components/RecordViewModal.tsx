@@ -174,19 +174,19 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({
               return (
                 <React.Fragment key={statusKey}>
                   <div className="detail-item detail-value-full" style={{ backgroundColor: 'var(--bg-color)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                    <div className="detail-label" style={{ fontSize: '15px', color: 'var(--state-maroon)', marginBottom: statusKey === 'deceased' ? '0' : '12px' }}>{t(`status.${statusKey}`)}</div>
-                    {statusKey !== 'deceased' && (
-                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px' }}>
+                    <div className="detail-label" style={{ fontSize: '15px', color: 'var(--state-maroon)', marginBottom: '12px' }}>{t(`status.${statusKey}`)}</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: statusKey === 'deceased' ? '1fr' : '1fr 2fr', gap: '16px' }}>
+                      {statusKey !== 'deceased' && (
                         <div>
                           <div className="detail-label" style={{ fontSize: '12px' }}>{t('form.statusModificationDate')}</div>
                           <div className="detail-value">{info.date || '-'}</div>
                         </div>
-                        <div>
-                          <div className="detail-label" style={{ fontSize: '12px' }}>{t('form.statusReason')}</div>
-                          <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{info.reason || '-'}</div>
-                        </div>
+                      )}
+                      <div>
+                        <div className="detail-label" style={{ fontSize: '12px' }}>{t('form.statusReason')}</div>
+                        <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{info.reason || '-'}</div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </React.Fragment>
               );
