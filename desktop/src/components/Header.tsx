@@ -1,11 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useAuth } from '../context/AuthContext';
-
-
 const Header: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const { logout } = useAuth();
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
@@ -36,13 +32,6 @@ const Header: React.FC = () => {
             தமிழ்
           </button>
         </div>
-        <button 
-          className="btn btn-outline" 
-          onClick={logout}
-          style={{ padding: '6px 12px', fontSize: '14px', marginLeft: '15px' }}
-        >
-          {t('actions.logout') || 'Logout'}
-        </button>
       </div>
       
       <h1>{t('header.secretariat')}</h1>

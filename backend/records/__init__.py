@@ -1,1 +1,0 @@
-# Records Django App
