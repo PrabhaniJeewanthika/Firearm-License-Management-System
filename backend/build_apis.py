@@ -109,41 +109,41 @@ views = {
     'accounts': '''from rest_framework import viewsets
 from .models import User
 from .serializers import UserSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 ''',
     'core': '''from rest_framework import viewsets
 from .models import GNDivision, FirearmType
 from .serializers import GNDivisionSerializer, FirearmTypeSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 
 class GNDivisionViewSet(viewsets.ModelViewSet):
     queryset = GNDivision.objects.all()
     serializer_class = GNDivisionSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     search_fields = ['name']
 
 class FirearmTypeViewSet(viewsets.ModelViewSet):
     queryset = FirearmType.objects.all()
     serializer_class = FirearmTypeSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     search_fields = ['name']
 ''',
     'licenses': '''from rest_framework import viewsets
 from .models import LicenseHolder, StatusHistory
 from .serializers import LicenseHolderSerializer, StatusHistorySerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 class LicenseHolderViewSet(viewsets.ModelViewSet):
     queryset = LicenseHolder.objects.all()
     serializer_class = LicenseHolderSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['current_status', 'outside_area_holder', 'gn_division']
     search_fields = ['full_name', 'nic', 'telephone_number']
@@ -152,91 +152,91 @@ class LicenseHolderViewSet(viewsets.ModelViewSet):
 class StatusHistoryViewSet(viewsets.ModelViewSet):
     queryset = StatusHistory.objects.all()
     serializer_class = StatusHistorySerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     filterset_fields = ['license_holder']
 ''',
     'firearms': '''from rest_framework import viewsets
 from .models import Firearm
 from .serializers import FirearmSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 
 class FirearmViewSet(viewsets.ModelViewSet):
     queryset = Firearm.objects.all()
     serializer_class = FirearmSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['license_holder', 'firearm_type', 'is_active']
 ''',
     'renewals': '''from rest_framework import viewsets
 from .models import Renewal, NonRenewalRecord
 from .serializers import RenewalSerializer, NonRenewalRecordSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from django_filters.rest_framework import DjangoFilterBackend
 
 class RenewalViewSet(viewsets.ModelViewSet):
     queryset = Renewal.objects.all()
     serializer_class = RenewalSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['license_holder', 'license_year', 'renewal_status']
 
 class NonRenewalRecordViewSet(viewsets.ModelViewSet):
     queryset = NonRenewalRecord.objects.all()
     serializer_class = NonRenewalRecordSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     filterset_fields = ['license_holder', 'year']
 ''',
     'transfers': '''from rest_framework import viewsets
 from .models import Transfer
 from .serializers import TransferSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 
 class TransferViewSet(viewsets.ModelViewSet):
     queryset = Transfer.objects.all()
     serializer_class = TransferSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     filterset_fields = ['previous_holder', 'firearm']
 ''',
     'documents': '''from rest_framework import viewsets
 from .models import Document
 from .serializers import DocumentSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 
 class DocumentViewSet(viewsets.ModelViewSet):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     filterset_fields = ['related_license_holder', 'document_type']
 ''',
     'notifications': '''from rest_framework import viewsets
 from .models import Notification, Reminder
 from .serializers import NotificationSerializer, ReminderSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 
 class NotificationViewSet(viewsets.ModelViewSet):
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     filterset_fields = ['is_read', 'priority']
 
 class ReminderViewSet(viewsets.ModelViewSet):
     queryset = Reminder.objects.all()
     serializer_class = ReminderSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     filterset_fields = ['is_completed', 'category']
 ''',
     'logs': '''from rest_framework import viewsets
 from .models import AuditLog
 from .serializers import AuditLogSerializer
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.filters import SearchFilter, OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
 class AuditLogViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = AuditLog.objects.all()
     serializer_class = AuditLogSerializer
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['user', 'action', 'entity']
     search_fields = ['old_value', 'new_value', 'record_id']
