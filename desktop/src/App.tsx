@@ -232,21 +232,54 @@ const App: React.FC = () => {
       }
 
       const headers = [
-        'සම්පූර්ණ නම (Full Name)', 'ජාතික හැඳුනුම්පත් අංකය (NIC)', 'දුරකථන අංකය (Phone)',
+        'සම්පූර්ණ නම (Full Name)', 'ජාතික හැඳුනුම්පත් අංකය (NIC)', 'දුරකථන අංකය (Phone)', 'WhatsApp අංකය',
         'ලිපිනය (Address)', 'ග්‍රාම නිලධාරී කොට්ඨාසය (GN Division)', 'උපන්දිනය (DOB)',
         '65 සම්පූර්ණ වන දිනය (65th Birthday)', 'ගිනිඅවි වර්ගය (Firearm Type)',
         'ගිනිඅවි අංකය (Firearm Number)', 'මුලින්ම බලපත්‍ර ලද වර්ෂය (First Licensed Year)',
-        'බලපත්‍ර අලුත් කිරීමේ තත්ත්වය (Renewal Status)', 'වර්තමාන තත්ත්වය (Current Status)'
+        'බලපත්‍ර අලුත් කිරීමේ ඉතිහාසය (Renewal History)', 'වර්තමාන තත්ත්වය (Current Status)',
+        'විශේෂ තොරතුරු (Special Info)', 'පිටත පදිංචි (Outside Resident)', 'පිටත ලිපිනය (Outside Address)', 'ඉඩම් විස්තර (Land Details)'
       ];
 
       const csvRows = [];
       csvRows.push(headers.join(','));
 
       for (const row of allRecords) {
+        // Parse renewal history
+        let renewalText = '';
+        if (row.renewal_history) {
+            renewalText = Object.entries(row.renewal_history)
+                .map(([year, info]: any) => {
+                    const status = info.renewed ? 'අලුත් කර ඇත' : `අලුත් කර නැත (${info.reason || '-'})`;
+                    return `${year}: ${status}`;
+                }).join(' | ');
+        }
+        
+        // Parse current status info
+        let statusTextArr = [];
+        if (row.current_status_info) {
+            const statuses = ['deceased', 'transferred', 'other'];
+            const names: any = { deceased: 'මියගොස් ඇත', transferred: 'පවරා ඇත', other: 'වෙනත්' };
+            statuses.forEach(k => {
+                if (row.current_status_info[k]?.selected) {
+                    const date = row.current_status_info[k].date;
+                    const reason = row.current_status_info[k].reason;
+                    let txt = names[k];
+                    if (k === 'deceased') {
+                        if (reason) txt += ` (විස්තරය: ${reason})`;
+                    } else {
+                        if (date || reason) txt += ` (දිනය: ${date || '-'}, විස්තරය: ${reason || '-'})`;
+                    }
+                    statusTextArr.push(txt);
+                }
+            });
+        }
+        let statusText = statusTextArr.length > 0 ? statusTextArr.join(' | ') : 'සක්‍රීය (Active)';
+
         const values = [
           `"${(row.full_name || '').replace(/"/g, '""')}"`,
           `"${(row.nic || '').replace(/"/g, '""')}"`,
           `"${(row.telephone || '').replace(/"/g, '""')}"`,
+          `"${(row.whatsapp_number || '').replace(/"/g, '""')}"`,
           `"${(row.address || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
           `"${(row.gn_division_detail?.name || '').replace(/"/g, '""')}"`,
           `"${row.date_of_birth || ''}"`,
@@ -254,8 +287,12 @@ const App: React.FC = () => {
           `"${(row.firearm_type_detail?.name_si || '').replace(/"/g, '""')}"`,
           `"${(row.firearm_number || '').replace(/"/g, '""')}"`,
           `"${row.first_licensed_year || ''}"`,
-          `"${row.renewal_status || ''}"`,
-          `"${row.current_status || ''}"`
+          `"${renewalText.replace(/"/g, '""')}"`,
+          `"${statusText.replace(/"/g, '""')}"`,
+          `"${(row.special_information || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+          `"${row.outside_area_holder ? 'ඔව්' : 'නැත'}"`,
+          `"${(row.outside_residential_address || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+          `"${(row.land_location_details || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
         ];
         csvRows.push(values.join(','));
       }
