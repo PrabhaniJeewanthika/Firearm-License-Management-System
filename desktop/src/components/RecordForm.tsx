@@ -614,8 +614,8 @@ const RecordForm: React.FC<RecordFormProps> = ({
                       />
                       {t(`status.${statusKey}`)}
                     </label>
-                    {info.selected && (
-                      <div style={{ display: 'grid', gridTemplateColumns: statusKey === 'deceased' ? '1fr' : '1fr 2fr', gap: '16px', marginTop: '12px', marginLeft: '32px' }}>
+                    {info.selected && statusKey !== 'deceased' && (
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px', marginTop: '12px', marginLeft: '32px' }}>
                         <div className="form-group" style={{ marginBottom: 0 }}>
                           <label className="form-label" style={{ fontSize: '13px' }}>{t('form.statusModificationDate')}</label>
                           <input
@@ -630,23 +630,21 @@ const RecordForm: React.FC<RecordFormProps> = ({
                             }}
                           />
                         </div>
-                        {statusKey !== 'deceased' && (
-                          <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label className="form-label" style={{ fontSize: '13px' }}>{t('form.statusReason')}</label>
-                            <input
-                              type="text"
-                              className="form-input"
-                              value={info.reason}
-                              onChange={(e) => {
-                                setCurrentStatusInfo(prev => ({
-                                  ...prev,
-                                  [statusKey]: { ...prev[statusKey as keyof typeof currentStatusInfo], reason: e.target.value }
-                                }));
-                              }}
-                              placeholder={t('form.reasonPlaceholder')}
-                            />
-                          </div>
-                        )}
+                        <div className="form-group" style={{ marginBottom: 0 }}>
+                          <label className="form-label" style={{ fontSize: '13px' }}>{t('form.statusReason')}</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={info.reason}
+                            onChange={(e) => {
+                              setCurrentStatusInfo(prev => ({
+                                ...prev,
+                                [statusKey]: { ...prev[statusKey as keyof typeof currentStatusInfo], reason: e.target.value }
+                              }));
+                            }}
+                            placeholder={t('form.reasonPlaceholder')}
+                          />
+                        </div>
                       </div>
                     )}
                   </div>
