@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
 import api from '../services/api';
+import FormBuilder from './FormBuilder';
 
 interface GNDivision {
   id: number;
@@ -161,6 +162,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ gnDivisions, onDataChanged }) =
           )}
         </div>
       </div>
+      
+      <FormBuilder />
     </div>
   );
 };
