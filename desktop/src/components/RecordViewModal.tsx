@@ -51,15 +51,7 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({
 
   if (!isOpen || !record) return null;
 
-  const getRenewalStatusText = (status: string | null) => {
-    switch (status) {
-      case 'renewed': return 'අලුත් කර ඇත'; // You can add translation keys here if needed
-      case 'pending': return 'අලුත් කිරීමට නියමිතයි';
-      case 'not_renewed': return t('status.not_renewed');
-      case 'other': return t('status.other');
-      default: return '-';
-    }
-  };
+
 
 
 
@@ -103,6 +95,10 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({
               <div className="detail-label">{t('form.telephone')}</div>
               <div className="detail-value">{record.telephone}</div>
             </div>
+            <div className="detail-item">
+              <div className="detail-label">{t('form.whatsapp')}</div>
+              <div className="detail-value">{record.whatsapp_number || '-'}</div>
+            </div>
             <div className="detail-item detail-value-full">
               <div className="detail-label">{t('form.address')}</div>
               <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{record.address}</div>
@@ -143,25 +139,30 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({
           {/* License Renewal */}
           <div className="form-section-divider">{t('form.renewal').replace(' *', '')}</div>
           <div className="detail-grid">
-            <div className="detail-item">
-              <div className="detail-label">{t('view.renewedYear')}</div>
-              <div className="detail-value">{record.renewal_year || '-'}</div>
-            </div>
-            <div className="detail-item">
-              <div className="detail-label">{t('view.renewedDate')}</div>
-              <div className="detail-value">{record.renewal_date || '-'}</div>
-            </div>
-            <div className="detail-item">
-              <div className="detail-label">{t('view.renewStatus')}</div>
-              <div className="detail-value">{getRenewalStatusText(record.renewal_status)}</div>
-            </div>
             <div className="detail-item detail-value-full">
-              <div className="detail-label">{t('view.notes')}</div>
-              <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{record.renewal_remarks || '-'}</div>
-            </div>
-            <div className="detail-item detail-value-full">
-              <div className="detail-label">{t('view.notRenewedReason')}</div>
-              <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{record.non_renewal_information || '-'}</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
+                {[2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030].map(year => {
+                  const yearStr = String(year);
+                  const info = record.renewal_history?.[yearStr];
+                  const isRenewed = info?.renewed ?? false;
+                  const reason = info?.reason ?? '';
+                  
+                  // if not renewed and no reason is given, it's just pending/default. We only show if explicitly set or we show all years.
+                  // It's better to show all years with status.
+                  return (
+                    <div key={year} style={{ padding: '12px', border: '1px solid var(--border-color)', borderRadius: '6px', backgroundColor: isRenewed ? '#f0fdf4' : '#fafaf9' }}>
+                       <div style={{ fontWeight: 'bold', fontSize: '14px', color: isRenewed ? '#166534' : '#57534e' }}>
+                          {year} - {isRenewed ? 'අලුත් කර ඇත' : t('status.not_renewed')}
+                       </div>
+                       {!isRenewed && reason && (
+                         <div style={{ marginTop: '8px', fontSize: '12px', color: '#991b1b' }}>
+                           <strong>{t('form.statusReason')}:</strong> {reason}
+                         </div>
+                       )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
