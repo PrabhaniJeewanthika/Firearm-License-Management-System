@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import api from '../services/api';
 
 interface GNDivision {
@@ -182,16 +182,16 @@ const RecordForm: React.FC<RecordFormProps> = ({
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!fullName.trim()) newErrors.full_name = 'සම්පූර්ණ නම ඇතුළත් කරන්න.';
-    if (!nic.trim()) newErrors.nic = 'ජාතික හැඳුනුම්පත් අංකය ඇතුළත් කරන්න.';
-    if (!firearmNumber.trim()) newErrors.firearm_number = 'ගිනිඅවි අංකය ඇතුළත් කරන්න.';
-    if (!gnDivision) newErrors.gn_division = 'ග්‍රාම නිලධාරී කොට්ඨාසය තෝරන්න.';
-    if (!firearmType) newErrors.firearm_type = 'ගිනිඅවි වර්ගය තෝරන්න.';
+    if (!fullName.trim()) newErrors.full_name = 'α╖âα╢╕α╖èα╢┤α╖ûα╢╗α╖èα╢½ α╢▒α╢╕ α╢çα╢¡α╖öα╖àα╢¡α╖è α╢Üα╢╗α╢▒α╖èα╢▒.';
+    if (!nic.trim()) newErrors.nic = 'α╢óα╖Åα╢¡α╖Æα╢Ü α╖äα╖Éα╢│α╖öα╢▒α╖öα╢╕α╖èα╢┤α╢¡α╖è α╢àα╢éα╢Üα╢║ α╢çα╢¡α╖öα╖àα╢¡α╖è α╢Üα╢╗α╢▒α╖èα╢▒.';
+    if (!firearmNumber.trim()) newErrors.firearm_number = 'α╢£α╖Æα╢▒α╖Æα╢àα╖Çα╖Æ α╢àα╢éα╢Üα╢║ α╢çα╢¡α╖öα╖àα╢¡α╖è α╢Üα╢╗α╢▒α╖èα╢▒.';
+    if (!gnDivision) newErrors.gn_division = 'α╢£α╖èΓÇìα╢╗α╖Åα╢╕ α╢▒α╖Æα╢╜α╢░α╖Åα╢╗α╖ô α╢Üα╖£α╢ºα╖èα╢¿α╖Åα╖âα╢║ α╢¡α╖¥α╢╗α╢▒α╖èα╢▒.';
+    if (!firearmType) newErrors.firearm_type = 'α╢£α╖Æα╢▒α╖Æα╢àα╖Çα╖Æ α╖Çα╢╗α╖èα╢£α╢║ α╢¡α╖¥α╢╗α╢▒α╖èα╢▒.';
 
     // Phone validation (SL format: 07XXXXXXXX)
     const phoneRegex = /^(?:0)\d{9}$/;
     if (telephone && !phoneRegex.test(telephone)) {
-      newErrors.telephone = 'වලංගු දුරකථන අංකයක් ඇතුළත් කරන්න. (උදා: 0771234567)';
+      newErrors.telephone = 'α╖Çα╢╜α╢éα╢£α╖ö α╢»α╖öα╢╗α╢Üα╢«α╢▒ α╢àα╢éα╢Üα╢║α╢Üα╖è α╢çα╢¡α╖öα╖àα╢¡α╖è α╢Üα╢╗α╢▒α╖èα╢▒. (α╢ïα╢»α╖Å: 0771234567)';
     }
 
     // DOB future date validation
@@ -199,10 +199,10 @@ const RecordForm: React.FC<RecordFormProps> = ({
       const dobDate = new Date(dateOfBirth);
       const today = new Date();
       if (dobDate > today) {
-        newErrors.date_of_birth = 'උපන්දිනය අනාගත දිනයක් විය නොහැක.';
+        newErrors.date_of_birth = 'α╢ïα╢┤α╢▒α╖èα╢»α╖Æα╢▒α╢║ α╢àα╢▒α╖Åα╢£α╢¡ α╢»α╖Æα╢▒α╢║α╢Üα╖è α╖Çα╖Æα╢║ α╢▒α╖£α╖äα╖Éα╢Ü.';
       }
     } else {
-      newErrors.date_of_birth = 'උපන්දිනය ඇතුළත් කරන්න.';
+      newErrors.date_of_birth = 'α╢ïα╢┤α╢▒α╖èα╢»α╖Æα╢▒α╢║ α╢çα╢¡α╖öα╖àα╢¡α╖è α╢Üα╢╗α╢▒α╖èα╢▒.';
     }
 
     setErrors(newErrors);
@@ -211,7 +211,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
   const resetForm = (askConfirmation = true) => {
     if (askConfirmation && (fullName || nic || firearmNumber || photoPreview)) {
-      const confirmClear = window.confirm('සුරැකී නොමැති වෙනස්කම් ඉවත් කිරීමට ඔබට විශ්වාසද?');
+      const confirmClear = window.confirm('α╖âα╖öα╢╗α╖Éα╢Üα╖ô α╢▒α╖£α╢╕α╖Éα╢¡α╖Æ α╖Çα╖Öα╢▒α╖âα╖èα╢Üα╢╕α╖è α╢ëα╖Çα╢¡α╖è α╢Üα╖Æα╢╗α╖ôα╢╕α╢º α╢öα╢╢α╢º α╖Çα╖Æα╖üα╖èα╖Çα╖Åα╖âα╢»?');
       if (!confirmClear) return;
     }
 
@@ -312,7 +312,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
         await api.put(`/records/${editingRecord.id}/`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        setSubmitSuccess('වාර්තාව සාර්ථකව යාවත්කාලීන කරන ලදී.');
+        setSubmitSuccess('α╖Çα╖Åα╢╗α╖èα╢¡α╖Åα╖Ç α╖âα╖Åα╢╗α╖èα╢«α╢Üα╖Ç α╢║α╖Åα╖Çα╢¡α╖èα╢Üα╖Åα╢╜α╖ôα╢▒ α╢Üα╢╗α╢▒ α╢╜α╢»α╖ô.');
         setTimeout(() => {
           onSaveSuccess();
         }, 1000);
@@ -320,7 +320,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
         await api.post('/records/', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        setSubmitSuccess('වාර්තාව සාර්ථකව සුරකින ලදී.');
+        setSubmitSuccess('α╖Çα╖Åα╢╗α╖èα╢¡α╖Åα╖Ç α╖âα╖Åα╢╗α╖èα╢«α╢Üα╖Ç α╖âα╖öα╢╗α╢Üα╖Æα╢▒ α╢╜α╢»α╖ô.');
         resetForm(false);
         setTimeout(() => {
           onSaveSuccess();
@@ -331,14 +331,14 @@ const RecordForm: React.FC<RecordFormProps> = ({
       if (err.response?.data) {
         const data = err.response.data;
         if (data.nic) {
-          setSubmitError('මෙම NIC අංකය දැනටමත් පද්ධතියේ ඇත.');
+          setSubmitError('α╢╕α╖Öα╢╕ NIC α╢àα╢éα╢Üα╢║ α╢»α╖Éα╢▒α╢ºα╢╕α╢¡α╖è α╢┤α╢»α╖èα╢░α╢¡α╖Æα╢║α╖Ü α╢çα╢¡.');
         } else if (data.firearm_number) {
-          setSubmitError('මෙම ගිනිඅවි අංකය දැනටමත් පද්ධතියේ ඇත.');
+          setSubmitError('α╢╕α╖Öα╢╕ α╢£α╖Æα╢▒α╖Æα╢àα╖Çα╖Æ α╢àα╢éα╢Üα╢║ α╢»α╖Éα╢▒α╢ºα╢╕α╢¡α╖è α╢┤α╢»α╖èα╢░α╢¡α╖Æα╢║α╖Ü α╢çα╢¡.');
         } else {
-          setSubmitError('වාර්තාව සුරැකීමට නොහැකි විය. නැවත උත්සාහ කරන්න.');
+          setSubmitError('α╖Çα╖Åα╢╗α╖èα╢¡α╖Åα╖Ç α╖âα╖öα╢╗α╖Éα╢Üα╖ôα╢╕α╢º α╢▒α╖£α╖äα╖Éα╢Üα╖Æ α╖Çα╖Æα╢║. α╢▒α╖Éα╖Çα╢¡ α╢ïα╢¡α╖èα╖âα╖Åα╖ä α╢Üα╢╗α╢▒α╖èα╢▒.');
         }
       } else {
-        setSubmitError('දත්ත සේවාව සමඟ සම්බන්ධ වීමට නොහැකි විය.');
+        setSubmitError('α╢»α╢¡α╖èα╢¡ α╖âα╖Üα╖Çα╖Åα╖Ç α╖âα╢╕α╢ƒ α╖âα╢╕α╖èα╢╢α╢▒α╖èα╢░ α╖Çα╖ôα╢╕α╢º α╢▒α╖£α╖äα╖Éα╢Üα╖Æ α╖Çα╖Æα╢║.');
       }
     } finally {
       setIsSubmitting(false);
@@ -349,9 +349,9 @@ const RecordForm: React.FC<RecordFormProps> = ({
     <div className="card" ref={formRef}>
       <div className="card-header-area">
         <div className="card-title">
-          {editingRecord ? '01 වාර්තාව සංස්කරණය' : '01 නව බලපත්‍රලාභී වාර්තාව'}
+          {editingRecord ? '01 α╖Çα╖Åα╢╗α╖èα╢¡α╖Åα╖Ç α╖âα╢éα╖âα╖èα╢Üα╢╗α╢½α╢║' : '01 α╢▒α╖Ç α╢╢α╢╜α╢┤α╢¡α╖èΓÇìα╢╗α╢╜α╖Åα╢╖α╖ô α╖Çα╖Åα╢╗α╖èα╢¡α╖Åα╖Ç'}
         </div>
-        <div className="card-subtitle">* ලකුණ සහිත තොරතුරු අනිවාර්යයි</div>
+        <div className="card-subtitle">* α╢╜α╢Üα╖öα╢½ α╖âα╖äα╖Æα╢¡ α╢¡α╖£α╢╗α╢¡α╖öα╢╗α╖ö α╢àα╢▒α╖Æα╖Çα╖Åα╢╗α╖èα╢║α╢║α╖Æ</div>
       </div>
 
       {submitError && (
@@ -405,7 +405,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
         {/* Section 1: Personal Details */}
         <div className="form-section-header">
           <span className="section-num">01</span>
-          <span className="section-title">{(customSections && customSections.length > 0) ? customSections[0]?.title_si : 'පුද්ගලික තොරතුරු (Personal Information)'}</span>
+          <span className="section-title">{(customSections && customSections.length > 0) ? customSections[0]?.title_si : 'α╢┤α╖öα╢»α╖èα╢£α╢╜α╖Æα╢Ü α╢¡α╖£α╢╗α╢¡α╖öα╢╗α╖ö (Personal Information)'}</span>
         </div>
 
         {/* Photo Upload Section */}
@@ -417,7 +417,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
               <img src={photoPreview} alt="Preview" className="photo-preview" />
             ) : (
               <div className="photo-placeholder" style={{ fontSize: '24px' }}>
-                📷
+                ≡ƒô╖
                 <span style={{ fontSize: '10px', marginTop: '4px', fontWeight: 'bold' }}>JPG / PNG</span>
               </div>
             )}
@@ -435,7 +435,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 onClick={() => fileInputRef.current?.click()}
                 style={{ padding: '6px 12px', fontSize: '12px' }}
               >
-                {photoPreview ? 'ඡායාරූපය වෙනස් කරන්න' : 'ඡායාරූපයක් තෝරන්න'}
+                {photoPreview ? 'α╢íα╖Åα╢║α╖Åα╢╗α╖ûα╢┤α╢║ α╖Çα╖Öα╢▒α╖âα╖è α╢Üα╢╗α╢▒α╖èα╢▒' : 'α╢íα╖Åα╢║α╖Åα╢╗α╖ûα╢┤α╢║α╢Üα╖è α╢¡α╖¥α╢╗α╢▒α╖èα╢▒'}
               </button>
               {photoPreview && (
                 <button
@@ -444,7 +444,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                   onClick={removePhoto}
                   style={{ padding: '6px 12px', fontSize: '12px', marginTop: '4px' }}
                 >
-                  ඡායාරූපය ඉවත් කරන්න
+                  α╢íα╖Åα╢║α╖Åα╢╗α╖ûα╢┤α╢║ α╢ëα╖Çα╢¡α╖è α╢Üα╢╗α╢▒α╖èα╢▒
                 </button>
               )}
             </div>
@@ -461,7 +461,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
               className="form-input"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              placeholder="උදා: කේ. ඒ. පෙරේරා"
+              placeholder="α╢ïα╢»α╖Å: α╢Üα╖Ü. α╢Æ. α╢┤α╖Öα╢╗α╖Üα╢╗α╖Å"
             />
             {errors.full_name && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.full_name}</span>}
           </div>
@@ -515,7 +515,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
               className="form-textarea"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="සම්පූර්ණ ලිපිනය ඇතුළත් කරන්න"
+              placeholder="α╖âα╢╕α╖èα╢┤α╖ûα╢╗α╖èα╢½ α╢╜α╖Æα╢┤α╖Æα╢▒α╢║ α╢çα╢¡α╖öα╖àα╢¡α╖è α╢Üα╢╗α╢▒α╖èα╢▒"
             />
           </div>
           )}
@@ -528,7 +528,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
               value={gnDivision}
               onChange={(e) => setGnDivision(e.target.value)}
             >
-              <option value="">තෝරන්න</option>
+              <option value="">α╢¡α╖¥α╢╗α╢▒α╖èα╢▒</option>
               {gnDivisions.map((gn) => (
                 <option key={gn.id} value={gn.id}>
                   {gn.name}
@@ -543,7 +543,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
         {/* Section 2: Birthdate and Age */}
         <div className="form-section-header">
           <span className="section-num">02</span>
-          <span className="section-title">{(customSections && customSections.length > 1) ? customSections[1]?.title_si : 'උපන්දිනය සහ වයස් තොරතුරු (DOB & Age Info)'}</span>
+          <span className="section-title">{(customSections && customSections.length > 1) ? customSections[1]?.title_si : 'α╢ïα╢┤α╢▒α╖èα╢»α╖Æα╢▒α╢║ α╖âα╖ä α╖Çα╢║α╖âα╖è α╢¡α╖£α╢╗α╢¡α╖öα╢╗α╖ö (DOB & Age Info)'}</span>
         </div>
         
         <div className="form-grid-2">
@@ -570,7 +570,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
               readOnly
               style={{ backgroundColor: '#f8fafc', cursor: 'not-allowed', fontWeight: 'bold', color: '#b45309' }}
             />
-            <span className="sub-text">ⓘ උපන්දිනය අනුව මෙම දිනය ස්වයංක්‍රීයව ගණනය වේ.</span>
+            <span className="sub-text">Γôÿ α╢ïα╢┤α╢▒α╖èα╢»α╖Æα╢▒α╢║ α╢àα╢▒α╖öα╖Ç α╢╕α╖Öα╢╕ α╢»α╖Æα╢▒α╢║ α╖âα╖èα╖Çα╢║α╢éα╢Üα╖èΓÇìα╢╗α╖ôα╢║α╖Ç α╢£α╢½α╢▒α╢║ α╖Çα╖Ü.</span>
           </div>
           )}
         </div>
@@ -578,7 +578,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
         {/* Section 3: Firearm and License Info */}
         <div className="form-section-header">
           <span className="section-num">03</span>
-          <span className="section-title">{(customSections && customSections.length > 2) ? customSections[2]?.title_si : 'ගිනිඅවි සහ බලපත්‍ර තොරතුරු (Firearm & License Info)'}</span>
+          <span className="section-title">{(customSections && customSections.length > 2) ? customSections[2]?.title_si : 'α╢£α╖Æα╢▒α╖Æα╢àα╖Çα╖Æ α╖âα╖ä α╢╢α╢╜α╢┤α╢¡α╖èΓÇìα╢╗ α╢¡α╖£α╢╗α╢¡α╖öα╢╗α╖ö (Firearm & License Info)'}</span>
         </div>
         
         <div className="form-grid-2">
@@ -590,7 +590,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
               value={firearmType}
               onChange={(e) => setFirearmType(e.target.value)}
             >
-              <option value="">තෝරන්න</option>
+              <option value="">α╢¡α╖¥α╢╗α╢▒α╖èα╢▒</option>
               {firearmTypes.map((ft) => (
                 <option key={ft.id} value={ft.id}>
                   {ft.name_si}
@@ -609,7 +609,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
               className="form-input"
               value={firearmNumber}
               onChange={(e) => setFirearmNumber(e.target.value)}
-              placeholder="ගිනිඅවි අංකය ඇතුළත් කරන්න"
+              placeholder="α╢£α╖Æα╢▒α╖Æα╢àα╖Çα╖Æ α╢àα╢éα╢Üα╢║ α╢çα╢¡α╖öα╖àα╢¡α╖è α╢Üα╢╗α╢▒α╖èα╢▒"
             />
             {errors.firearm_number && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.firearm_number}</span>}
           </div>
@@ -632,7 +632,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
           <div className="form-group form-grid-full">
             <label className="form-label" style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--danger-color)' }}>{fRenew.label_si} {fRenew.is_required ? '*' : ''}</label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
-              {(renewalYears && renewalYears.length > 0 ? renewalYears.map(ry => ry.year) : [2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030]).map(year => {
+              {[2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030].map(year => {
                 const yearStr = String(year);
                 const isRenewed = renewalHistory[yearStr]?.renewed ?? false;
                 const reason = renewalHistory[yearStr]?.reason ?? '';
@@ -664,7 +664,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                               [yearStr]: { ...prev[yearStr], renewed: false, reason: e.target.value }
                             }));
                           }}
-                          placeholder="අලුත් නොකිරීමට හේතුව මෙහි ඇතුළත් කරන්න (Reason for not renewing)"
+                          placeholder="α╢àα╢╜α╖öα╢¡α╖è α╢▒α╖£α╢Üα╖Æα╢╗α╖ôα╢╕α╢º α╖äα╖Üα╢¡α╖öα╖Ç α╢╕α╖Öα╖äα╖Æ α╢çα╢¡α╖öα╖àα╢¡α╖è α╢Üα╢╗α╢▒α╖èα╢▒ (Reason for not renewing)"
                           style={{ maxWidth: '400px', backgroundColor: '#fef2f2', border: '1px solid #fca5a5' }}
                         />
                       </div>
@@ -680,7 +680,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
         {/* Section 4: Current Status and Other Info */}
         <div className="form-section-header">
           <span className="section-num">04</span>
-          <span className="section-title">{(customSections && customSections.length > 3) ? customSections[3]?.title_si : 'වර්තමාන තත්ත්වය සහ වෙනත් තොරතුරු (Current Status & Other Info)'}</span>
+          <span className="section-title">{(customSections && customSections.length > 3) ? customSections[3]?.title_si : 'α╖Çα╢╗α╖èα╢¡α╢╕α╖Åα╢▒ α╢¡α╢¡α╖èα╢¡α╖èα╖Çα╢║ α╖âα╖ä α╖Çα╖Öα╢▒α╢¡α╖è α╢¡α╖£α╢╗α╢¡α╖öα╢╗α╖ö (Current Status & Other Info)'}</span>
         </div>
 
         <div className="form-grid-2">
@@ -691,9 +691,9 @@ const RecordForm: React.FC<RecordFormProps> = ({
               {['deceased', 'transferred', 'other'].map(statusKey => {
                 const info = currentStatusInfo[statusKey as keyof typeof currentStatusInfo];
                 const labels: any = {
-                  deceased: 'මියගොස් ඇත',
-                  transferred: 'පවරා ඇත',
-                  other: 'වෙනත්'
+                  deceased: 'α╢╕α╖Æα╢║α╢£α╖£α╖âα╖è α╢çα╢¡',
+                  transferred: 'α╢┤α╖Çα╢╗α╖Å α╢çα╢¡',
+                  other: 'α╖Çα╖Öα╢▒α╢¡α╖è'
                 };
                 return (
                   <div key={statusKey} style={{ border: '1px solid var(--border-color)', padding: '16px', borderRadius: '8px', backgroundColor: info.selected ? 'rgba(153, 27, 27, 0.05)' : 'transparent' }}>
@@ -715,7 +715,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                       <div style={{ display: 'grid', gridTemplateColumns: statusKey === 'deceased' ? '1fr' : '1fr 2fr', gap: '16px', marginTop: '12px', marginLeft: '32px' }}>
                         {statusKey !== 'deceased' && (
                           <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label className="form-label" style={{ fontSize: '13px' }}>තත්ත්වය වෙනස් වූ දිනය</label>
+                            <label className="form-label" style={{ fontSize: '13px' }}>α╢¡α╢¡α╖èα╢¡α╖èα╖Çα╢║ α╖Çα╖Öα╢▒α╖âα╖è α╖Çα╖û α╢»α╖Æα╢▒α╢║</label>
                             <input
                               type="date"
                               className="form-input"
@@ -730,7 +730,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                           </div>
                         )}
                         <div className="form-group" style={{ marginBottom: 0 }}>
-                          <label className="form-label" style={{ fontSize: '13px' }}>තත්ත්වය පිළිබඳ විස්තර සහ සටහන්</label>
+                          <label className="form-label" style={{ fontSize: '13px' }}>α╢¡α╢¡α╖èα╢¡α╖èα╖Çα╢║ α╢┤α╖Æα╖àα╖Æα╢╢α╢│ α╖Çα╖Æα╖âα╖èα╢¡α╢╗ α╖âα╖ä α╖âα╢ºα╖äα╢▒α╖è</label>
                           <input
                             type="text"
                             className="form-input"
@@ -741,7 +741,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                                 [statusKey]: { ...prev[statusKey as keyof typeof currentStatusInfo], reason: e.target.value }
                               }));
                             }}
-                            placeholder="විස්තර ඇතුළත් කරන්න..."
+                            placeholder="α╖Çα╖Æα╖âα╖èα╢¡α╢╗ α╢çα╢¡α╖öα╖àα╢¡α╖è α╢Üα╢╗α╢▒α╖èα╢▒..."
                           />
                         </div>
                       </div>
@@ -761,7 +761,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
               className="form-textarea"
               value={specialInformation}
               onChange={(e) => setSpecialInformation(e.target.value)}
-              placeholder="අවශ්‍ය වෙනත් නිල තොරතුරු මෙහි ඇතුළත් කරන්න..."
+              placeholder="α╢àα╖Çα╖üα╖èΓÇìα╢║ α╖Çα╖Öα╢▒α╢¡α╖è α╢▒α╖Æα╢╜ α╢¡α╖£α╢╗α╢¡α╖öα╢╗α╖ö α╢╕α╖Öα╖äα╖Æ α╢çα╢¡α╖öα╖àα╢¡α╖è α╢Üα╢╗α╢▒α╖èα╢▒..."
             />
           </div>
           )}
@@ -779,7 +779,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                   checked={outsideAreaHolder === true}
                   onChange={() => setOutsideAreaHolder(true)}
                 />
-                ඔව්
+                α╢öα╖Çα╖è
               </label>
               <label className="radio-option">
                 <input
@@ -788,7 +788,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                   checked={outsideAreaHolder === false}
                   onChange={() => setOutsideAreaHolder(false)}
                 />
-                නැත
+                α╢▒α╖Éα╢¡
               </label>
             </div>
           </div>
@@ -804,7 +804,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 className="form-textarea"
                 value={outsideResidentialAddress}
                 onChange={(e) => setOutsideResidentialAddress(e.target.value)}
-                placeholder="වර්තමාන පදිංචි ලිපිනය ඇතුළත් කරන්න"
+                placeholder="α╖Çα╢╗α╖èα╢¡α╢╕α╖Åα╢▒ α╢┤α╢»α╖Æα╢éα╢áα╖Æ α╢╜α╖Æα╢┤α╖Æα╢▒α╢║ α╢çα╢¡α╖öα╖àα╢¡α╖è α╢Üα╢╗α╢▒α╖èα╢▒"
               />
             </div>
             )}
@@ -815,7 +815,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 className="form-textarea"
                 value={landLocationDetails}
                 onChange={(e) => setLandLocationDetails(e.target.value)}
-                placeholder="මෙම බලප්‍රදේශය තුළ පිහිටි ඉඩම් හෝ ස්ථාන විස්තර ඇතුළත් කරන්න"
+                placeholder="α╢╕α╖Öα╢╕ α╢╢α╢╜α╢┤α╖èΓÇìα╢╗α╢»α╖Üα╖üα╢║ α╢¡α╖öα╖à α╢┤α╖Æα╖äα╖Æα╢ºα╖Æ α╢ëα╢⌐α╢╕α╖è α╖äα╖¥ α╖âα╖èα╢«α╖Åα╢▒ α╖Çα╖Æα╖âα╖èα╢¡α╢╗ α╢çα╢¡α╖öα╖àα╢¡α╖è α╢Üα╢╗α╢▒α╖èα╢▒"
               />
             </div>
             )}
@@ -847,57 +847,8 @@ const RecordForm: React.FC<RecordFormProps> = ({
                           />
                         ) : field.field_type === 'boolean' ? (
                           <div style={{ display: 'flex', gap: '16px' }}>
-                            <label><input type="radio" checked={customData[field.id] === true} onChange={() => setCustomData({...customData, [field.id]: true})} /> ඔව්</label>
-                            <label><input type="radio" checked={customData[field.id] === false} onChange={() => setCustomData({...customData, [field.id]: false})} /> නැත</label>
-                          </div>
-                        ) : field.field_type === 'select' ? (
-                          <select
-                            className="form-select"
-                            value={customData[field.id] || ''}
-                            onChange={(e) => setCustomData({...customData, [field.id]: e.target.value})}
-                          >
-                            <option value="">-- තෝරන්න --</option>
-                            {(Array.isArray(field.options) ? field.options : []).map((opt: string, i: number) => (
-                              <option key={i} value={opt}>{opt}</option>
-                            ))}
-                          </select>
-                        ) : field.field_type === 'radio' ? (
-                          <div className="radio-group" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                            {(Array.isArray(field.options) ? field.options : []).map((opt: string, i: number) => (
-                              <label key={i} className="radio-option">
-                                <input
-                                  type="radio"
-                                  name={`custom_radio_${field.id}`}
-                                  value={opt}
-                                  checked={customData[field.id] === opt}
-                                  onChange={() => setCustomData({...customData, [field.id]: opt})}
-                                />
-                                {opt}
-                              </label>
-                            ))}
-                          </div>
-                        ) : field.field_type === 'checkbox' ? (
-                          <div className="checkbox-group" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                            {(Array.isArray(field.options) ? field.options : []).map((opt: string, i: number) => {
-                              const currentVals = Array.isArray(customData[field.id]) ? customData[field.id] : [];
-                              return (
-                                <label key={i} className="radio-option">
-                                  <input
-                                    type="checkbox"
-                                    value={opt}
-                                    checked={currentVals.includes(opt)}
-                                    onChange={(e) => {
-                                      if (e.target.checked) {
-                                        setCustomData({...customData, [field.id]: [...currentVals, opt]});
-                                      } else {
-                                        setCustomData({...customData, [field.id]: currentVals.filter((v: string) => v !== opt)});
-                                      }
-                                    }}
-                                  />
-                                  {opt}
-                                </label>
-                              );
-                            })}
+                            <label><input type="radio" checked={customData[field.id] === true} onChange={() => setCustomData({...customData, [field.id]: true})} /> α╢öα╖Çα╖è</label>
+                            <label><input type="radio" checked={customData[field.id] === false} onChange={() => setCustomData({...customData, [field.id]: false})} /> α╢▒α╖Éα╢¡</label>
                           </div>
                         ) : (
                           <input
@@ -927,14 +878,14 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 className="btn btn-secondary"
                 onClick={onCancelEdit}
               >
-                සංස්කරණය අවලංගු කරන්න
+                α╖âα╢éα╖âα╖èα╢Üα╢╗α╢½α╢║ α╢àα╖Çα╢╜α╢éα╢£α╖ö α╢Üα╢╗α╢▒α╖èα╢▒
               </button>
               <button
                 type="submit"
                 className="btn btn-primary"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'යාවත්කාලීන වෙමින් පවතී...' : '✓ වාර්තාව යාවත්කාලීන කරන්න'}
+                {isSubmitting ? 'α╢║α╖Åα╖Çα╢¡α╖èα╢Üα╖Åα╢╜α╖ôα╢▒ α╖Çα╖Öα╢╕α╖Æα╢▒α╖è α╢┤α╖Çα╢¡α╖ô...' : 'Γ£ô α╖Çα╖Åα╢╗α╖èα╢¡α╖Åα╖Ç α╢║α╖Åα╖Çα╢¡α╖èα╢Üα╖Åα╢╜α╖ôα╢▒ α╢Üα╢╗α╢▒α╖èα╢▒'}
               </button>
             </>
           ) : (
@@ -944,14 +895,14 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 className="btn btn-secondary"
                 onClick={() => resetForm(true)}
               >
-                මකන්න
+                α╢╕α╢Üα╢▒α╖èα╢▒
               </button>
               <button
                 type="submit"
                 className="btn btn-primary"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'සුරැකෙමින් පවතී...' : '✓ වාර්තාව සුරකින්න'}
+                {isSubmitting ? 'α╖âα╖öα╢╗α╖Éα╢Üα╖Öα╢╕α╖Æα╢▒α╖è α╢┤α╖Çα╢¡α╖ô...' : 'Γ£ô α╖Çα╖Åα╢╗α╖èα╢¡α╖Åα╖Ç α╖âα╖öα╢╗α╢Üα╖Æα╢▒α╖èα╢▒'}
               </button>
             </>
           )}

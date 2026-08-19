@@ -1,0 +1,577 @@
+﻿commit 1e25cb3a972e36c5779f81fb857b436de6c23186
+Author: Prabhani Jeewanthika <iit22049@std.uwu.ac.lk>
+Date:   Wed Aug 19 12:20:47 2026 +0530
+
+    feat: implement main application shell and record management form with data fetching, filtering, and export capabilities.
+
+diff --git a/desktop/src/App.tsx b/desktop/src/App.tsx
+index 344fa2f..de4192e 100644
+--- a/desktop/src/App.tsx
++++ b/desktop/src/App.tsx
+@@ -414,7 +414,6 @@ const App: React.FC = () => {
+               gnDivisions={gnDivisions}
+               firearmTypes={firearmTypes}
+               customSections={customSections}
+-              renewalYears={renewalYears}
+               editingRecord={editingRecord}
+               onSaveSuccess={handleSaveSuccess}
+               onCancelEdit={handleCancelEdit}
+@@ -482,3 +481,4 @@ const App: React.FC = () => {
+ };
+ 
+ export default App;
++
+
+commit c2d531bf0564049189a361b05c0f0caaadaa1bc0
+Author: Prabhani Jeewanthika <iit22049@std.uwu.ac.lk>
+Date:   Wed Aug 19 12:08:59 2026 +0530
+
+    feat: implement core record management features including dynamic forms, data filtering, and CRUD operations
+
+diff --git a/desktop/src/App.tsx b/desktop/src/App.tsx
+index 3aa912a..344fa2f 100644
+--- a/desktop/src/App.tsx
++++ b/desktop/src/App.tsx
+@@ -11,13 +11,14 @@ import RecordTable from './components/RecordTable';
+ import RecordViewModal from './components/RecordViewModal';
+ import DeleteConfirmModal from './components/DeleteConfirmModal';
+ import LoadingSpinner from './components/LoadingSpinner';
++import SettingsLayout from './components/SettingsLayout';
+ 
+ import api from './services/api';
+ 
+ const App: React.FC = () => {
+   const { t } = useTranslation();
+   // Navigation State
+-  const [activeTab, setActiveTab] = useState<'form' | 'table'>('form');
++  const [activeTab, setActiveTab] = useState<'form' | 'table' | 'settings'>('form');
+ 
+   // Data State
+   const [records, setRecords] = useState<any[]>([]);
+@@ -395,6 +396,12 @@ const App: React.FC = () => {
+                 {t('tabs.savedRecords')}
+                 <span className="tab-badge">{totalCount}</span>
+               </button>
++              <button
++                className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
++                onClick={() => setActiveTab('settings')}
++              >
++                α╖âα╖Éα╢Üα╖âα╖öα╢╕α╖è
++              </button>
+             </div>
+             <button className="btn-export" onClick={handleExportToExcel}>
+               Excel Export
+@@ -443,6 +450,8 @@ const App: React.FC = () => {
+                 />
+               )}
+             </>
++          ) : activeTab === 'settings' ? (
++            <SettingsLayout />
+           ) : null}
+ 
+           {/* View Details Modal */}
+
+commit 44db0680708d3fbb54fd125b9e000ce158f75043
+Author: Prabhani Jeewanthika <iit22049@std.uwu.ac.lk>
+Date:   Wed Aug 19 11:53:56 2026 +0530
+
+    feat: implement main application shell with CRUD functionality, search, filtering, and CSV export support
+
+diff --git a/desktop/src/App.tsx b/desktop/src/App.tsx
+index a34efc4..3aa912a 100644
+--- a/desktop/src/App.tsx
++++ b/desktop/src/App.tsx
+@@ -11,14 +11,13 @@ import RecordTable from './components/RecordTable';
+ import RecordViewModal from './components/RecordViewModal';
+ import DeleteConfirmModal from './components/DeleteConfirmModal';
+ import LoadingSpinner from './components/LoadingSpinner';
+-import AdminPanel from './components/AdminPanel';
+ 
+ import api from './services/api';
+ 
+ const App: React.FC = () => {
+   const { t } = useTranslation();
+   // Navigation State
+-  const [activeTab, setActiveTab] = useState<'form' | 'table' | 'admin'>('form');
++  const [activeTab, setActiveTab] = useState<'form' | 'table'>('form');
+ 
+   // Data State
+   const [records, setRecords] = useState<any[]>([]);
+@@ -396,12 +395,6 @@ const App: React.FC = () => {
+                 {t('tabs.savedRecords')}
+                 <span className="tab-badge">{totalCount}</span>
+               </button>
+-              <button
+-                className={`tab-btn ${activeTab === 'admin' ? 'active' : ''}`}
+-                onClick={() => setActiveTab('admin')}
+-              >
+-                {t('tabs.settings')}
+-              </button>
+             </div>
+             <button className="btn-export" onClick={handleExportToExcel}>
+               Excel Export
+@@ -450,12 +443,6 @@ const App: React.FC = () => {
+                 />
+               )}
+             </>
+-          ) : activeTab === 'admin' ? (
+-            <AdminPanel 
+-              gnDivisions={gnDivisions} 
+-              renewalYears={renewalYears}
+-              onDataChanged={fetchLookups} 
+-            />
+           ) : null}
+ 
+           {/* View Details Modal */}
+
+commit 23d61e4c6fa10f9b2e753e0a9d04965ab1296427
+Author: Prabhani Jeewanthika <iit22049@std.uwu.ac.lk>
+Date:   Tue Aug 18 22:57:05 2026 +0530
+
+    fix: make API fetching resilient to partial endpoint failures to prevent empty form
+
+diff --git a/desktop/src/App.tsx b/desktop/src/App.tsx
+index e021739..a34efc4 100644
+--- a/desktop/src/App.tsx
++++ b/desktop/src/App.tsx
+@@ -63,19 +63,29 @@ const App: React.FC = () => {
+   // Fetch GN divisions, Firearm types, Custom Sections and Renewal Years once on mount
+   const fetchLookups = async () => {
+     try {
+-      const [gnRes, ftRes, csRes, ryRes] = await Promise.all([
++      const results = await Promise.allSettled([
+         api.get('/gn-divisions/'),
+         api.get('/firearm-types/'),
+         api.get('/custom-sections/'),
+         api.get('/renewal-years/'),
+       ]);
+-      setGnDivisions(gnRes.data.results || gnRes.data);
+-      setFirearmTypes(ftRes.data.results || ftRes.data);
+-      setCustomSections(csRes.data.results || csRes.data);
+-      setRenewalYears(ryRes.data.results || ryRes.data);
++
++      if (results[0].status === 'fulfilled') {
++        setGnDivisions(results[0].value.data.results || results[0].value.data);
++      }
++      if (results[1].status === 'fulfilled') {
++        setFirearmTypes(results[1].value.data.results || results[1].value.data);
++      }
++      if (results[2].status === 'fulfilled') {
++        setCustomSections(results[2].value.data.results || results[2].value.data);
++      }
++      if (results[3].status === 'fulfilled') {
++        setRenewalYears(results[3].value.data.results || results[3].value.data);
++      } else {
++        console.warn('Could not load renewal years. Make sure backend is deployed.');
++      }
+     } catch (err) {
+       console.error('Lookup load error:', err);
+-      setApiError(true);
+     }
+   };
+ 
+
+commit 013ef4c3fd1a3228183e85c5971d968380d225a8
+Author: Prabhani Jeewanthika <iit22049@std.uwu.ac.lk>
+Date:   Tue Aug 18 22:31:53 2026 +0530
+
+    feat: implement dynamic form building, advanced record management, and administrative configuration infrastructure
+
+diff --git a/desktop/src/App.tsx b/desktop/src/App.tsx
+index 9196db8..e021739 100644
+--- a/desktop/src/App.tsx
++++ b/desktop/src/App.tsx
+@@ -30,6 +30,7 @@ const App: React.FC = () => {
+   const [gnDivisions, setGnDivisions] = useState<any[]>([]);
+   const [firearmTypes, setFirearmTypes] = useState<any[]>([]);
+   const [customSections, setCustomSections] = useState<any[]>([]);
++  const [renewalYears, setRenewalYears] = useState<any[]>([]);
+ 
+   // Summary State
+   const [summary, setSummary] = useState({
+@@ -59,17 +60,19 @@ const App: React.FC = () => {
+   const [loading, setLoading] = useState(true);
+   const [apiError, setApiError] = useState(false);
+ 
+-  // Fetch GN divisions, Firearm types, and Custom Sections once on mount
++  // Fetch GN divisions, Firearm types, Custom Sections and Renewal Years once on mount
+   const fetchLookups = async () => {
+     try {
+-      const [gnRes, ftRes, csRes] = await Promise.all([
++      const [gnRes, ftRes, csRes, ryRes] = await Promise.all([
+         api.get('/gn-divisions/'),
+         api.get('/firearm-types/'),
+         api.get('/custom-sections/'),
++        api.get('/renewal-years/'),
+       ]);
+       setGnDivisions(gnRes.data.results || gnRes.data);
+       setFirearmTypes(ftRes.data.results || ftRes.data);
+       setCustomSections(csRes.data.results || csRes.data);
++      setRenewalYears(ryRes.data.results || ryRes.data);
+     } catch (err) {
+       console.error('Lookup load error:', err);
+       setApiError(true);
+@@ -240,8 +243,10 @@ const App: React.FC = () => {
+       
+       customSections.forEach((section: any) => {
+         section.fields?.forEach((field: any) => {
+-          customFieldHeaders.push(`${field.label_si} (${field.label_en})`);
+-          customFieldMapping.push(field);
++          if (!field.system_name) {
++            customFieldHeaders.push(`${field.label_si} (${field.label_en})`);
++            customFieldMapping.push(field);
++          }
+         });
+       });
+ 
+@@ -399,6 +404,7 @@ const App: React.FC = () => {
+               gnDivisions={gnDivisions}
+               firearmTypes={firearmTypes}
+               customSections={customSections}
++              renewalYears={renewalYears}
+               editingRecord={editingRecord}
+               onSaveSuccess={handleSaveSuccess}
+               onCancelEdit={handleCancelEdit}
+@@ -437,6 +443,7 @@ const App: React.FC = () => {
+           ) : activeTab === 'admin' ? (
+             <AdminPanel 
+               gnDivisions={gnDivisions} 
++              renewalYears={renewalYears}
+               onDataChanged={fetchLookups} 
+             />
+           ) : null}
+@@ -445,6 +452,7 @@ const App: React.FC = () => {
+           <RecordViewModal
+             isOpen={selectedRecord !== null}
+             record={selectedRecord}
++            renewalYears={renewalYears}
+             customSections={customSections}
+             onClose={() => setSelectedRecord(null)}
+           />
+
+commit be60f2aef336463ffe48b24288dbde982d30313c
+Author: Prabhani Jeewanthika <iit22049@std.uwu.ac.lk>
+Date:   Tue Aug 18 21:53:53 2026 +0530
+
+    feat(frontend): integrate dynamic fields into RecordForm, RecordViewModal, and Excel export
+
+diff --git a/desktop/src/App.tsx b/desktop/src/App.tsx
+index d5bc386..9196db8 100644
+--- a/desktop/src/App.tsx
++++ b/desktop/src/App.tsx
+@@ -29,6 +29,7 @@ const App: React.FC = () => {
+   // Lookup State
+   const [gnDivisions, setGnDivisions] = useState<any[]>([]);
+   const [firearmTypes, setFirearmTypes] = useState<any[]>([]);
++  const [customSections, setCustomSections] = useState<any[]>([]);
+ 
+   // Summary State
+   const [summary, setSummary] = useState({
+@@ -58,15 +59,17 @@ const App: React.FC = () => {
+   const [loading, setLoading] = useState(true);
+   const [apiError, setApiError] = useState(false);
+ 
+-  // Fetch GN divisions and Firearm types once on mount
++  // Fetch GN divisions, Firearm types, and Custom Sections once on mount
+   const fetchLookups = async () => {
+     try {
+-      const [gnRes, ftRes] = await Promise.all([
++      const [gnRes, ftRes, csRes] = await Promise.all([
+         api.get('/gn-divisions/'),
+         api.get('/firearm-types/'),
++        api.get('/custom-sections/'),
+       ]);
+       setGnDivisions(gnRes.data.results || gnRes.data);
+       setFirearmTypes(ftRes.data.results || ftRes.data);
++      setCustomSections(csRes.data.results || csRes.data);
+     } catch (err) {
+       console.error('Lookup load error:', err);
+       setApiError(true);
+@@ -231,13 +234,25 @@ const App: React.FC = () => {
+         return;
+       }
+ 
++      // Extract custom field headers and mapping
++      const customFieldHeaders: string[] = [];
++      const customFieldMapping: any[] = [];
++      
++      customSections.forEach((section: any) => {
++        section.fields?.forEach((field: any) => {
++          customFieldHeaders.push(`${field.label_si} (${field.label_en})`);
++          customFieldMapping.push(field);
++        });
++      });
++
+       const headers = [
+         'α╖âα╢╕α╖èα╢┤α╖ûα╢╗α╖èα╢½ α╢▒α╢╕ (Full Name)', 'α╢óα╖Åα╢¡α╖Æα╢Ü α╖äα╖Éα╢│α╖öα╢▒α╖öα╢╕α╖èα╢┤α╢¡α╖è α╢àα╢éα╢Üα╢║ (NIC)', 'α╢»α╖öα╢╗α╢Üα╢«α╢▒ α╢àα╢éα╢Üα╢║ (Phone)', 'WhatsApp α╢àα╢éα╢Üα╢║',
+         'α╢╜α╖Æα╢┤α╖Æα╢▒α╢║ (Address)', 'α╢£α╖èΓÇìα╢╗α╖Åα╢╕ α╢▒α╖Æα╢╜α╢░α╖Åα╢╗α╖ô α╢Üα╖£α╢ºα╖èα╢¿α╖Åα╖âα╢║ (GN Division)', 'α╢ïα╢┤α╢▒α╖èα╢»α╖Æα╢▒α╢║ (DOB)',
+         '65 α╖âα╢╕α╖èα╢┤α╖ûα╢╗α╖èα╢½ α╖Çα╢▒ α╢»α╖Æα╢▒α╢║ (65th Birthday)', 'α╢£α╖Æα╢▒α╖Æα╢àα╖Çα╖Æ α╖Çα╢╗α╖èα╢£α╢║ (Firearm Type)',
+         'α╢£α╖Æα╢▒α╖Æα╢àα╖Çα╖Æ α╢àα╢éα╢Üα╢║ (Firearm Number)', 'α╢╕α╖öα╢╜α╖Æα╢▒α╖èα╢╕ α╢╢α╢╜α╢┤α╢¡α╖èΓÇìα╢╗ α╢╜α╢» α╖Çα╢╗α╖èα╖éα╢║ (First Licensed Year)',
+         'α╢╢α╢╜α╢┤α╢¡α╖èΓÇìα╢╗ α╢àα╢╜α╖öα╢¡α╖è α╢Üα╖Æα╢╗α╖ôα╢╕α╖Ü α╢ëα╢¡α╖Æα╖äα╖Åα╖âα╢║ (Renewal History)', 'α╖Çα╢╗α╖èα╢¡α╢╕α╖Åα╢▒ α╢¡α╢¡α╖èα╢¡α╖èα╖Çα╢║ (Current Status)',
+-        'α╖Çα╖Æα╖üα╖Üα╖é α╢¡α╖£α╢╗α╢¡α╖öα╢╗α╖ö (Special Info)', 'α╢┤α╖Æα╢ºα╢¡ α╢┤α╢»α╖Æα╢éα╢áα╖Æ (Outside Resident)', 'α╢┤α╖Æα╢ºα╢¡ α╢╜α╖Æα╢┤α╖Æα╢▒α╢║ (Outside Address)', 'α╢ëα╢⌐α╢╕α╖è α╖Çα╖Æα╖âα╖èα╢¡α╢╗ (Land Details)'
++        'α╖Çα╖Æα╖üα╖Üα╖é α╢¡α╖£α╢╗α╢¡α╖öα╢╗α╖ö (Special Info)', 'α╢┤α╖Æα╢ºα╢¡ α╢┤α╢»α╖Æα╢éα╢áα╖Æ (Outside Resident)', 'α╢┤α╖Æα╢ºα╢¡ α╢╜α╖Æα╢┤α╖Æα╢▒α╢║ (Outside Address)', 'α╢ëα╢⌐α╢╕α╖è α╖Çα╖Æα╖âα╖èα╢¡α╢╗ (Land Details)',
++        ...customFieldHeaders
+       ];
+ 
+       const csvRows = [];
+@@ -275,6 +290,14 @@ const App: React.FC = () => {
+         }
+         let statusText = statusTextArr.length > 0 ? statusTextArr.join(' | ') : 'α╖âα╢Üα╖èΓÇìα╢╗α╖ôα╢║ (Active)';
+ 
++        const customFieldValues = customFieldMapping.map((field: any) => {
++          let value = row.custom_data?.[field.id];
++          if (value === undefined || value === null) value = '';
++          if (field.field_type === 'boolean') value = value ? 'α╢öα╖Çα╖è' : 'α╢▒α╖Éα╢¡';
++          if (field.field_type === 'checkbox' && Array.isArray(value)) value = value.join(', ');
++          return `"${String(value).replace(/"/g, '""').replace(/\n/g, ' ')}"`;
++        });
++
+         const values = [
+           `"${(row.full_name || '').replace(/"/g, '""')}"`,
+           `"${(row.nic || '').replace(/"/g, '""')}"`,
+@@ -293,6 +316,7 @@ const App: React.FC = () => {
+           `"${row.outside_area_holder ? 'α╢öα╖Çα╖è' : 'α╢▒α╖Éα╢¡'}"`,
+           `"${(row.outside_residential_address || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+           `"${(row.land_location_details || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
++          ...customFieldValues
+         ];
+         csvRows.push(values.join(','));
+       }
+@@ -374,6 +398,7 @@ const App: React.FC = () => {
+             <RecordForm
+               gnDivisions={gnDivisions}
+               firearmTypes={firearmTypes}
++              customSections={customSections}
+               editingRecord={editingRecord}
+               onSaveSuccess={handleSaveSuccess}
+               onCancelEdit={handleCancelEdit}
+@@ -420,6 +445,7 @@ const App: React.FC = () => {
+           <RecordViewModal
+             isOpen={selectedRecord !== null}
+             record={selectedRecord}
++            customSections={customSections}
+             onClose={() => setSelectedRecord(null)}
+           />
+ 
+
+commit 7d5be5aa6a9c4665fbd9e0d3b0db4138020c5288
+Author: Prabhani Jeewanthika <iit22049@std.uwu.ac.lk>
+Date:   Tue Aug 18 21:25:43 2026 +0530
+
+    feat: implement main application shell with record management, filtering, and CSV export functionality
+
+diff --git a/desktop/src/App.tsx b/desktop/src/App.tsx
+index 4d3e907..d5bc386 100644
+--- a/desktop/src/App.tsx
++++ b/desktop/src/App.tsx
+@@ -216,7 +216,7 @@ const App: React.FC = () => {
+   // Excel CSV Export Logic with Sinhala character support (BOM prefix)
+   const handleExportToExcel = async () => {
+     try {
+-      toast.info(t('errors.exporting'));
++      toast.info(t('table.exporting'));
+       
+       // Fetch all records for full export
+       const res = await api.get('/records/', {
+@@ -227,7 +227,7 @@ const App: React.FC = () => {
+       
+       const allRecords = res.data.results || res.data;
+       if (allRecords.length === 0) {
+-        toast.warning(t('errors.noRecordsToExport'));
++        toast.warning(t('table.exportEmpty'));
+         return;
+       }
+ 
+@@ -308,10 +308,10 @@ const App: React.FC = () => {
+       link.click();
+       document.body.removeChild(link);
+       
+-      toast.success(t('errors.exportSuccess'));
++      toast.success(t('table.exportSuccess'));
+     } catch (err) {
+       console.error(err);
+-      toast.error(t('errors.exportFailed'));
++      toast.error(t('table.exportFailed'));
+     }
+   };
+ 
+
+commit 0d9b5df7af274e7e804ddec6391ecd4bc530fb60
+Author: Prabhani Jeewanthika <iit22049@std.uwu.ac.lk>
+Date:   Tue Aug 18 21:18:51 2026 +0530
+
+    feat: initialize main application component with record management and data synchronization features
+
+diff --git a/desktop/src/App.tsx b/desktop/src/App.tsx
+index 7362f9f..4d3e907 100644
+--- a/desktop/src/App.tsx
++++ b/desktop/src/App.tsx
+@@ -232,21 +232,54 @@ const App: React.FC = () => {
+       }
+ 
+       const headers = [
+-        'α╖âα╢╕α╖èα╢┤α╖ûα╢╗α╖èα╢½ α╢▒α╢╕ (Full Name)', 'α╢óα╖Åα╢¡α╖Æα╢Ü α╖äα╖Éα╢│α╖öα╢▒α╖öα╢╕α╖èα╢┤α╢¡α╖è α╢àα╢éα╢Üα╢║ (NIC)', 'α╢»α╖öα╢╗α╢Üα╢«α╢▒ α╢àα╢éα╢Üα╢║ (Phone)',
++        'α╖âα╢╕α╖èα╢┤α╖ûα╢╗α╖èα╢½ α╢▒α╢╕ (Full Name)', 'α╢óα╖Åα╢¡α╖Æα╢Ü α╖äα╖Éα╢│α╖öα╢▒α╖öα╢╕α╖èα╢┤α╢¡α╖è α╢àα╢éα╢Üα╢║ (NIC)', 'α╢»α╖öα╢╗α╢Üα╢«α╢▒ α╢àα╢éα╢Üα╢║ (Phone)', 'WhatsApp α╢àα╢éα╢Üα╢║',
+         'α╢╜α╖Æα╢┤α╖Æα╢▒α╢║ (Address)', 'α╢£α╖èΓÇìα╢╗α╖Åα╢╕ α╢▒α╖Æα╢╜α╢░α╖Åα╢╗α╖ô α╢Üα╖£α╢ºα╖èα╢¿α╖Åα╖âα╢║ (GN Division)', 'α╢ïα╢┤α╢▒α╖èα╢»α╖Æα╢▒α╢║ (DOB)',
+         '65 α╖âα╢╕α╖èα╢┤α╖ûα╢╗α╖èα╢½ α╖Çα╢▒ α╢»α╖Æα╢▒α╢║ (65th Birthday)', 'α╢£α╖Æα╢▒α╖Æα╢àα╖Çα╖Æ α╖Çα╢╗α╖èα╢£α╢║ (Firearm Type)',
+         'α╢£α╖Æα╢▒α╖Æα╢àα╖Çα╖Æ α╢àα╢éα╢Üα╢║ (Firearm Number)', 'α╢╕α╖öα╢╜α╖Æα╢▒α╖èα╢╕ α╢╢α╢╜α╢┤α╢¡α╖èΓÇìα╢╗ α╢╜α╢» α╖Çα╢╗α╖èα╖éα╢║ (First Licensed Year)',
+-        'α╢╢α╢╜α╢┤α╢¡α╖èΓÇìα╢╗ α╢àα╢╜α╖öα╢¡α╖è α╢Üα╖Æα╢╗α╖ôα╢╕α╖Ü α╢¡α╢¡α╖èα╢¡α╖èα╖Çα╢║ (Renewal Status)', 'α╖Çα╢╗α╖èα╢¡α╢╕α╖Åα╢▒ α╢¡α╢¡α╖èα╢¡α╖èα╖Çα╢║ (Current Status)'
++        'α╢╢α╢╜α╢┤α╢¡α╖èΓÇìα╢╗ α╢àα╢╜α╖öα╢¡α╖è α╢Üα╖Æα╢╗α╖ôα╢╕α╖Ü α╢ëα╢¡α╖Æα╖äα╖Åα╖âα╢║ (Renewal History)', 'α╖Çα╢╗α╖èα╢¡α╢╕α╖Åα╢▒ α╢¡α╢¡α╖èα╢¡α╖èα╖Çα╢║ (Current Status)',
++        'α╖Çα╖Æα╖üα╖Üα╖é α╢¡α╖£α╢╗α╢¡α╖öα╢╗α╖ö (Special Info)', 'α╢┤α╖Æα╢ºα╢¡ α╢┤α╢»α╖Æα╢éα╢áα╖Æ (Outside Resident)', 'α╢┤α╖Æα╢ºα╢¡ α╢╜α╖Æα╢┤α╖Æα╢▒α╢║ (Outside Address)', 'α╢ëα╢⌐α╢╕α╖è α╖Çα╖Æα╖âα╖èα╢¡α╢╗ (Land Details)'
+       ];
+ 
+       const csvRows = [];
+       csvRows.push(headers.join(','));
+ 
+       for (const row of allRecords) {
++        // Parse renewal history
++        let renewalText = '';
++        if (row.renewal_history) {
++            renewalText = Object.entries(row.renewal_history)
++                .map(([year, info]: any) => {
++                    const status = info.renewed ? 'α╢àα╢╜α╖öα╢¡α╖è α╢Üα╢╗ α╢çα╢¡' : `α╢àα╢╜α╖öα╢¡α╖è α╢Üα╢╗ α╢▒α╖Éα╢¡ (${info.reason || '-'})`;
++                    return `${year}: ${status}`;
++                }).join(' | ');
++        }
++        
++        // Parse current status info
++        let statusTextArr = [];
++        if (row.current_status_info) {
++            const statuses = ['deceased', 'transferred', 'other'];
++            const names: any = { deceased: 'α╢╕α╖Æα╢║α╢£α╖£α╖âα╖è α╢çα╢¡', transferred: 'α╢┤α╖Çα╢╗α╖Å α╢çα╢¡', other: 'α╖Çα╖Öα╢▒α╢¡α╖è' };
++            statuses.forEach(k => {
++                if (row.current_status_info[k]?.selected) {
++                    const date = row.current_status_info[k].date;
++                    const reason = row.current_status_info[k].reason;
++                    let txt = names[k];
++                    if (k === 'deceased') {
++                        if (reason) txt += ` (α╖Çα╖Æα╖âα╖èα╢¡α╢╗α╢║: ${reason})`;
++                    } else {
++                        if (date || reason) txt += ` (α╢»α╖Æα╢▒α╢║: ${date || '-'}, α╖Çα╖Æα╖âα╖èα╢¡α╢╗α╢║: ${reason || '-'})`;
++                    }
++                    statusTextArr.push(txt);
++                }
++            });
++        }
++        let statusText = statusTextArr.length > 0 ? statusTextArr.join(' | ') : 'α╖âα╢Üα╖èΓÇìα╢╗α╖ôα╢║ (Active)';
++
+         const values = [
+           `"${(row.full_name || '').replace(/"/g, '""')}"`,
+           `"${(row.nic || '').replace(/"/g, '""')}"`,
+           `"${(row.telephone || '').replace(/"/g, '""')}"`,
++          `"${(row.whatsapp_number || '').replace(/"/g, '""')}"`,
+           `"${(row.address || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+           `"${(row.gn_division_detail?.name || '').replace(/"/g, '""')}"`,
+           `"${row.date_of_birth || ''}"`,
+@@ -254,8 +287,12 @@ const App: React.FC = () => {
+           `"${(row.firearm_type_detail?.name_si || '').replace(/"/g, '""')}"`,
+           `"${(row.firearm_number || '').replace(/"/g, '""')}"`,
+           `"${row.first_licensed_year || ''}"`,
+-          `"${row.renewal_status || ''}"`,
+-          `"${row.current_status || ''}"`
++          `"${renewalText.replace(/"/g, '""')}"`,
++          `"${statusText.replace(/"/g, '""')}"`,
++          `"${(row.special_information || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
++          `"${row.outside_area_holder ? 'α╢öα╖Çα╖è' : 'α╢▒α╖Éα╢¡'}"`,
++          `"${(row.outside_residential_address || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
++          `"${(row.land_location_details || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+         ];
+         csvRows.push(values.join(','));
+       }
+
+commit 7429663918d68950f62a069e57b9f02d0651f7f5
+Author: Prabhani Jeewanthika <iit22049@std.uwu.ac.lk>
+Date:   Tue Aug 18 18:13:14 2026 +0530
+
+    feat: initialize core backend modules and desktop frontend architecture
+
+diff --git a/desktop/src/App.tsx b/desktop/src/App.tsx
+index 83185d0..7362f9f 100644
+--- a/desktop/src/App.tsx
++++ b/desktop/src/App.tsx
+@@ -12,13 +12,10 @@ import RecordViewModal from './components/RecordViewModal';
+ import DeleteConfirmModal from './components/DeleteConfirmModal';
+ import LoadingSpinner from './components/LoadingSpinner';
+ import AdminPanel from './components/AdminPanel';
+-import Login from './components/Login';
+ 
+-import { useAuth } from './context/AuthContext';
+ import api from './services/api';
+ 
+ const App: React.FC = () => {
+-  const { isAuthenticated, loading: authLoading } = useAuth();
+   const { t } = useTranslation();
+   // Navigation State
+   const [activeTab, setActiveTab] = useState<'form' | 'table' | 'admin'>('form');
+@@ -285,19 +282,6 @@ const App: React.FC = () => {
+     fetchRecordsAndSummary(currentPage, search, filters);
+   }, [currentPage, search, filters]); // Re-fetch when these change
+ 
+-  if (authLoading) {
+-    return <LoadingSpinner />;
+-  }
+-
+-  if (!isAuthenticated) {
+-    return (
+-      <>
+-        <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+-        <Login />
+-      </>
+-    );
+-  }
+-
+   return (
+     <div className="app-container">
+       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+
+commit bc23bcaa030afbac54fb7e1387e9583a46cdf287
+Author: Prabhani Jeewanthika <iit22049@std.uwu.ac.lk>
+Date:   Mon Aug 17 13:23:28 2026 +0530
+
+    feat(frontend): integrate login UI, secure routing, and add logout functionality
+
+diff --git a/desktop/src/App.tsx b/desktop/src/App.tsx
+index 0ccee08..83185d0 100644
+--- a/desktop/src/App.tsx
++++ b/desktop/src/App.tsx
+@@ -12,10 +12,13 @@ import RecordViewModal from './components/RecordViewModal';
+ import DeleteConfirmModal from './components/DeleteConfirmModal';
+ import LoadingSpinner from './components/LoadingSpinner';
+ import AdminPanel from './components/AdminPanel';
++import Login from './components/Login';
+ 
++import { useAuth } from './context/AuthContext';
+ import api from './services/api';
+ 
+ const App: React.FC = () => {
++  const { isAuthenticated, loading: authLoading } = useAuth();
+   const { t } = useTranslation();
+   // Navigation State
+   const [activeTab, setActiveTab] = useState<'form' | 'table' | 'admin'>('form');
+@@ -278,8 +281,25 @@ const App: React.FC = () => {
+     }
+   };
+ 
++  useEffect(() => {
++    fetchRecordsAndSummary(currentPage, search, filters);
++  }, [currentPage, search, filters]); // Re-fetch when these change
++
++  if (authLoading) {
++    return <LoadingSpinner />;
++  }
++
++  if (!isAuthenticated) {
++    return (
++      <>
++        <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
++        <Login />
++      </>
++    );
++  }
++
+   return (
+-    <div className="container">
++    <div className="app-container">
+       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+ 
+       {/* Header */}
