@@ -411,55 +411,6 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
       <form onSubmit={handleSubmit}>
         
-        {/* Section 1: Personal Details */}
-        <div className="form-section-header">
-          <span className="section-num">01</span>
-          <span className="section-title">{t('form.section1').replace('01 ', '')}</span>
-        </div>
-
-        {/* Photo Upload Section */}
-        <div className="form-group">
-          <label className="form-label">{t('form.photoLabel')}</label>
-          <div className="photo-uploader">
-            {photoPreview ? (
-              <img src={photoPreview} alt="Preview" className="photo-preview" />
-            ) : (
-              <div className="photo-placeholder">
-                <span style={{ fontSize: '24px' }}></span>
-                <span style={{ marginTop: '8px', fontWeight: '600' }}>JPG / PNG</span>
-              </div>
-            )}
-            <div className="photo-controls">
-              <input
-                type="file"
-                accept="image/png, image/jpeg, image/jpg"
-                onChange={handlePhotoChange}
-                ref={fileInputRef}
-                style={{ display: 'none' }}
-              />
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => fileInputRef.current?.click()}
-                style={{ padding: '6px 12px', fontSize: '12px' }}
-              >
-                {photoPreview ? t('form.changePhoto') : t('form.choosePhoto')}
-              </button>
-              {photoPreview && (
-                <button
-                  type="button"
-                  className="btn btn-danger"
-                  onClick={removePhoto}
-                  style={{ padding: '6px 12px', fontSize: '12px', marginTop: '4px' }}
-                >
-                  {t('form.removePhoto')}
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        
         {customSections && customSections.map((section: any, idx: number) => (
           <React.Fragment key={section.id}>
             <div className="form-section-header">
@@ -468,7 +419,50 @@ const RecordForm: React.FC<RecordFormProps> = ({
             </div>
             <div className="form-grid-2">
               {section.fields?.map((field: any) => {
-                if (field.system_name === 'photo') return null; // Handled at the top
+                if (field.system_name === 'photo') {
+                  return (
+                    <div key={field.id} className="form-group form-grid-full">
+                      <label className="form-label">{field.label_si} / {field.label_en}</label>
+                      <div className="photo-uploader">
+                        {photoPreview ? (
+                          <img src={photoPreview} alt="Preview" className="photo-preview" />
+                        ) : (
+                          <div className="photo-placeholder">
+                            <span style={{ fontSize: '24px' }}></span>
+                            <span style={{ marginTop: '8px', fontWeight: '600' }}>JPG / PNG</span>
+                          </div>
+                        )}
+                        <div className="photo-controls">
+                          <input
+                            type="file"
+                            accept="image/png, image/jpeg, image/jpg"
+                            onChange={handlePhotoChange}
+                            ref={fileInputRef}
+                            style={{ display: 'none' }}
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-secondary"
+                            onClick={() => fileInputRef.current?.click()}
+                            style={{ padding: '6px 12px', fontSize: '12px' }}
+                          >
+                            {photoPreview ? t('form.changePhoto') : t('form.choosePhoto')}
+                          </button>
+                          {photoPreview && (
+                            <button
+                              type="button"
+                              className="btn btn-danger"
+                              onClick={removePhoto}
+                              style={{ padding: '6px 12px', fontSize: '12px', marginTop: '4px' }}
+                            >
+                              {t('form.removePhoto')}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                }
 
                 if (field.depends_on) {
                   const parentVal = getFieldValueById(field.depends_on);
