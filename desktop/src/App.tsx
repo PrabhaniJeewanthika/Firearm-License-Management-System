@@ -414,7 +414,6 @@ const App: React.FC = () => {
               gnDivisions={gnDivisions}
               firearmTypes={firearmTypes}
               customSections={customSections}
-              renewalYears={renewalYears}
               editingRecord={editingRecord}
               onSaveSuccess={handleSaveSuccess}
               onCancelEdit={handleCancelEdit}
@@ -482,3 +481,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+

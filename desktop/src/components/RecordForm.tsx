@@ -17,7 +17,6 @@ interface RecordFormProps {
   firearmTypes: FirearmType[];
   editingRecord: any | null;
   customSections: any[];
-  renewalYears?: any[];
   onSaveSuccess: () => void;
   onCancelEdit: () => void;
 }
@@ -27,7 +26,6 @@ const RecordForm: React.FC<RecordFormProps> = ({
   firearmTypes,
   editingRecord,
   customSections,
-  renewalYears,
   onSaveSuccess,
   onCancelEdit,
 }) => {
@@ -632,7 +630,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
           <div className="form-group form-grid-full">
             <label className="form-label" style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--danger-color)' }}>{fRenew.label_si} {fRenew.is_required ? '*' : ''}</label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
-              {(renewalYears && renewalYears.length > 0 ? renewalYears.map(ry => ry.year) : [2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030]).map(year => {
+              {[2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030].map(year => {
                 const yearStr = String(year);
                 const isRenewed = renewalHistory[yearStr]?.renewed ?? false;
                 const reason = renewalHistory[yearStr]?.reason ?? '';
