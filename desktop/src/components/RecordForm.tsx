@@ -48,6 +48,12 @@ const RecordForm: React.FC<RecordFormProps> = ({
   const [nonRenewalInformation, setNonRenewalInformation] = useState('');
   const [renewalHistory, setRenewalHistory] = useState<Record<string, { renewed: boolean; reason: string }>>({});
 
+  const [currentStatusInfo, setCurrentStatusInfo] = useState({
+    deceased: { selected: false, reason: '', date: '' },
+    transferred: { selected: false, reason: '', date: '' },
+    other: { selected: false, reason: '', date: '' }
+  });
+
   const [currentStatus, setCurrentStatus] = useState('active');
   const [statusDate, setStatusDate] = useState('');
   const [statusRemarks, setStatusRemarks] = useState('');
@@ -100,6 +106,11 @@ const RecordForm: React.FC<RecordFormProps> = ({
       setNonRenewalInformation(editingRecord.non_renewal_information || '');
       setRenewalHistory(editingRecord.renewal_history || {});
 
+      setCurrentStatusInfo(editingRecord.current_status_info || {
+        deceased: { selected: false, reason: '', date: '' },
+        transferred: { selected: false, reason: '', date: '' },
+        other: { selected: false, reason: '', date: '' }
+      });
       setCurrentStatus(editingRecord.current_status || 'active');
       setStatusDate(editingRecord.status_date || '');
       setStatusRemarks(editingRecord.status_remarks || '');
@@ -212,6 +223,11 @@ const RecordForm: React.FC<RecordFormProps> = ({
     setRenewalRemarks('');
     setNonRenewalInformation('');
     setRenewalHistory({});
+    setCurrentStatusInfo({
+      deceased: { selected: false, reason: '', date: '' },
+      transferred: { selected: false, reason: '', date: '' },
+      other: { selected: false, reason: '', date: '' }
+    });
     setCurrentStatus('active');
     setStatusDate('');
     setStatusRemarks('');
@@ -267,6 +283,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
     formData.append('renewal_remarks', renewalRemarks);
     formData.append('non_renewal_information', nonRenewalInformation);
     formData.append('renewal_history', JSON.stringify(renewalHistory));
+    formData.append('current_status_info', JSON.stringify(currentStatusInfo));
     formData.append('current_status', currentStatus);
     formData.append('status_date', statusDate || '');
     formData.append('status_remarks', statusRemarks);
@@ -596,39 +613,71 @@ const RecordForm: React.FC<RecordFormProps> = ({
         </div>
 
         <div className="form-grid-2">
-          <div className="form-group">
-            <label className="form-label">වර්තමාන තත්ත්වය</label>
-            <select
-              className="form-select"
-              value={currentStatus}
-              onChange={(e) => setCurrentStatus(e.target.value)}
-            >
-              <option value="active">සක්‍රීය</option>
-              <option value="deceased">මියගොස් ඇත</option>
-              <option value="transferred">පවරා ඇත</option>
-              <option value="not_renewed">බලපත්‍රය අලුත් කර නැත</option>
-              <option value="other">වෙනත්</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label className="form-label">තත්ත්වය වෙනස් වූ දිනය</label>
-            <input
-              type="date"
-              className="form-input"
-              value={statusDate}
-              onChange={(e) => setStatusDate(e.target.value)}
-            />
-          </div>
-
           <div className="form-group form-grid-full">
-            <label className="form-label">තත්ත්වය පිළිබඳ විස්තර සහ සටහන්</label>
-            <textarea
-              className="form-textarea"
-              value={statusRemarks}
-              onChange={(e) => setStatusRemarks(e.target.value)}
-              placeholder="තත්ත්වය වෙනස් වීමට අදාළ විස්තර ඇතුළත් කරන්න..."
-            />
+            <label className="form-label">වර්තමාන තත්ත්වය</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
+              {['deceased', 'transferred', 'other'].map(statusKey => {
+                const info = currentStatusInfo[statusKey as keyof typeof currentStatusInfo];
+                const labels: any = {
+                  deceased: 'මියගොස් ඇත',
+                  transferred: 'පවරා ඇත',
+                  other: 'වෙනත්'
+                };
+                return (
+                  <div key={statusKey} style={{ border: '1px solid var(--border-color)', padding: '16px', borderRadius: '8px', backgroundColor: info.selected ? 'rgba(153, 27, 27, 0.05)' : 'transparent' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '15px', fontWeight: info.selected ? '600' : '400', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={info.selected}
+                        onChange={(e) => {
+                          setCurrentStatusInfo(prev => ({
+                            ...prev,
+                            [statusKey]: { ...prev[statusKey as keyof typeof currentStatusInfo], selected: e.target.checked }
+                          }));
+                        }}
+                        style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: 'var(--state-maroon)' }}
+                      />
+                      {labels[statusKey]}
+                    </label>
+                    {info.selected && (
+                      <div style={{ display: 'grid', gridTemplateColumns: statusKey === 'deceased' ? '1fr' : '1fr 2fr', gap: '16px', marginTop: '12px', marginLeft: '32px' }}>
+                        {statusKey !== 'deceased' && (
+                          <div className="form-group" style={{ marginBottom: 0 }}>
+                            <label className="form-label" style={{ fontSize: '13px' }}>තත්ත්වය වෙනස් වූ දිනය</label>
+                            <input
+                              type="date"
+                              className="form-input"
+                              value={info.date}
+                              onChange={(e) => {
+                                setCurrentStatusInfo(prev => ({
+                                  ...prev,
+                                  [statusKey]: { ...prev[statusKey as keyof typeof currentStatusInfo], date: e.target.value }
+                                }));
+                              }}
+                            />
+                          </div>
+                        )}
+                        <div className="form-group" style={{ marginBottom: 0 }}>
+                          <label className="form-label" style={{ fontSize: '13px' }}>තත්ත්වය පිළිබඳ විස්තර සහ සටහන්</label>
+                          <input
+                            type="text"
+                            className="form-input"
+                            value={info.reason}
+                            onChange={(e) => {
+                              setCurrentStatusInfo(prev => ({
+                                ...prev,
+                                [statusKey]: { ...prev[statusKey as keyof typeof currentStatusInfo], reason: e.target.value }
+                              }));
+                            }}
+                            placeholder="විස්තර ඇතුළත් කරන්න..."
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
           </div>
 
           <div className="form-group form-grid-full">
