@@ -11,13 +11,14 @@ import RecordTable from './components/RecordTable';
 import RecordViewModal from './components/RecordViewModal';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
 import LoadingSpinner from './components/LoadingSpinner';
+import SettingsLayout from './components/SettingsLayout';
 
 import api from './services/api';
 
 const App: React.FC = () => {
   const { t } = useTranslation();
   // Navigation State
-  const [activeTab, setActiveTab] = useState<'form' | 'table'>('form');
+  const [activeTab, setActiveTab] = useState<'form' | 'table' | 'settings'>('form');
 
   // Data State
   const [records, setRecords] = useState<any[]>([]);
@@ -395,6 +396,12 @@ const App: React.FC = () => {
                 {t('tabs.savedRecords')}
                 <span className="tab-badge">{totalCount}</span>
               </button>
+              <button
+                className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
+                onClick={() => setActiveTab('settings')}
+              >
+                සැකසුම්
+              </button>
             </div>
             <button className="btn-export" onClick={handleExportToExcel}>
               Excel Export
@@ -443,6 +450,8 @@ const App: React.FC = () => {
                 />
               )}
             </>
+          ) : activeTab === 'settings' ? (
+            <SettingsLayout />
           ) : null}
 
           {/* View Details Modal */}

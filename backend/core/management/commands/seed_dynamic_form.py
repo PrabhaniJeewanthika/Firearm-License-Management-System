@@ -44,7 +44,8 @@ class Command(BaseCommand):
         fields_sec3 = [
             {"system_name": "firearm_type", "label_si": "ගිනිඅවි වර්ගය", "label_en": "Firearm Type", "field_type": "select", "is_required": True},
             {"system_name": "firearm_number", "label_si": "ගිනිඅවි අංකය", "label_en": "Firearm Number", "field_type": "text", "is_required": True},
-            {"system_name": "first_licensed_year", "label_si": "මුලින්ම බලපත්‍ර ලද වර්ෂය", "label_en": "First Licensed Year", "field_type": "number", "is_required": True},
+            {"system_name": "first_licensed_year", "label_si": "මුලින්ම බලපත්‍ර ලද වර්ෂය", "label_en": "First Licensed Year", "field_type": "number", "is_required": False},
+            {"system_name": "renewal_history", "label_si": "බලපත්‍ර අලුත් කිරීම", "label_en": "Renewal History", "field_type": "renewal_history_grid", "is_required": True},
         ]
 
         # Section 4: Current Status and Other Info
@@ -55,7 +56,8 @@ class Command(BaseCommand):
         )
 
         fields_sec4 = [
-            {"system_name": "special_information", "label_si": "විශේෂ තොරතුරු", "label_en": "Special Information", "field_type": "textarea", "is_required": False},
+            {"system_name": "current_status_info", "label_si": "වර්තමාන තත්ත්වය", "label_en": "Current Status", "field_type": "current_status_checkboxes", "is_required": False},
+            {"system_name": "special_information", "label_si": "වෙනත් විශේෂ තොරතුරු", "label_en": "Special Information", "field_type": "textarea", "is_required": False},
             {"system_name": "outside_area_holder", "label_si": "පඬුවස්නුවරින් පිටත පදිංචි, මෙම බලප්‍රදේශය තුළ ඉඩම් හිමි අයෙක්ද?", "label_en": "Outside Area Holder?", "field_type": "boolean", "is_required": False},
             # Conditional fields based on outside_area_holder
             {"system_name": "outside_residential_address", "label_si": "පදිංචි ලිපිනය", "label_en": "Residential Address", "field_type": "textarea", "is_required": False, "depends_on_sys": "outside_area_holder", "depends_on_value": "true"},

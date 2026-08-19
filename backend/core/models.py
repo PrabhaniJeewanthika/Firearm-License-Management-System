@@ -50,7 +50,9 @@ class CustomFormField(models.Model):
         ('checkbox', 'Checkbox (Multiple)'),
         ('boolean', 'Yes/No (Boolean)'),
         ('image', 'Image Upload'),
-        ('autocalc_65', 'Auto Calculate (65th Birthday)')
+        ('autocalc_65', 'Auto Calculate (65th Birthday)'),
+        ('renewal_history_grid', 'Renewal History (Grid)'),
+        ('current_status_checkboxes', 'Current Status (Checkboxes)')
     )
     
     id = models.BigAutoField(primary_key=True)

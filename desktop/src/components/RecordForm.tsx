@@ -16,6 +16,8 @@ interface RecordFormProps {
   gnDivisions: GNDivision[];
   firearmTypes: FirearmType[];
   editingRecord: any | null;
+  customSections: any[];
+  renewalYears?: any[];
   onSaveSuccess: () => void;
   onCancelEdit: () => void;
 }
@@ -24,6 +26,8 @@ const RecordForm: React.FC<RecordFormProps> = ({
   gnDivisions,
   firearmTypes,
   editingRecord,
+  customSections,
+  renewalYears,
   onSaveSuccess,
   onCancelEdit,
 }) => {
@@ -68,6 +72,9 @@ const RecordForm: React.FC<RecordFormProps> = ({
   const [outsideAreaHolder, setOutsideAreaHolder] = useState(false);
   const [outsideResidentialAddress, setOutsideResidentialAddress] = useState('');
   const [landLocationDetails, setLandLocationDetails] = useState('');
+
+  // Dynamic Custom Fields State
+  const [customData, setCustomData] = useState<Record<string, any>>({});
 
   // Image Upload State
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -125,6 +132,8 @@ const RecordForm: React.FC<RecordFormProps> = ({
       setOutsideAreaHolder(editingRecord.outside_area_holder || false);
       setOutsideResidentialAddress(editingRecord.outside_residential_address || '');
       setLandLocationDetails(editingRecord.land_location_details || '');
+
+      setCustomData(editingRecord.custom_data || {});
 
       setPhotoFile(null);
       setPhotoPreview(editingRecord.photo || null);
@@ -239,6 +248,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
     setOutsideAreaHolder(false);
     setOutsideResidentialAddress('');
     setLandLocationDetails('');
+    setCustomData({});
     setPhotoFile(null);
     setPhotoPreview(null);
     setErrors({});
@@ -295,6 +305,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
     formData.append('outside_area_holder', String(outsideAreaHolder));
     formData.append('outside_residential_address', outsideResidentialAddress);
     formData.append('land_location_details', landLocationDetails);
+    formData.append('custom_data', JSON.stringify(customData));
 
     try {
       if (editingRecord) {
@@ -357,15 +368,50 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
       <form onSubmit={handleSubmit}>
         
+        {/* Helper function to get field config */}
+        {(() => {
+          const getF = (sysName: string) => {
+            for (const sec of customSections || []) {
+              const f = sec.fields?.find((field: any) => field.system_name === sysName);
+              if (f) return f;
+            }
+            return null;
+          };
+
+          const fPhoto = getF('photo');
+          const fFullName = getF('full_name');
+          const fNic = getF('nic');
+          const fTel = getF('telephone');
+          const fWa = getF('whatsapp_number');
+          const fAddr = getF('address');
+          const fGn = getF('gn_division');
+          
+          const fDob = getF('date_of_birth');
+          const f65 = getF('sixty_fifth_birthday');
+          
+          const fFtype = getF('firearm_type');
+          const fFnum = getF('firearm_number');
+          const fFyear = getF('first_licensed_year');
+          const fRenew = getF('renewal_history');
+
+          const fStatus = getF('current_status_info');
+          const fSpecial = getF('special_information');
+          const fOutside = getF('outside_area_holder');
+          const fOutAddr = getF('outside_residential_address');
+          const fOutLand = getF('land_location_details');
+
+          return (
+            <>
         {/* Section 1: Personal Details */}
         <div className="form-section-header">
           <span className="section-num">01</span>
-          <span className="section-title">පුද්ගලික තොරතුරු (Personal Information)</span>
+          <span className="section-title">{(customSections && customSections.length > 0) ? customSections[0]?.title_si : 'පුද්ගලික තොරතුරු (Personal Information)'}</span>
         </div>
 
         {/* Photo Upload Section */}
+        {fPhoto && (
         <div className="form-group">
-          <label className="form-label">ඡායාරූපය ඇතුළත් කරන්න (JPG / PNG)</label>
+          <label className="form-label">{fPhoto.label_si} {fPhoto.is_required ? '*' : ''} (JPG / PNG)</label>
           <div className="photo-uploader">
             {photoPreview ? (
               <img src={photoPreview} alt="Preview" className="photo-preview" />
@@ -404,10 +450,12 @@ const RecordForm: React.FC<RecordFormProps> = ({
             </div>
           </div>
         </div>
+        )}
 
         <div className="form-grid-2">
+          {fFullName && (
           <div className="form-group form-grid-full">
-            <label className="form-label">සම්පූර්ණ නම *</label>
+            <label className="form-label">{fFullName.label_si} {fFullName.is_required ? '*' : ''}</label>
             <input
               type="text"
               className="form-input"
@@ -417,9 +465,11 @@ const RecordForm: React.FC<RecordFormProps> = ({
             />
             {errors.full_name && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.full_name}</span>}
           </div>
+          )}
 
+          {fNic && (
           <div className="form-group">
-            <label className="form-label">ජාතික හැඳුනුම්පත් අංකය *</label>
+            <label className="form-label">{fNic.label_si} {fNic.is_required ? '*' : ''}</label>
             <input
               type="text"
               className="form-input"
@@ -429,9 +479,11 @@ const RecordForm: React.FC<RecordFormProps> = ({
             />
             {errors.nic && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.nic}</span>}
           </div>
+          )}
 
+          {fTel && (
           <div className="form-group">
-            <label className="form-label">දුරකථන අංකය</label>
+            <label className="form-label">{fTel.label_si} {fTel.is_required ? '*' : ''}</label>
             <input
               type="text"
               className="form-input"
@@ -441,9 +493,11 @@ const RecordForm: React.FC<RecordFormProps> = ({
             />
             {errors.telephone && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.telephone}</span>}
           </div>
+          )}
 
+          {fWa && (
           <div className="form-group">
-            <label className="form-label">වට්ස්ඇප් අංකය (WhatsApp)</label>
+            <label className="form-label">{fWa.label_si} {fWa.is_required ? '*' : ''}</label>
             <input
               type="text"
               className="form-input"
@@ -452,9 +506,11 @@ const RecordForm: React.FC<RecordFormProps> = ({
               placeholder="07X XXXXXXX"
             />
           </div>
+          )}
 
+          {fAddr && (
           <div className="form-group form-grid-full">
-            <label className="form-label">ලිපිනය</label>
+            <label className="form-label">{fAddr.label_si} {fAddr.is_required ? '*' : ''}</label>
             <textarea
               className="form-textarea"
               value={address}
@@ -462,9 +518,11 @@ const RecordForm: React.FC<RecordFormProps> = ({
               placeholder="සම්පූර්ණ ලිපිනය ඇතුළත් කරන්න"
             />
           </div>
+          )}
 
+          {fGn && (
           <div className="form-group">
-            <label className="form-label">ග්‍රාම නිලධාරී කොට්ඨාසය *</label>
+            <label className="form-label">{fGn.label_si} {fGn.is_required ? '*' : ''}</label>
             <select
               className="form-select"
               value={gnDivision}
@@ -479,17 +537,19 @@ const RecordForm: React.FC<RecordFormProps> = ({
             </select>
             {errors.gn_division && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.gn_division}</span>}
           </div>
+          )}
         </div>
 
         {/* Section 2: Birthdate and Age */}
         <div className="form-section-header">
           <span className="section-num">02</span>
-          <span className="section-title">උපන්දිනය සහ වයස් තොරතුරු (DOB & Age Info)</span>
+          <span className="section-title">{(customSections && customSections.length > 1) ? customSections[1]?.title_si : 'උපන්දිනය සහ වයස් තොරතුරු (DOB & Age Info)'}</span>
         </div>
         
         <div className="form-grid-2">
+          {fDob && (
           <div className="form-group">
-            <label className="form-label">උපන්දිනය *</label>
+            <label className="form-label">{fDob.label_si} {fDob.is_required ? '*' : ''}</label>
             <input
               type="date"
               className="form-input"
@@ -498,9 +558,11 @@ const RecordForm: React.FC<RecordFormProps> = ({
             />
             {errors.date_of_birth && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.date_of_birth}</span>}
           </div>
+          )}
 
+          {f65 && (
           <div className="form-group">
-            <label className="form-label">අවුරුදු 65 සම්පූර්ණ වන දිනය</label>
+            <label className="form-label">{f65.label_si} {f65.is_required ? '*' : ''}</label>
             <input
               type="date"
               className="form-input"
@@ -510,17 +572,19 @@ const RecordForm: React.FC<RecordFormProps> = ({
             />
             <span className="sub-text">ⓘ උපන්දිනය අනුව මෙම දිනය ස්වයංක්‍රීයව ගණනය වේ.</span>
           </div>
+          )}
         </div>
 
         {/* Section 3: Firearm and License Info */}
         <div className="form-section-header">
           <span className="section-num">03</span>
-          <span className="section-title">ගිනිඅවි සහ බලපත්‍ර තොරතුරු (Firearm & License Info)</span>
+          <span className="section-title">{(customSections && customSections.length > 2) ? customSections[2]?.title_si : 'ගිනිඅවි සහ බලපත්‍ර තොරතුරු (Firearm & License Info)'}</span>
         </div>
         
         <div className="form-grid-2">
+          {fFtype && (
           <div className="form-group">
-            <label className="form-label">ගිනිඅවි වර්ගය *</label>
+            <label className="form-label">{fFtype.label_si} {fFtype.is_required ? '*' : ''}</label>
             <select
               className="form-select"
               value={firearmType}
@@ -535,9 +599,11 @@ const RecordForm: React.FC<RecordFormProps> = ({
             </select>
             {errors.firearm_type && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.firearm_type}</span>}
           </div>
+          )}
 
+          {fFnum && (
           <div className="form-group">
-            <label className="form-label">ගිනිඅවි අංකය *</label>
+            <label className="form-label">{fFnum.label_si} {fFnum.is_required ? '*' : ''}</label>
             <input
               type="text"
               className="form-input"
@@ -547,9 +613,11 @@ const RecordForm: React.FC<RecordFormProps> = ({
             />
             {errors.firearm_number && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.firearm_number}</span>}
           </div>
+          )}
 
+          {fFyear && (
           <div className="form-group">
-            <label className="form-label">මුලින්ම බලපත්‍ර ලද වර්ෂය</label>
+            <label className="form-label">{fFyear.label_si} {fFyear.is_required ? '*' : ''}</label>
             <input
               type="number"
               className="form-input"
@@ -558,9 +626,11 @@ const RecordForm: React.FC<RecordFormProps> = ({
               placeholder="YYYY"
             />
           </div>
+          )}
 
+          {fRenew && (
           <div className="form-group form-grid-full">
-            <label className="form-label" style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--danger-color)' }}>බලපත්‍ර අලුත් කිරීම *</label>
+            <label className="form-label" style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--danger-color)' }}>{fRenew.label_si} {fRenew.is_required ? '*' : ''}</label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
               {[2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030].map(year => {
                 const yearStr = String(year);
@@ -604,17 +674,19 @@ const RecordForm: React.FC<RecordFormProps> = ({
               })}
             </div>
           </div>
+          )}
         </div>
 
         {/* Section 4: Current Status and Other Info */}
         <div className="form-section-header">
           <span className="section-num">04</span>
-          <span className="section-title">වර්තමාන තත්ත්වය සහ වෙනත් තොරතුරු (Current Status & Other Info)</span>
+          <span className="section-title">{(customSections && customSections.length > 3) ? customSections[3]?.title_si : 'වර්තමාන තත්ත්වය සහ වෙනත් තොරතුරු (Current Status & Other Info)'}</span>
         </div>
 
         <div className="form-grid-2">
+          {fStatus && (
           <div className="form-group form-grid-full">
-            <label className="form-label">වර්තමාන තත්ත්වය</label>
+            <label className="form-label">{fStatus.label_si} {fStatus.is_required ? '*' : ''}</label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
               {['deceased', 'transferred', 'other'].map(statusKey => {
                 const info = currentStatusInfo[statusKey as keyof typeof currentStatusInfo];
@@ -679,11 +751,12 @@ const RecordForm: React.FC<RecordFormProps> = ({
               })}
             </div>
           </div>
+          )}
 
 
-
+          {fSpecial && (
           <div className="form-group form-grid-full">
-            <label className="form-label">වෙනත් විශේෂ තොරතුරු</label>
+            <label className="form-label">{fSpecial.label_si} {fSpecial.is_required ? '*' : ''}</label>
             <textarea
               className="form-textarea"
               value={specialInformation}
@@ -691,10 +764,12 @@ const RecordForm: React.FC<RecordFormProps> = ({
               placeholder="අවශ්‍ය වෙනත් නිල තොරතුරු මෙහි ඇතුළත් කරන්න..."
             />
           </div>
+          )}
 
+          {fOutside && (
           <div className="form-group form-grid-full">
             <label className="form-label">
-              පඬුවස්නුවරින් පිටත පදිංචි, මෙම බලප්‍රදේශය තුළ ඉඩම් හිමි බලපත්‍රලාභියෙක්ද?
+              {fOutside.label_si} {fOutside.is_required ? '*' : ''}
             </label>
             <div className="radio-group">
               <label className="radio-option">
@@ -717,12 +792,14 @@ const RecordForm: React.FC<RecordFormProps> = ({
               </label>
             </div>
           </div>
+          )}
         </div>
 
         {outsideAreaHolder && (
           <div className="form-grid-2" style={{ backgroundColor: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
+            {fOutAddr && (
             <div className="form-group form-grid-full">
-              <label className="form-label">වර්තමාන පදිංචි ලිපිනය</label>
+              <label className="form-label">{fOutAddr.label_si} {fOutAddr.is_required ? '*' : ''}</label>
               <textarea
                 className="form-textarea"
                 value={outsideResidentialAddress}
@@ -730,8 +807,10 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 placeholder="වර්තමාන පදිංචි ලිපිනය ඇතුළත් කරන්න"
               />
             </div>
+            )}
+            {fOutLand && (
             <div className="form-group form-grid-full">
-              <label className="form-label">මෙම බලප්‍රදේශය තුළ ඉඩම් / ස්ථාන විස්තර</label>
+              <label className="form-label">{fOutLand.label_si} {fOutLand.is_required ? '*' : ''}</label>
               <textarea
                 className="form-textarea"
                 value={landLocationDetails}
@@ -739,8 +818,56 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 placeholder="මෙම බලප්‍රදේශය තුළ පිහිටි ඉඩම් හෝ ස්ථාන විස්තර ඇතුළත් කරන්න"
               />
             </div>
+            )}
           </div>
         )}
+
+            {/* Completely Dynamic Custom Fields render here if needed */}
+            {customSections && customSections.map((section: any, idx: number) => {
+              const customFields = section.fields?.filter((f: any) => !f.system_name);
+              if (!customFields || customFields.length === 0) return null;
+              
+              return (
+                <div key={`custom-section-${section.id}`} style={{ marginTop: '20px' }}>
+                  {idx > 3 && (
+                    <div className="form-section-header">
+                      <span className="section-num">{String(idx + 1).padStart(2, '0')}</span>
+                      <span className="section-title">{section.title_si}</span>
+                    </div>
+                  )}
+                  <div className="form-grid-2" style={{ padding: idx > 3 ? '0' : '20px', border: idx > 3 ? 'none' : '1px dashed #cbd5e1', borderRadius: '8px', marginTop: '10px' }}>
+                    {customFields.map((field: any) => (
+                      <div key={field.id} className="form-group">
+                        <label className="form-label">{field.label_si} {field.is_required ? '*' : ''}</label>
+                        {field.field_type === 'textarea' ? (
+                          <textarea
+                            className="form-textarea"
+                            value={customData[field.id] || ''}
+                            onChange={(e) => setCustomData({...customData, [field.id]: e.target.value})}
+                          />
+                        ) : field.field_type === 'boolean' ? (
+                          <div style={{ display: 'flex', gap: '16px' }}>
+                            <label><input type="radio" checked={customData[field.id] === true} onChange={() => setCustomData({...customData, [field.id]: true})} /> ඔව්</label>
+                            <label><input type="radio" checked={customData[field.id] === false} onChange={() => setCustomData({...customData, [field.id]: false})} /> නැත</label>
+                          </div>
+                        ) : (
+                          <input
+                            type={field.field_type === 'number' ? 'number' : 'text'}
+                            className="form-input"
+                            value={customData[field.id] || ''}
+                            onChange={(e) => setCustomData({...customData, [field.id]: e.target.value})}
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+
+            </>
+          );
+        })()}
 
         {/* Action Buttons */}
         <div className="btn-group">
