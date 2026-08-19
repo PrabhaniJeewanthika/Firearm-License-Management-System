@@ -680,15 +680,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
             </div>
           </div>
 
-          <div className="form-group form-grid-full">
-            <label className="form-label">ගිනිඅවිය පැවරීම පිළිබඳ විස්තර</label>
-            <textarea
-              className="form-textarea"
-              value={transferDetails}
-              onChange={(e) => setTransferDetails(e.target.value)}
-              placeholder="පැවරීම සම්බන්ධ නිල විස්තර සහ සටහන් ඇතුළත් කරන්න..."
-            />
-          </div>
+
 
           <div className="form-group form-grid-full">
             <label className="form-label">වෙනත් විශේෂ තොරතුරු</label>
