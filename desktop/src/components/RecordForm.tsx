@@ -632,7 +632,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
           <div className="form-group form-grid-full">
             <label className="form-label" style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--danger-color)' }}>{fRenew.label_si} {fRenew.is_required ? '*' : ''}</label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
-              {[2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030].map(year => {
+              {(renewalYears && renewalYears.length > 0 ? renewalYears.map(ry => ry.year) : [2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030]).map(year => {
                 const yearStr = String(year);
                 const isRenewed = renewalHistory[yearStr]?.renewed ?? false;
                 const reason = renewalHistory[yearStr]?.reason ?? '';
@@ -849,6 +849,55 @@ const RecordForm: React.FC<RecordFormProps> = ({
                           <div style={{ display: 'flex', gap: '16px' }}>
                             <label><input type="radio" checked={customData[field.id] === true} onChange={() => setCustomData({...customData, [field.id]: true})} /> ඔව්</label>
                             <label><input type="radio" checked={customData[field.id] === false} onChange={() => setCustomData({...customData, [field.id]: false})} /> නැත</label>
+                          </div>
+                        ) : field.field_type === 'select' ? (
+                          <select
+                            className="form-select"
+                            value={customData[field.id] || ''}
+                            onChange={(e) => setCustomData({...customData, [field.id]: e.target.value})}
+                          >
+                            <option value="">-- තෝරන්න --</option>
+                            {(Array.isArray(field.options) ? field.options : []).map((opt: string, i: number) => (
+                              <option key={i} value={opt}>{opt}</option>
+                            ))}
+                          </select>
+                        ) : field.field_type === 'radio' ? (
+                          <div className="radio-group" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                            {(Array.isArray(field.options) ? field.options : []).map((opt: string, i: number) => (
+                              <label key={i} className="radio-option">
+                                <input
+                                  type="radio"
+                                  name={`custom_radio_${field.id}`}
+                                  value={opt}
+                                  checked={customData[field.id] === opt}
+                                  onChange={() => setCustomData({...customData, [field.id]: opt})}
+                                />
+                                {opt}
+                              </label>
+                            ))}
+                          </div>
+                        ) : field.field_type === 'checkbox' ? (
+                          <div className="checkbox-group" style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
+                            {(Array.isArray(field.options) ? field.options : []).map((opt: string, i: number) => {
+                              const currentVals = Array.isArray(customData[field.id]) ? customData[field.id] : [];
+                              return (
+                                <label key={i} className="radio-option">
+                                  <input
+                                    type="checkbox"
+                                    value={opt}
+                                    checked={currentVals.includes(opt)}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setCustomData({...customData, [field.id]: [...currentVals, opt]});
+                                      } else {
+                                        setCustomData({...customData, [field.id]: currentVals.filter((v: string) => v !== opt)});
+                                      }
+                                    }}
+                                  />
+                                  {opt}
+                                </label>
+                              );
+                            })}
                           </div>
                         ) : (
                           <input

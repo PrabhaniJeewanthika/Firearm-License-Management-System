@@ -416,6 +416,32 @@ const FormBuilder: React.FC = () => {
               </select>
             </div>
 
+            {['select', 'radio', 'checkbox'].includes(editingField.field.field_type) && !editingField.field.system_name && (
+              <div className="form-group">
+                <label className="form-label">විකල්ප (Options)</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="විකල්ප කොමා (,) මගින් වෙන් කර ඇතුළත් කරන්න (උදා: Option 1, Option 2)"
+                  value={
+                    Array.isArray(editingField.field.options)
+                      ? editingField.field.options.join(', ')
+                      : typeof editingField.field.options === 'string'
+                        ? editingField.field.options
+                        : ''
+                  }
+                  onChange={e => {
+                    const opts = e.target.value.split(',').map(s => s.trim()).filter(Boolean);
+                    setEditingField({
+                      ...editingField,
+                      field: { ...editingField.field, options: opts }
+                    });
+                  }}
+                />
+                <span style={{ fontSize: '11px', color: '#64748b' }}>මෙම ක්ෂේත්‍රය සඳහා ලබා දිය යුතු විකල්ප (Dropdown/Radio) කොමා භාවිතයෙන් වෙන් කර ලියන්න.</span>
+              </div>
+            )}
+
             <div className="form-group" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <input type="checkbox" id="req" checked={editingField.field.is_required} onChange={e => setEditingField({...editingField, field: {...editingField.field, is_required: e.target.checked}})} style={{ width: '18px', height: '18px' }} />
               <label htmlFor="req" className="form-label" style={{ marginBottom: 0 }}>මෙය අනිවාර්ය තොරතුරක් ද?</label>
