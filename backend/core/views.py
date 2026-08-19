@@ -39,8 +39,12 @@ class FirearmTypeViewSet(viewsets.ModelViewSet):
         instance.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+from django.db.models import Prefetch
+
 class CustomFormSectionViewSet(viewsets.ModelViewSet):
-    queryset = CustomFormSection.objects.filter(is_active=True).prefetch_related('fields')
+    queryset = CustomFormSection.objects.filter(is_active=True).prefetch_related(
+        Prefetch('fields', queryset=CustomFormField.objects.filter(is_active=True))
+    )
     serializer_class = CustomFormSectionSerializer
     permission_classes = [AllowAny]
     

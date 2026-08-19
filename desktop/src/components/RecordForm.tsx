@@ -270,6 +270,11 @@ const RecordForm: React.FC<RecordFormProps> = ({
       return;
     }
 
+    const actionText = editingRecord ? 'මෙම වාර්තාව යාවත්කාලීන කිරීමට' : 'මෙම නව වාර්තාව සුරැකීමට';
+    if (!window.confirm(`${actionText} ඔබට විශ්වාසද? (Are you sure you want to save this record?)`)) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     // Create Form Data for file upload

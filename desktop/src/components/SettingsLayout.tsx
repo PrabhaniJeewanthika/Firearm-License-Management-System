@@ -32,6 +32,7 @@ const SettingsLayout: React.FC = () => {
 
   const handleAddGN = async () => {
     if (!newGnName.trim()) return;
+    if (!window.confirm(`නව ග්‍රාම නිලධාරී වසම "${newGnName}" එකතු කිරීමට ඔබට විශ්වාසද?`)) return;
     try {
       await api.post('/gn-divisions/', { name: newGnName });
       toast.success('ග්‍රාම නිලධාරී වසම එකතු කරන ලදී.');
@@ -55,6 +56,7 @@ const SettingsLayout: React.FC = () => {
 
   const handleAddFT = async () => {
     if (!newFtNameSi.trim() || !newFtNameEn.trim()) return;
+    if (!window.confirm(`නව ගිනිඅවි වර්ගය "${newFtNameSi}" එකතු කිරීමට ඔබට විශ්වාසද?`)) return;
     try {
       await api.post('/firearm-types/', { name_si: newFtNameSi, name_en: newFtNameEn });
       toast.success('ගිනිඅවි වර්ගය එකතු කරන ලදී.');

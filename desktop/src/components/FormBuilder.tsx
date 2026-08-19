@@ -171,6 +171,7 @@ const FormBuilder: React.FC = () => {
   };
 
   const handleDeleteField = (sectionId: number, fieldId: number) => {
+    if (!window.confirm("මෙම ක්ෂේත්‍රය මකා දැමීමට ඔබට විශ්වාසද?")) return;
     setSections(sections.map(s => {
       if (s.id === sectionId) {
         return {
@@ -210,6 +211,7 @@ const FormBuilder: React.FC = () => {
   };
 
   const handleSave = async () => {
+    if (!window.confirm("වෙනස්කම් සුරැකීමට ඔබට විශ්වාසද? (Are you sure you want to save changes?)")) return;
     setIsSaving(true);
     try {
       // Very basic sequential save logic to preserve relationships
