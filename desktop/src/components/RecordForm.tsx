@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 import api from '../services/api';
 
 interface GNDivision {
@@ -16,8 +15,6 @@ interface FirearmType {
 interface RecordFormProps {
   gnDivisions: GNDivision[];
   firearmTypes: FirearmType[];
-  renewalYears: any[];
-  customSections?: any[];
   editingRecord: any | null;
   onSaveSuccess: () => void;
   onCancelEdit: () => void;
@@ -26,13 +23,10 @@ interface RecordFormProps {
 const RecordForm: React.FC<RecordFormProps> = ({
   gnDivisions,
   firearmTypes,
-  renewalYears = [],
-  customSections = [],
   editingRecord,
   onSaveSuccess,
   onCancelEdit,
 }) => {
-  const { t } = useTranslation();
   // Form State
   const [fullName, setFullName] = useState('');
   const [nic, setNic] = useState('');
@@ -54,20 +48,20 @@ const RecordForm: React.FC<RecordFormProps> = ({
   const [nonRenewalInformation, setNonRenewalInformation] = useState('');
   const [renewalHistory, setRenewalHistory] = useState<Record<string, { renewed: boolean; reason: string }>>({});
 
-  const [currentStatusInfo, setCurrentStatusInfo] = useState({
-    deceased: { selected: false, date: '', reason: '' },
-    transferred: { selected: false, date: '', reason: '' },
-    other: { selected: false, date: '', reason: '' }
-  });
+  const [currentStatus, setCurrentStatus] = useState('active');
+  const [statusDate, setStatusDate] = useState('');
+  const [statusRemarks, setStatusRemarks] = useState('');
+
+  const [transferDate, setTransferDate] = useState('');
+  const [previousHolder, setPreviousHolder] = useState('');
+  const [newHolderReference, setNewHolderReference] = useState('');
+  const [transferDetails, setTransferDetails] = useState('');
 
   const [specialInformation, setSpecialInformation] = useState('');
 
   const [outsideAreaHolder, setOutsideAreaHolder] = useState(false);
   const [outsideResidentialAddress, setOutsideResidentialAddress] = useState('');
   const [landLocationDetails, setLandLocationDetails] = useState('');
-
-  // Dynamic Custom Data State
-  const [customData, setCustomData] = useState<Record<string, any>>({});
 
   // Image Upload State
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -79,65 +73,6 @@ const RecordForm: React.FC<RecordFormProps> = ({
   const [submitError, setSubmitError] = useState('');
   const [submitSuccess, setSubmitSuccess] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-
-  const getFieldValue = (field: any) => {
-    if (field.system_name === 'full_name') return fullName;
-    if (field.system_name === 'nic') return nic;
-    if (field.system_name === 'telephone') return telephone;
-    if (field.system_name === 'whatsapp_number') return whatsappNumber;
-    if (field.system_name === 'address') return address;
-    if (field.system_name === 'gn_division') return gnDivision;
-    if (field.system_name === 'date_of_birth') return dateOfBirth;
-    if (field.system_name === 'sixty_fifth_birthday') return sixtyFifthBirthday;
-    if (field.system_name === 'firearm_type') return firearmType;
-    if (field.system_name === 'firearm_number') return firearmNumber;
-    if (field.system_name === 'first_licensed_year') return firstLicensedYear;
-    if (field.system_name === 'special_information') return specialInformation;
-    if (field.system_name === 'outside_area_holder') return outsideAreaHolder;
-    if (field.system_name === 'outside_residential_address') return outsideResidentialAddress;
-    if (field.system_name === 'land_location_details') return landLocationDetails;
-    
-    return customData[field.id] !== undefined ? customData[field.id] : (field.field_type === 'checkbox' ? [] : field.field_type === 'boolean' ? false : '');
-  };
-
-  const getFieldValueById = (id: number) => {
-    for (const sec of customSections) {
-      const f = sec.fields?.find((f: any) => f.id === id);
-      if (f) return getFieldValue(f);
-    }
-    return null;
-  };
-
-  const setFieldValue = (field: any, val: any) => {
-    if (field.system_name === 'full_name') setFullName(val);
-    else if (field.system_name === 'nic') setNic(val);
-    else if (field.system_name === 'telephone') setTelephone(val);
-    else if (field.system_name === 'whatsapp_number') setWhatsappNumber(val);
-    else if (field.system_name === 'address') setAddress(val);
-    else if (field.system_name === 'gn_division') setGnDivision(val);
-    else if (field.system_name === 'date_of_birth') {
-      setDateOfBirth(val);
-      if (val) {
-        const dobDate = new Date(val);
-        dobDate.setFullYear(dobDate.getFullYear() + 65);
-        setSixtyFifthBirthday(dobDate.toISOString().split('T')[0]);
-      } else {
-        setSixtyFifthBirthday('');
-      }
-    }
-    else if (field.system_name === 'sixty_fifth_birthday') setSixtyFifthBirthday(val);
-    else if (field.system_name === 'firearm_type') setFirearmType(val);
-    else if (field.system_name === 'firearm_number') setFirearmNumber(val);
-    else if (field.system_name === 'first_licensed_year') setFirstLicensedYear(val);
-    else if (field.system_name === 'special_information') setSpecialInformation(val);
-    else if (field.system_name === 'outside_area_holder') setOutsideAreaHolder(val);
-    else if (field.system_name === 'outside_residential_address') setOutsideResidentialAddress(val);
-    else if (field.system_name === 'land_location_details') setLandLocationDetails(val);
-    else {
-      setCustomData(prev => ({ ...prev, [field.id]: val }));
-    }
-  };
 
   // Scroll to Form Ref
   const formRef = useRef<HTMLDivElement>(null);
@@ -165,32 +100,20 @@ const RecordForm: React.FC<RecordFormProps> = ({
       setNonRenewalInformation(editingRecord.non_renewal_information || '');
       setRenewalHistory(editingRecord.renewal_history || {});
 
-      const csi = editingRecord.current_status_info || {};
-      setCurrentStatusInfo({
-        deceased: {
-          selected: csi.deceased?.selected || false,
-          date: csi.deceased?.date || '',
-          reason: csi.deceased?.reason || ''
-        },
-        transferred: {
-          selected: csi.transferred?.selected || false,
-          date: csi.transferred?.date || '',
-          reason: csi.transferred?.reason || ''
-        },
-        other: {
-          selected: csi.other?.selected || false,
-          date: csi.other?.date || '',
-          reason: csi.other?.reason || ''
-        }
-      });
+      setCurrentStatus(editingRecord.current_status || 'active');
+      setStatusDate(editingRecord.status_date || '');
+      setStatusRemarks(editingRecord.status_remarks || '');
+
+      setTransferDate(editingRecord.transfer_date || '');
+      setPreviousHolder(editingRecord.previous_holder || '');
+      setNewHolderReference(editingRecord.new_holder_reference || '');
+      setTransferDetails(editingRecord.transfer_details || '');
 
       setSpecialInformation(editingRecord.special_information || '');
 
       setOutsideAreaHolder(editingRecord.outside_area_holder || false);
       setOutsideResidentialAddress(editingRecord.outside_residential_address || '');
       setLandLocationDetails(editingRecord.land_location_details || '');
-
-      setCustomData(editingRecord.custom_data || {});
 
       setPhotoFile(null);
       setPhotoPreview(editingRecord.photo || null);
@@ -239,16 +162,16 @@ const RecordForm: React.FC<RecordFormProps> = ({
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!fullName.trim()) newErrors.full_name = t('errors.fullName');
-    if (!nic.trim()) newErrors.nic = t('errors.nic');
-    if (!firearmNumber.trim()) newErrors.firearm_number = t('errors.firearmNumber');
-    if (!gnDivision) newErrors.gn_division = t('errors.gnDivision');
-    if (!firearmType) newErrors.firearm_type = t('errors.firearmType');
+    if (!fullName.trim()) newErrors.full_name = 'සම්පූර්ණ නම ඇතුළත් කරන්න.';
+    if (!nic.trim()) newErrors.nic = 'ජාතික හැඳුනුම්පත් අංකය ඇතුළත් කරන්න.';
+    if (!firearmNumber.trim()) newErrors.firearm_number = 'ගිනිඅවි අංකය ඇතුළත් කරන්න.';
+    if (!gnDivision) newErrors.gn_division = 'ග්‍රාම නිලධාරී කොට්ඨාසය තෝරන්න.';
+    if (!firearmType) newErrors.firearm_type = 'ගිනිඅවි වර්ගය තෝරන්න.';
 
     // Phone validation (SL format: 07XXXXXXXX)
     const phoneRegex = /^(?:0)\d{9}$/;
     if (telephone && !phoneRegex.test(telephone)) {
-      newErrors.telephone = t('errors.phone');
+      newErrors.telephone = 'වලංගු දුරකථන අංකයක් ඇතුළත් කරන්න. (උදා: 0771234567)';
     }
 
     // DOB future date validation
@@ -256,10 +179,10 @@ const RecordForm: React.FC<RecordFormProps> = ({
       const dobDate = new Date(dateOfBirth);
       const today = new Date();
       if (dobDate > today) {
-        newErrors.date_of_birth = t('errors.dobFuture');
+        newErrors.date_of_birth = 'උපන්දිනය අනාගත දිනයක් විය නොහැක.';
       }
     } else {
-      newErrors.date_of_birth = t('errors.dobReq');
+      newErrors.date_of_birth = 'උපන්දිනය ඇතුළත් කරන්න.';
     }
 
     setErrors(newErrors);
@@ -268,7 +191,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
   const resetForm = (askConfirmation = true) => {
     if (askConfirmation && (fullName || nic || firearmNumber || photoPreview)) {
-      const confirmClear = window.confirm(t('errors.confirmClear'));
+      const confirmClear = window.confirm('සුරැකී නොමැති වෙනස්කම් ඉවත් කිරීමට ඔබට විශ්වාසද?');
       if (!confirmClear) return;
     }
 
@@ -289,16 +212,17 @@ const RecordForm: React.FC<RecordFormProps> = ({
     setRenewalRemarks('');
     setNonRenewalInformation('');
     setRenewalHistory({});
-    setCurrentStatusInfo({
-      deceased: { selected: false, date: '', reason: '' },
-      transferred: { selected: false, date: '', reason: '' },
-      other: { selected: false, date: '', reason: '' }
-    });
+    setCurrentStatus('active');
+    setStatusDate('');
+    setStatusRemarks('');
+    setTransferDate('');
+    setPreviousHolder('');
+    setNewHolderReference('');
+    setTransferDetails('');
     setSpecialInformation('');
     setOutsideAreaHolder(false);
     setOutsideResidentialAddress('');
     setLandLocationDetails('');
-    setCustomData({});
     setPhotoFile(null);
     setPhotoPreview(null);
     setErrors({});
@@ -343,19 +267,24 @@ const RecordForm: React.FC<RecordFormProps> = ({
     formData.append('renewal_remarks', renewalRemarks);
     formData.append('non_renewal_information', nonRenewalInformation);
     formData.append('renewal_history', JSON.stringify(renewalHistory));
-    formData.append('current_status_info', JSON.stringify(currentStatusInfo));
+    formData.append('current_status', currentStatus);
+    formData.append('status_date', statusDate || '');
+    formData.append('status_remarks', statusRemarks);
+    formData.append('transfer_date', transferDate || '');
+    formData.append('previous_holder', previousHolder);
+    formData.append('new_holder_reference', newHolderReference);
+    formData.append('transfer_details', transferDetails);
     formData.append('special_information', specialInformation);
     formData.append('outside_area_holder', String(outsideAreaHolder));
     formData.append('outside_residential_address', outsideResidentialAddress);
     formData.append('land_location_details', landLocationDetails);
-    formData.append('custom_data', JSON.stringify(customData));
 
     try {
       if (editingRecord) {
         await api.put(`/records/${editingRecord.id}/`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        setSubmitSuccess(t('errors.updateSuccess'));
+        setSubmitSuccess('වාර්තාව සාර්ථකව යාවත්කාලීන කරන ලදී.');
         setTimeout(() => {
           onSaveSuccess();
         }, 1000);
@@ -363,7 +292,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
         await api.post('/records/', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        setSubmitSuccess(t('errors.saveSuccess'));
+        setSubmitSuccess('වාර්තාව සාර්ථකව සුරකින ලදී.');
         resetForm(false);
         setTimeout(() => {
           onSaveSuccess();
@@ -374,14 +303,14 @@ const RecordForm: React.FC<RecordFormProps> = ({
       if (err.response?.data) {
         const data = err.response.data;
         if (data.nic) {
-          setSubmitError(t('errors.duplicateNIC'));
+          setSubmitError('මෙම NIC අංකය දැනටමත් පද්ධතියේ ඇත.');
         } else if (data.firearm_number) {
-          setSubmitError(t('errors.duplicateFirearm'));
+          setSubmitError('මෙම ගිනිඅවි අංකය දැනටමත් පද්ධතියේ ඇත.');
         } else {
-          setSubmitError(t('errors.saveFailed'));
+          setSubmitError('වාර්තාව සුරැකීමට නොහැකි විය. නැවත උත්සාහ කරන්න.');
         }
       } else {
-        setSubmitError(t('errors.apiError'));
+        setSubmitError('දත්ත සේවාව සමඟ සම්බන්ධ වීමට නොහැකි විය.');
       }
     } finally {
       setIsSubmitting(false);
@@ -392,307 +321,422 @@ const RecordForm: React.FC<RecordFormProps> = ({
     <div className="card" ref={formRef}>
       <div className="card-header-area">
         <div className="card-title">
-          {editingRecord ? t('tabs.editRecord') : t('tabs.newRecord')}
+          {editingRecord ? '01 වාර්තාව සංස්කරණය' : '01 නව බලපත්‍රලාභී වාර්තාව'}
         </div>
-        <div className="card-subtitle">{t('form.mandatory')}</div>
+        <div className="card-subtitle">* ලකුණ සහිත තොරතුරු අනිවාර්යයි</div>
       </div>
 
       {submitError && (
-        <div style={{ backgroundColor: 'var(--danger-color)', color: '#fff', padding: '12px 16px', borderRadius: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: '600', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ backgroundColor: '#fee2e2', border: '1px solid #fca5a5', color: '#991b1b', padding: '12px', borderRadius: '6px', marginBottom: '20px', fontSize: '13px', fontWeight: '500' }}>
           {submitError}
         </div>
       )}
 
       {submitSuccess && (
-        <div style={{ backgroundColor: 'var(--success-color)', color: '#fff', padding: '12px 16px', borderRadius: '8px', marginBottom: '24px', fontSize: '14px', fontWeight: '600', boxShadow: 'var(--shadow-sm)' }}>
+        <div style={{ backgroundColor: '#dcfce7', border: '1px solid #86efac', color: '#166534', padding: '12px', borderRadius: '6px', marginBottom: '20px', fontSize: '13px', fontWeight: '500' }}>
           {submitSuccess}
         </div>
       )}
 
       <form onSubmit={handleSubmit}>
         
-        {customSections && customSections.map((section: any, idx: number) => (
-          <React.Fragment key={section.id}>
-            <div className="form-section-header">
-              <span className="section-num">{String(idx + 1).padStart(2, '0')}</span>
-              <span className="section-title">{section.title_si} / {section.title_en}</span>
+        {/* Section 1: Personal Details */}
+        <div className="form-section-header">
+          <span className="section-num">01</span>
+          <span className="section-title">පුද්ගලික තොරතුරු (Personal Information)</span>
+        </div>
+
+        {/* Photo Upload Section */}
+        <div className="form-group">
+          <label className="form-label">ඡායාරූපය ඇතුළත් කරන්න (JPG / PNG)</label>
+          <div className="photo-uploader">
+            {photoPreview ? (
+              <img src={photoPreview} alt="Preview" className="photo-preview" />
+            ) : (
+              <div className="photo-placeholder" style={{ fontSize: '24px' }}>
+                📷
+                <span style={{ fontSize: '10px', marginTop: '4px', fontWeight: 'bold' }}>JPG / PNG</span>
+              </div>
+            )}
+            <div className="photo-controls">
+              <input
+                type="file"
+                accept="image/png, image/jpeg, image/jpg"
+                onChange={handlePhotoChange}
+                ref={fileInputRef}
+                style={{ display: 'none' }}
+              />
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => fileInputRef.current?.click()}
+                style={{ padding: '6px 12px', fontSize: '12px' }}
+              >
+                {photoPreview ? 'ඡායාරූපය වෙනස් කරන්න' : 'ඡායාරූපයක් තෝරන්න'}
+              </button>
+              {photoPreview && (
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={removePhoto}
+                  style={{ padding: '6px 12px', fontSize: '12px', marginTop: '4px' }}
+                >
+                  ඡායාරූපය ඉවත් කරන්න
+                </button>
+              )}
             </div>
-            <div className="form-grid-2">
-              {section.fields?.map((field: any) => {
-                if (field.system_name === 'photo') {
-                  return (
-                    <div key={field.id} className="form-group form-grid-full">
-                      <label className="form-label">{field.label_si} / {field.label_en}</label>
-                      <div className="photo-uploader">
-                        {photoPreview ? (
-                          <img src={photoPreview} alt="Preview" className="photo-preview" />
-                        ) : (
-                          <div className="photo-placeholder">
-                            <span style={{ fontSize: '24px' }}></span>
-                            <span style={{ marginTop: '8px', fontWeight: '600' }}>JPG / PNG</span>
-                          </div>
-                        )}
-                        <div className="photo-controls">
-                          <input
-                            type="file"
-                            accept="image/png, image/jpeg, image/jpg"
-                            onChange={handlePhotoChange}
-                            ref={fileInputRef}
-                            style={{ display: 'none' }}
-                          />
-                          <button
-                            type="button"
-                            className="btn btn-secondary"
-                            onClick={() => fileInputRef.current?.click()}
-                            style={{ padding: '6px 12px', fontSize: '12px' }}
-                          >
-                            {photoPreview ? t('form.changePhoto') : t('form.choosePhoto')}
-                          </button>
-                          {photoPreview && (
-                            <button
-                              type="button"
-                              className="btn btn-danger"
-                              onClick={removePhoto}
-                              style={{ padding: '6px 12px', fontSize: '12px', marginTop: '4px' }}
-                            >
-                              {t('form.removePhoto')}
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                }
+          </div>
+        </div>
 
-                if (field.depends_on) {
-                  const parentVal = getFieldValueById(field.depends_on);
-                  if (String(parentVal) !== String(field.depends_on_value)) {
-                    return null;
-                  }
-                }
+        <div className="form-grid-2">
+          <div className="form-group form-grid-full">
+            <label className="form-label">සම්පූර්ණ නම *</label>
+            <input
+              type="text"
+              className="form-input"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              placeholder="උදා: කේ. ඒ. පෙරේරා"
+            />
+            {errors.full_name && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.full_name}</span>}
+          </div>
 
-                const value = getFieldValue(field);
-                
+          <div className="form-group">
+            <label className="form-label">ජාතික හැඳුනුම්පත් අංකය *</label>
+            <input
+              type="text"
+              className="form-input"
+              value={nic}
+              onChange={(e) => setNic(e.target.value)}
+              placeholder="XXXXXXXXXV / XXXXXXXXXXXX"
+            />
+            {errors.nic && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.nic}</span>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">දුරකථන අංකය</label>
+            <input
+              type="text"
+              className="form-input"
+              value={telephone}
+              onChange={(e) => setTelephone(e.target.value)}
+              placeholder="07X XXXXXXX"
+            />
+            {errors.telephone && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.telephone}</span>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">වට්ස්ඇප් අංකය (WhatsApp)</label>
+            <input
+              type="text"
+              className="form-input"
+              value={whatsappNumber}
+              onChange={(e) => setWhatsappNumber(e.target.value)}
+              placeholder="07X XXXXXXX"
+            />
+          </div>
+
+          <div className="form-group form-grid-full">
+            <label className="form-label">ලිපිනය</label>
+            <textarea
+              className="form-textarea"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="සම්පූර්ණ ලිපිනය ඇතුළත් කරන්න"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">ග්‍රාම නිලධාරී කොට්ඨාසය *</label>
+            <select
+              className="form-select"
+              value={gnDivision}
+              onChange={(e) => setGnDivision(e.target.value)}
+            >
+              <option value="">තෝරන්න</option>
+              {gnDivisions.map((gn) => (
+                <option key={gn.id} value={gn.id}>
+                  {gn.name}
+                </option>
+              ))}
+            </select>
+            {errors.gn_division && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.gn_division}</span>}
+          </div>
+        </div>
+
+        {/* Section 2: Birthdate and Age */}
+        <div className="form-section-header">
+          <span className="section-num">02</span>
+          <span className="section-title">උපන්දිනය සහ වයස් තොරතුරු (DOB & Age Info)</span>
+        </div>
+        
+        <div className="form-grid-2">
+          <div className="form-group">
+            <label className="form-label">උපන්දිනය *</label>
+            <input
+              type="date"
+              className="form-input"
+              value={dateOfBirth}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+            />
+            {errors.date_of_birth && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.date_of_birth}</span>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">අවුරුදු 65 සම්පූර්ණ වන දිනය</label>
+            <input
+              type="date"
+              className="form-input"
+              value={sixtyFifthBirthday}
+              readOnly
+              style={{ backgroundColor: '#f8fafc', cursor: 'not-allowed', fontWeight: 'bold', color: '#b45309' }}
+            />
+            <span className="sub-text">ⓘ උපන්දිනය අනුව මෙම දිනය ස්වයංක්‍රීයව ගණනය වේ.</span>
+          </div>
+        </div>
+
+        {/* Section 3: Firearm and License Info */}
+        <div className="form-section-header">
+          <span className="section-num">03</span>
+          <span className="section-title">ගිනිඅවි සහ බලපත්‍ර තොරතුරු (Firearm & License Info)</span>
+        </div>
+        
+        <div className="form-grid-2">
+          <div className="form-group">
+            <label className="form-label">ගිනිඅවි වර්ගය *</label>
+            <select
+              className="form-select"
+              value={firearmType}
+              onChange={(e) => setFirearmType(e.target.value)}
+            >
+              <option value="">තෝරන්න</option>
+              {firearmTypes.map((ft) => (
+                <option key={ft.id} value={ft.id}>
+                  {ft.name_si}
+                </option>
+              ))}
+            </select>
+            {errors.firearm_type && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.firearm_type}</span>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">ගිනිඅවි අංකය *</label>
+            <input
+              type="text"
+              className="form-input"
+              value={firearmNumber}
+              onChange={(e) => setFirearmNumber(e.target.value)}
+              placeholder="ගිනිඅවි අංකය ඇතුළත් කරන්න"
+            />
+            {errors.firearm_number && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.firearm_number}</span>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">මුලින්ම බලපත්‍ර ලද වර්ෂය</label>
+            <input
+              type="number"
+              className="form-input"
+              value={firstLicensedYear}
+              onChange={(e) => setFirstLicensedYear(e.target.value)}
+              placeholder="YYYY"
+            />
+          </div>
+
+          <div className="form-group form-grid-full">
+            <label className="form-label" style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--danger-color)' }}>බලපත්‍ර අලුත් කිරීම *</label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
+              {[2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030].map(year => {
+                const yearStr = String(year);
+                const isRenewed = renewalHistory[yearStr]?.renewed ?? false;
+                const reason = renewalHistory[yearStr]?.reason ?? '';
                 return (
-                  <div key={field.id} className={`form-group ${['textarea', 'image'].includes(field.field_type) ? 'form-grid-full' : ''}`}>
-                    <label className="form-label">
-                      {field.label_si} / {field.label_en} {field.is_required && <span style={{ color: 'red' }}>*</span>}
+                  <div key={year} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '15px', cursor: 'pointer' }}>
+                      <input
+                        type="checkbox"
+                        checked={isRenewed}
+                        onChange={(e) => {
+                          setRenewalHistory(prev => ({
+                            ...prev,
+                            [yearStr]: { ...prev[yearStr], renewed: e.target.checked, reason: e.target.checked ? '' : prev[yearStr]?.reason || '' }
+                          }));
+                        }}
+                        style={{ width: '20px', height: '20px', cursor: 'pointer' }}
+                      />
+                      {year}
                     </label>
-
-                    {['text', 'nic', 'phone'].includes(field.field_type) && (
-                      <input type="text" className="form-input" value={value} onChange={e => setFieldValue(field, e.target.value)} />
-                    )}
-
-                    {field.field_type === 'number' && (
-                      <input type="number" className="form-input" value={value} onChange={e => setFieldValue(field, e.target.value)} />
-                    )}
-
-                    {['date', 'autocalc_65'].includes(field.field_type) && (
-                      <input type="date" className="form-input" value={value} onChange={e => setFieldValue(field, e.target.value)} readOnly={field.field_type === 'autocalc_65'} style={field.field_type === 'autocalc_65' ? { backgroundColor: 'var(--bg-color)', cursor: 'not-allowed' } : {}} />
-                    )}
-
-                    {field.field_type === 'textarea' && (
-                      <textarea className="form-textarea" value={value} onChange={e => setFieldValue(field, e.target.value)} />
-                    )}
-
-                    {field.field_type === 'select' && (
-                      <select className="form-select" value={value} onChange={e => setFieldValue(field, e.target.value)}>
-                        <option value="">{t('form.select')}</option>
-                        {field.system_name === 'gn_division' && gnDivisions.map(gn => <option key={gn.id} value={gn.id}>{gn.name}</option>)}
-                        {field.system_name === 'firearm_type' && firearmTypes.map(ft => <option key={ft.id} value={ft.id}>{ft.name_si}</option>)}
-                        {!field.system_name && field.options && field.options.map((opt: string, i: number) => <option key={i} value={opt}>{opt}</option>)}
-                      </select>
-                    )}
-
-                    {field.field_type === 'radio' && field.options && (
-                      <div className="radio-group" style={{ display: 'flex', gap: '15px', marginTop: '8px' }}>
-                        {field.options.map((opt: string, i: number) => (
-                          <label key={i} className="radio-option" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                            <input type="radio" name={`field_${field.id}`} checked={value === opt} onChange={() => setFieldValue(field, opt)} /> {opt}
-                          </label>
-                        ))}
+                    {!isRenewed && (
+                      <div style={{ marginLeft: '32px' }}>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={reason}
+                          onChange={(e) => {
+                            setRenewalHistory(prev => ({
+                              ...prev,
+                              [yearStr]: { ...prev[yearStr], renewed: false, reason: e.target.value }
+                            }));
+                          }}
+                          placeholder="අලුත් නොකිරීමට හේතුව මෙහි ඇතුළත් කරන්න (Reason for not renewing)"
+                          style={{ maxWidth: '400px', backgroundColor: '#fef2f2', border: '1px solid #fca5a5' }}
+                        />
                       </div>
                     )}
-
-                    {field.field_type === 'boolean' && (
-                      <div className="radio-group" style={{ display: 'flex', gap: '15px', marginTop: '8px' }}>
-                        <label className="radio-option" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <input type="radio" name={`field_${field.id}`} checked={value === true || value === 'true'} onChange={() => setFieldValue(field, true)} /> {t('form.yes')}
-                        </label>
-                        <label className="radio-option" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                          <input type="radio" name={`field_${field.id}`} checked={value === false || value === 'false'} onChange={() => setFieldValue(field, false)} /> {t('form.no')}
-                        </label>
-                      </div>
-                    )}
-
-                    {field.field_type === 'checkbox' && field.options && (
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
-                        {field.options.map((opt: string, i: number) => {
-                          const isChecked = Array.isArray(value) && value.includes(opt);
-                          return (
-                            <label key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                              <input type="checkbox" checked={isChecked} onChange={(e) => {
-                                const currentArr = Array.isArray(value) ? value : [];
-                                if (e.target.checked) setFieldValue(field, [...currentArr, opt]);
-                                else setFieldValue(field, currentArr.filter((v: any) => v !== opt));
-                              }} /> {opt}
-                            </label>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    {field.system_name && errors[field.system_name] && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors[field.system_name]}</span>}
                   </div>
                 );
               })}
             </div>
+          </div>
+        </div>
 
-            {/* Special injections for complex blocks */}
-            {section.title_en === 'Firearm and License Information' && (
-              <div className="form-group form-grid-full" style={{ marginTop: '20px' }}>
-                <label className="form-label">{t('form.renewal')}</label>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
-                  {(Array.isArray(renewalYears) ? renewalYears : []).map(ry => {
-                    const yearStr = String(ry.year);
-                    const isRenewed = renewalHistory[yearStr]?.renewed ?? false;
-                    const reason = renewalHistory[yearStr]?.reason ?? '';
-                    return (
-                      <div key={ry.id} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                        <label style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '15px', cursor: 'pointer' }}>
-                          <input
-                            type="checkbox"
-                            checked={isRenewed}
-                            onChange={(e) => {
-                              setRenewalHistory(prev => ({
-                                ...prev,
-                                [yearStr]: { ...prev[yearStr], renewed: e.target.checked, reason: e.target.checked ? '' : prev[yearStr]?.reason || '' }
-                              }));
-                            }}
-                            style={{ width: '20px', height: '20px', cursor: 'pointer' }}
-                          />
-                          {ry.year}
-                        </label>
-                        {!isRenewed && (
-                          <div style={{ marginLeft: '32px' }}>
-                            <input
-                              type="text"
-                              className="form-input"
-                              value={reason}
-                              onChange={(e) => {
-                                setRenewalHistory(prev => ({
-                                  ...prev,
-                                  [yearStr]: { ...prev[yearStr], renewed: false, reason: e.target.value }
-                                }));
-                              }}
-                              placeholder={t('form.reasonPlaceholder')}
-                              style={{ maxWidth: '100%', borderColor: 'var(--danger-color)' }}
-                            />
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+        {/* Section 4: Current Status and Other Info */}
+        <div className="form-section-header">
+          <span className="section-num">04</span>
+          <span className="section-title">වර්තමාන තත්ත්වය සහ වෙනත් තොරතුරු (Current Status & Other Info)</span>
+        </div>
 
-            {section.title_en === 'Current Status and Other Information' && (
-              <div className="form-grid-2" style={{ marginTop: '20px' }}>
-                <div className="form-group form-grid-full">
-                  <label className="form-label">{t('form.currentStatus')}</label>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
-                    {['deceased', 'transferred', 'other'].map(statusKey => {
-                      const info = currentStatusInfo[statusKey as keyof typeof currentStatusInfo];
-                      return (
-                        <div key={statusKey} style={{ border: '1px solid var(--border-color)', padding: '16px', borderRadius: '8px', backgroundColor: info.selected ? 'rgba(153, 27, 27, 0.05)' : 'transparent' }}>
-                          <label style={{ display: 'flex', alignItems: 'center', gap: '12px', fontSize: '15px', fontWeight: info.selected ? '600' : '400', cursor: 'pointer' }}>
-                            <input
-                              type="checkbox"
-                              checked={info.selected}
-                              onChange={(e) => {
-                                setCurrentStatusInfo(prev => ({
-                                  ...prev,
-                                  [statusKey]: { ...prev[statusKey as keyof typeof currentStatusInfo], selected: e.target.checked }
-                                }));
-                              }}
-                              style={{ width: '20px', height: '20px', cursor: 'pointer', accentColor: 'var(--state-maroon)' }}
-                            />
-                            {t(`status.${statusKey}`)}
-                          </label>
-                          {info.selected && (
-                            <div style={{ display: 'grid', gridTemplateColumns: statusKey === 'deceased' ? '1fr' : '1fr 2fr', gap: '16px', marginTop: '12px', marginLeft: '32px' }}>
-                              {statusKey !== 'deceased' && (
-                                <div className="form-group" style={{ marginBottom: 0 }}>
-                                  <label className="form-label" style={{ fontSize: '13px' }}>{t('form.statusModificationDate')}</label>
-                                  <input
-                                    type="date"
-                                    className="form-input"
-                                    value={info.date}
-                                    onChange={(e) => {
-                                      setCurrentStatusInfo(prev => ({
-                                        ...prev,
-                                        [statusKey]: { ...prev[statusKey as keyof typeof currentStatusInfo], date: e.target.value }
-                                      }));
-                                    }}
-                                  />
-                                </div>
-                              )}
-                              <div className="form-group" style={{ marginBottom: 0 }}>
-                                <label className="form-label" style={{ fontSize: '13px' }}>{t('form.statusReason')}</label>
-                                <input
-                                  type="text"
-                                  className="form-input"
-                                  value={info.reason}
-                                  onChange={(e) => {
-                                    setCurrentStatusInfo(prev => ({
-                                      ...prev,
-                                      [statusKey]: { ...prev[statusKey as keyof typeof currentStatusInfo], reason: e.target.value }
-                                    }));
-                                  }}
-                                  placeholder={t('form.reasonPlaceholder')}
-                                />
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            )}
-          </React.Fragment>
-        ))}
+        <div className="form-grid-2">
+          <div className="form-group">
+            <label className="form-label">වර්තමාන තත්ත්වය</label>
+            <select
+              className="form-select"
+              value={currentStatus}
+              onChange={(e) => setCurrentStatus(e.target.value)}
+            >
+              <option value="active">සක්‍රීය</option>
+              <option value="deceased">මියගොස් ඇත</option>
+              <option value="transferred">පවරා ඇත</option>
+              <option value="not_renewed">බලපත්‍රය අලුත් කර නැත</option>
+              <option value="other">වෙනත්</option>
+            </select>
+          </div>
 
-        <div style={{ display: 'flex', gap: '12px', marginTop: '32px', borderTop: '1px solid var(--border-color)', paddingTop: '20px' }}>
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={isSubmitting}
-            style={{ minWidth: '120px' }}
-          >
-            {isSubmitting ? 'සුරකිමින්...' : 'සුරකින්න (Save)'}
-          </button>
-          
+          <div className="form-group">
+            <label className="form-label">තත්ත්වය වෙනස් වූ දිනය</label>
+            <input
+              type="date"
+              className="form-input"
+              value={statusDate}
+              onChange={(e) => setStatusDate(e.target.value)}
+            />
+          </div>
+
+          <div className="form-group form-grid-full">
+            <label className="form-label">තත්ත්වය පිළිබඳ විස්තර සහ සටහන්</label>
+            <textarea
+              className="form-textarea"
+              value={statusRemarks}
+              onChange={(e) => setStatusRemarks(e.target.value)}
+              placeholder="තත්ත්වය වෙනස් වීමට අදාළ විස්තර ඇතුළත් කරන්න..."
+            />
+          </div>
+
+          <div className="form-group form-grid-full">
+            <label className="form-label">ගිනිඅවිය පැවරීම පිළිබඳ විස්තර</label>
+            <textarea
+              className="form-textarea"
+              value={transferDetails}
+              onChange={(e) => setTransferDetails(e.target.value)}
+              placeholder="පැවරීම සම්බන්ධ නිල විස්තර සහ සටහන් ඇතුළත් කරන්න..."
+            />
+          </div>
+
+          <div className="form-group form-grid-full">
+            <label className="form-label">වෙනත් විශේෂ තොරතුරු</label>
+            <textarea
+              className="form-textarea"
+              value={specialInformation}
+              onChange={(e) => setSpecialInformation(e.target.value)}
+              placeholder="අවශ්‍ය වෙනත් නිල තොරතුරු මෙහි ඇතුළත් කරන්න..."
+            />
+          </div>
+
+          <div className="form-group form-grid-full">
+            <label className="form-label">
+              පඬුවස්නුවරින් පිටත පදිංචි, මෙම බලප්‍රදේශය තුළ ඉඩම් හිමි බලපත්‍රලාභියෙක්ද?
+            </label>
+            <div className="radio-group">
+              <label className="radio-option">
+                <input
+                  type="radio"
+                  name="outsideArea"
+                  checked={outsideAreaHolder === true}
+                  onChange={() => setOutsideAreaHolder(true)}
+                />
+                ඔව්
+              </label>
+              <label className="radio-option">
+                <input
+                  type="radio"
+                  name="outsideArea"
+                  checked={outsideAreaHolder === false}
+                  onChange={() => setOutsideAreaHolder(false)}
+                />
+                නැත
+              </label>
+            </div>
+          </div>
+        </div>
+
+        {outsideAreaHolder && (
+          <div className="form-grid-2" style={{ backgroundColor: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
+            <div className="form-group form-grid-full">
+              <label className="form-label">වර්තමාන පදිංචි ලිපිනය</label>
+              <textarea
+                className="form-textarea"
+                value={outsideResidentialAddress}
+                onChange={(e) => setOutsideResidentialAddress(e.target.value)}
+                placeholder="වර්තමාන පදිංචි ලිපිනය ඇතුළත් කරන්න"
+              />
+            </div>
+            <div className="form-group form-grid-full">
+              <label className="form-label">මෙම බලප්‍රදේශය තුළ ඉඩම් / ස්ථාන විස්තර</label>
+              <textarea
+                className="form-textarea"
+                value={landLocationDetails}
+                onChange={(e) => setLandLocationDetails(e.target.value)}
+                placeholder="මෙම බලප්‍රදේශය තුළ පිහිටි ඉඩම් හෝ ස්ථාන විස්තර ඇතුළත් කරන්න"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Action Buttons */}
+        <div className="btn-group">
           {editingRecord ? (
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={onCancelEdit}
-              disabled={isSubmitting}
-            >
-              අවලංගු කරන්න (Cancel)
-            </button>
+            <>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={onCancelEdit}
+              >
+                සංස්කරණය අවලංගු කරන්න
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'යාවත්කාලීන වෙමින් පවතී...' : '✓ වාර්තාව යාවත්කාලීන කරන්න'}
+              </button>
+            </>
           ) : (
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => resetForm(true)}
-              disabled={isSubmitting}
-            >
-              මකන්න (Clear)
-            </button>
+            <>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => resetForm(true)}
+              >
+                මකන්න
+              </button>
+              <button
+                type="submit"
+                className="btn btn-primary"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? 'සුරැකෙමින් පවතී...' : '✓ වාර්තාව සුරකින්න'}
+              </button>
+            </>
           )}
         </div>
       </form>
