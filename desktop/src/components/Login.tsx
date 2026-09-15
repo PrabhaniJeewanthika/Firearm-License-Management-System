@@ -43,18 +43,17 @@ const Login: React.FC = () => {
         <div className="login-header">
           <div className="logo-container">
             <img 
-              src="/police_logo.png" 
-              alt="Police Logo" 
+              src="/favicon.svg" 
+              alt="System Logo" 
               className="login-logo" 
               onError={(e) => {
-                // Fallback icon if logo image fails to load
                 e.currentTarget.style.display = 'none';
                 e.currentTarget.parentElement?.classList.add('fallback-icon');
               }} 
             />
           </div>
-          <h2>{t('login.title') || 'Sri Lanka Police'}</h2>
-          <p>{t('login.subtitle') || 'Firearm License Management System'}</p>
+          <h2 style={{fontSize: '22px'}}>{t('header.secretariat') || 'Panduwasnuwara Divisional Secretariat'}</h2>
+          <p>{t('header.title') || 'Firearm License Data Management System'}</p>
         </div>
         
         <form onSubmit={handleSubmit} className="login-form">
