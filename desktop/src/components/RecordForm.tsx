@@ -152,13 +152,13 @@ const RecordForm: React.FC<RecordFormProps> = ({
     }
   }, [editingRecord]);
 
-  // Real-time calculation of 65th birthday
+  // Real-time calculation of 70th birthday
   useEffect(() => {
     if (dateOfBirth) {
       const parts = dateOfBirth.split('-');
       if (parts.length === 3) {
         const year = parseInt(parts[0]);
-        setSixtyFifthBirthday(`${year + 65}-${parts[1]}-${parts[2]}`);
+        setSixtyFifthBirthday(`${year + 70}-${parts[1]}-${parts[2]}`);
       }
     } else {
       setSixtyFifthBirthday('');

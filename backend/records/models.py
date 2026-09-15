@@ -59,10 +59,10 @@ class LicenseRecord(models.Model):
             if isinstance(dob, datetime.date):
                 try:
                     # Add 65 years to the date_of_birth
-                    self.sixty_fifth_birthday = dob.replace(year=dob.year + 65)  # type: ignore
+                    self.sixty_fifth_birthday = dob.replace(year=dob.year + 70)  # type: ignore
                 except ValueError:
                     # Leap year edge case (Feb 29)
-                    self.sixty_fifth_birthday = dob + timedelta(days=65*365 + 16)  # type: ignore
+                    self.sixty_fifth_birthday = dob + timedelta(days=70*365 + 16)  # type: ignore
         super().save(*args, **kwargs)
 
     def __str__(self):

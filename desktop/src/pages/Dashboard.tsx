@@ -81,14 +81,14 @@ const Dashboard = () => {
 
       <div className="monitoring-section">
         <div className="monitoring-card">
-          <h2>Age 65 Monitoring</h2>
+          <h2>Age 70 Monitoring</h2>
           <div className="monitoring-stats">
             <div className="monitoring-item">
-              <span className="label">Already reached age 65:</span>
+              <span className="label">Already reached age 70:</span>
               <span className="value danger-text">{stats.age_65_reached}</span>
             </div>
             <div className="monitoring-item">
-              <span className="label">Reaching age 65 soon (90 days):</span>
+              <span className="label">Reaching age 70 soon (90 days):</span>
               <span className="value warning-text">{stats.age_65_upcoming}</span>
             </div>
           </div>
