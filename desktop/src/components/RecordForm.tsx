@@ -637,7 +637,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
           {fRenew && (
           <div className="form-group form-grid-full">
-            <label className="form-label" style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--danger-color)' }}>{t('form.renewal').replace(' *', '')} {fRenew.is_required ? '*' : ''}</label>
+            <label className="form-label" style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--text-primary)' }}>{t('form.renewal').replace(' *', '')} {fRenew.is_required ? '*' : ''}</label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
               {(renewalYears && renewalYears.length > 0 ? renewalYears.map(ry => ry.year) : [2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030]).map(year => {
                 const yearStr = String(year);
