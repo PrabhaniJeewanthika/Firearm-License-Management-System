@@ -470,19 +470,6 @@ const App: React.FC = () => {
             onClose={() => setDeleteRecordId(null)}
             onConfirm={handleDeleteConfirm}
           />
-
-          {/* Footer Section */}
-          <footer className="footer-section">
-            <div className="footer-content">
-              <div className="footer-icon-wrapper">
-                <Shield size={24} className="footer-icon" />
-              </div>
-              <div className="footer-text">
-                <p>{t('footer.department')}</p>
-                <span>{t('footer.dataSecurity')} &copy; {new Date().getFullYear()}</span>
-              </div>
-            </div>
-          </footer>
         </>
       )}
     </div>
@@ -490,4 +477,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
