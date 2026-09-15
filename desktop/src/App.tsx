@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Shield } from 'lucide-react';
 
 import Header from './components/Header';
 import SummaryCards from './components/SummaryCards';
@@ -472,8 +473,15 @@ const App: React.FC = () => {
 
           {/* Footer Section */}
           <footer className="footer-section">
-            <p>{t('footer.department')}</p>
-            <span>{t('footer.dataSecurity')}</span>
+            <div className="footer-content">
+              <div className="footer-icon-wrapper">
+                <Shield size={24} className="footer-icon" />
+              </div>
+              <div className="footer-text">
+                <p>{t('footer.department')}</p>
+                <span>{t('footer.dataSecurity')} &copy; {new Date().getFullYear()}</span>
+              </div>
+            </div>
           </footer>
         </>
       )}

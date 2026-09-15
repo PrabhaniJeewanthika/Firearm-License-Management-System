@@ -1,45 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 
-interface GNDivisionDetail {
-  id: number;
-  name: string;
-}
-
-interface FirearmTypeDetail {
-  id: number;
-  name_si: string;
-  name_en: string;
-}
-
-interface RecordData {
-  id: number;
-  photo: string | null;
-  full_name: string;
-  nic: string;
-  address: string;
-  gn_division_detail?: GNDivisionDetail;
-  date_of_birth: string;
-  sixty_fifth_birthday: string | null;
-  telephone: string;
-  whatsapp_number?: string;
-  firearm_type_detail?: FirearmTypeDetail;
-  firearm_number: string;
-  first_licensed_year: number;
-  renewal_year: number | null;
-  renewal_date: string | null;
-  renewal_status: string | null;
-  renewal_remarks: string | null;
-  non_renewal_information: string | null;
-  renewal_history?: Record<string, { renewed: boolean; reason: string }>;
-  current_status_info?: any;
-  special_information: string | null;
-  outside_area_holder: boolean;
-  outside_residential_address: string | null;
-  land_location_details: string | null;
-  custom_data?: any;
-}
-
 interface RecordViewModalProps {
   record: any | null;
   isOpen: boolean;
