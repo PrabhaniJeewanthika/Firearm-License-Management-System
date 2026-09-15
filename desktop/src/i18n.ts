@@ -247,6 +247,17 @@ const resources = {
   },
   si: {
     translation: {
+      settings: {
+        loginTitle: "පරිපාලක තහවුරු කිරීම",
+        loginSubtitle: "සැකසුම් වෙත ප්‍රවේශ වීමට ඔබගේ පරිපාලක තොරතුරු ලබා දෙන්න.",
+        username: "පරිශීලක නාමය",
+        usernamePlaceholder: "පරිශීලක නාමය ඇතුලත් කරන්න",
+        password: "මුරපදය",
+        passwordPlaceholder: "මුරපදය ඇතුලත් කරන්න",
+        authenticating: "තහවුරු කරමින්...",
+        loginBtn: "ඇතුල් වන්න",
+        loginError: "පරිශීලක නාමය හෝ මුරපදය වැරදියි.",
+
       confirm: {
         discard: "සුරැකී නොමැති වෙනස්කම් ඉවත් කිරීමට ඔබට විශ්වාසද?",
         update: "මෙම වාර්තාව යාවත්කාලීන කිරීමට",
@@ -434,6 +445,17 @@ const resources = {
   },
   ta: {
     translation: {
+      settings: {
+        loginTitle: "நிர்வாகி அங்கீகாரம்",
+        loginSubtitle: "அமைப்புகளை அணுக உங்கள் நிர்வாகி சான்றுகளை உள்ளிடவும்.",
+        username: "பயனர்பெயர்",
+        usernamePlaceholder: "பயனர்பெயரை உள்ளிடவும்",
+        password: "கடவுச்சொல்",
+        passwordPlaceholder: "கடவுச்சொல்லை உள்ளிடவும்",
+        authenticating: "அங்கீகரிக்கப்படுகிறது...",
+        loginBtn: "உள்நுழைய",
+        loginError: "தவறான பயனர்பெயர் அல்லது கடவுச்சொல்.",
+
       confirm: {
         discard: "சேமிக்கப்படாத மாற்றங்களை நிராகரிக்க விரும்புகிறீர்களா?",
         update: "இந்த பதிவை புதுப்பிக்க",

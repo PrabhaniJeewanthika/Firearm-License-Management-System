@@ -2,8 +2,12 @@ import React, { useState, useEffect } from 'react';
 import FormBuilder from './FormBuilder';
 import api from '../services/api';
 import { toast } from 'react-toastify';
+import SettingsLogin from './SettingsLogin';
+import { useAuth } from '../context/AuthContext';
+import { LogOut } from 'lucide-react';
 
 const SettingsLayout: React.FC = () => {
+  const { isAuthenticated, logout } = useAuth();
   const [activeSettingsTab, setActiveSettingsTab] = useState<'form_builder' | 'general'>('form_builder');
   
   // Lookup states for General Settings
@@ -79,11 +83,23 @@ const SettingsLayout: React.FC = () => {
     }
   };
 
+  if (!isAuthenticated) {
+    return <SettingsLogin />;
+  }
+
   return (
     <div className="card" style={{ padding: '24px', minHeight: '600px' }}>
-      <div className="card-header-area" style={{ marginBottom: '24px' }}>
-        <div className="card-title">සැකසුම් (Settings)</div>
-        <div className="card-subtitle">පද්ධතියේ පෝරම සහ අනෙකුත් සැකසුම් කළමනාකරණය කරන්න.</div>
+      <div className="card-header-area" style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <div className="card-title">සැකසුම් (Settings)</div>
+          <div className="card-subtitle">පද්ධතියේ පෝරම සහ අනෙකුත් සැකසුම් කළමනාකරණය කරන්න.</div>
+        </div>
+        <button 
+          onClick={logout}
+          style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', background: '#fef2f2', color: '#b91c1c', border: '1px solid #fca5a5', borderRadius: '6px', cursor: 'pointer', fontWeight: 500 }}
+        >
+          <LogOut size={16} /> Logout
+        </button>
       </div>
 
       <div style={{ display: 'flex', gap: '20px' }}>

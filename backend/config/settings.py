@@ -98,7 +98,7 @@ DATABASES = {
 
 database_url = os.getenv('DATABASE_URL')
 if database_url:
-    DATABASES['default'] = dj_database_url.config(
+    DATABASES['default'] = dj_database_url.config(  # type: ignore
         default=database_url,
         conn_max_age=600,
         conn_health_checks=True,
@@ -149,6 +149,12 @@ CORS_ALLOW_CREDENTIALS = True
 
 # DRF Settings
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 20,

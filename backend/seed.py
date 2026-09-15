@@ -5,10 +5,22 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
+from django.contrib.auth import get_user_model
 from core.models import FirearmType, GNDivision
 
 def seed_data():
+
+    # Create Default Admin User
+    print("Checking default admin user...")
+    User = get_user_model()
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser('admin', 'admin@example.com', 'admin123')
+        print("Created default admin user: admin / admin123")
+    else:
+        print("Admin user already exists.")
+
     # Add Firearm Types
+
     firearms = [
         {"name_si": "බෙහෙත් කොටන තුවක්කු", "name_en": "Muzzle-loading Gun"},
         {"name_si": "බෝර 12 තුවක්කු", "name_en": "12 Bore Shotgun"},
