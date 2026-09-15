@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 from datetime import timedelta
 from dotenv import load_dotenv
+import dj_database_url
 try:
     import django_stubs_ext
     django_stubs_ext.monkeypatch()
@@ -24,7 +25,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key-for-dev')
 
 DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '*').split(',')
 
 # Application definition
 INSTALLED_APPS = [
@@ -95,16 +96,24 @@ DATABASES = {
     }
 }
 
-database_name = os.getenv('DATABASE_NAME')
-if database_name:
-    DATABASES['default'] = {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': database_name,  # type: ignore
-        'USER': os.getenv('DATABASE_USER') or 'postgres',  # type: ignore
-        'PASSWORD': os.getenv('DATABASE_PASSWORD') or 'postgres',  # type: ignore
-        'HOST': os.getenv('DATABASE_HOST') or 'localhost',  # type: ignore
-        'PORT': os.getenv('DATABASE_PORT') or '5432',  # type: ignore
-    }
+database_url = os.getenv('DATABASE_URL')
+if database_url:
+    DATABASES['default'] = dj_database_url.config(
+        default=database_url,
+        conn_max_age=600,
+        conn_health_checks=True,
+    )
+else:
+    database_name = os.getenv('DATABASE_NAME')
+    if database_name:
+        DATABASES['default'] = {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': database_name,  # type: ignore
+            'USER': os.getenv('DATABASE_USER') or 'postgres',  # type: ignore
+            'PASSWORD': os.getenv('DATABASE_PASSWORD') or 'postgres',  # type: ignore
+            'HOST': os.getenv('DATABASE_HOST') or 'localhost',  # type: ignore
+            'PORT': os.getenv('DATABASE_PORT') or '5432',  # type: ignore
+        }
 
 # Password validation
 AUTH_PASSWORD_VALIDATORS = [
