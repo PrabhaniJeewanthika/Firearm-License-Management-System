@@ -49,7 +49,7 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
 
   return (
     <div className="card">
-      <div className="card-title">සෙවීම සහ පෙරහන් (Search & Filters)</div>
+      <div className="card-title">{t('search.title')}</div>
       
       <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
         <div style={{ flex: 1, minWidth: '280px' }}>
@@ -63,7 +63,7 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
           />
         </div>
         <div>
-          <button className="btn btn-primary" onClick={onSearchSubmit}>සොයන්න</button>
+          <button className="btn btn-primary" onClick={onSearchSubmit}>{t('search.button')}</button>
         </div>
       </div>
 
@@ -107,10 +107,10 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
             value={filters.renewal_status}
             onChange={(e) => onFilterChange('renewal_status', e.target.value)}
           >
-            <option value="">සියල්ල (All)</option>
-            <option value="renewed">අලුත් කර ඇත</option>
-            <option value="pending">අලුත් කිරීමට නියමිතයි</option>
-            <option value="not_renewed">අලුත් කර නැත</option>
+            <option value="">{t('search.all')}</option>
+            <option value="renewed">{t('search.renewed')}</option>
+            <option value="pending">{t('search.pending')}</option>
+            <option value="not_renewed">{t('status.not_renewed')}</option>
             <option value="other">{t('status.other')}</option>
           </select>
         </div>
@@ -138,7 +138,7 @@ const SearchFilterBar: React.FC<SearchFilterBarProps> = ({
             value={filters.outside_area_holder}
             onChange={(e) => onFilterChange('outside_area_holder', e.target.value)}
           >
-            <option value="">සියල්ල (All)</option>
+            <option value="">{t('search.all')}</option>
             <option value="true">{t('form.yes')}</option>
             <option value="false">{t('form.no')}</option>
           </select>

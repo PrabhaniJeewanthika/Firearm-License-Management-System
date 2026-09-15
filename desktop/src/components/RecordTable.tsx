@@ -156,7 +156,7 @@ const RecordTable: React.FC<RecordTableProps> = ({
       {totalPages > 1 && (
         <div className="pagination">
           <div style={{ fontSize: '13px', fontWeight: '500', color: 'var(--text-secondary)' }}>
-            පිටුව {currentPage} / {totalPages}
+            {t('table.page', { current: currentPage, total: totalPages })}
           </div>
           <div className="pagination-buttons">
             <button

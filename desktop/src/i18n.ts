@@ -39,7 +39,28 @@ const resources = {
         transferred: "Transferred",
         deceased: "Deceased"
       },
+
+
+
       search: {
+        title: "தேடல் மற்றும் வடிகட்டிகள்",
+        button: "தேடு",
+        all: "அனைத்தும்",
+        renewed: "புதுப்பிக்கப்பட்டது",
+        pending: "புதுப்பிக்க நிலுவையில் உள்ளது",
+
+        title: "සෙවීම සහ පෙරහන්",
+        button: "සොයන්න",
+        all: "සියල්ල",
+        renewed: "අලුත් කර ඇත",
+        pending: "අලුත් කිරීමට නියමිතයි",
+
+        title: "Search & Filters",
+        button: "Search",
+        all: "All",
+        renewed: "Renewed",
+        pending: "Pending Renewal",
+
         placeholder: "Search by Name, NIC, or Firearm No...",
         allGN: "All GN Divisions",
         allTypes: "All Firearm Types",
@@ -83,7 +104,16 @@ const resources = {
         landDetails: "Land/Location Details in this Division",
         select: "Select"
       },
+
+
+
       status: {
+        renewed: "புதுப்பிக்கப்பட்டது",
+
+        renewed: "අලුත් කර ඇත",
+
+        renewed: "Renewed",
+
         active: "Active",
         deceased: "Deceased",
         transferred: "Transferred",
@@ -119,7 +149,22 @@ const resources = {
         saveSuccess: "Record saved successfully.",
         updateSuccess: "Record updated successfully."
       },
+
+
+
       table: {
+        page: "பக்கம் {{current}} / {{total}}",
+        prev: "முந்தைய",
+        next: "அடுத்த",
+
+        page: "පිටුව {{current}} / {{total}}",
+        prev: "පෙර",
+        next: "ඊළඟ",
+
+        page: "Page {{current}} of {{total}}",
+        prev: "Previous",
+        next: "Next",
+
         actions: "Actions",
         noRecords: "No records found.",
         deleteConfirmTitle: "Confirm Deletion",
@@ -131,7 +176,16 @@ const resources = {
         exportEmpty: "No records available to export.",
         exporting: "Exporting records..."
       },
+
+
+
       view: {
+        noPhoto: "புகைப்படம் இல்லை",
+
+        noPhoto: "ඡායාරූපයක් නොමැත",
+
+        noPhoto: "No Photo Available",
+
         recordDetails: "Licensee Details",
         close: "Close"
       },

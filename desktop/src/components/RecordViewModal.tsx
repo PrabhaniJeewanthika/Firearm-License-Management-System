@@ -62,7 +62,7 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
             ) : (
               <div style={{ width: '150px', height: '150px', borderRadius: '8px', backgroundColor: '#fafaf9', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', border: '2px dashed #cbd5e1', fontSize: '48px' }}>
                 👤
-                <span style={{ fontSize: '11px', color: '#78716c', marginTop: '8px', fontWeight: '600' }}>ඡායාරූපයක් නොමැත</span>
+                <span style={{ fontSize: '11px', color: '#78716c', marginTop: '8px', fontWeight: '600' }}>{t('view.noPhoto')}</span>
               </div>
             )}
           </div>
@@ -116,7 +116,7 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
                             return (
                               <div key={ry.id} style={{ padding: '12px', border: '1px solid var(--border-color)', borderRadius: '6px', backgroundColor: isRenewed ? '#f0fdf4' : '#fafaf9' }}>
                                 <div style={{ fontWeight: 'bold', fontSize: '14px', color: isRenewed ? '#166534' : '#57534e' }}>
-                                    {ry.year} - {isRenewed ? 'අලුත් කර ඇත' : t('status.not_renewed')}
+                                    {ry.year} - {isRenewed ? t('status.renewed') : t('status.not_renewed')}
                                 </div>
                                 {!isRenewed && reason && (
                                   <div style={{ marginTop: '8px', fontSize: '12px', color: '#991b1b' }}>

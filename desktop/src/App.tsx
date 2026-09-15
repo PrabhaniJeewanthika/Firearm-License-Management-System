@@ -401,11 +401,11 @@ const App: React.FC = () => {
                 className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
                 onClick={() => setActiveTab('settings')}
               >
-                සැකසුම්
+                {t('tabs.settings')}
               </button>
             </div>
             <button className="btn-export" onClick={handleExportToExcel}>
-              Excel Export
+              {t('tabs.exportExcel')}
             </button>
           </div>
 
