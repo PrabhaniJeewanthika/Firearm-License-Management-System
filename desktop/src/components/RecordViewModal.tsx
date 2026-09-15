@@ -74,7 +74,7 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
                 <div className="form-section-divider">{section.title_si} / {section.title_en}</div>
                 <div className="detail-grid">
                   {section.fields?.map((field: any) => {
-                    if (field.system_name === 'photo') return null; // Handled at the top
+                    if (['photo', 'renewal_history', 'current_status_info'].includes(field.system_name)) return null; // Handled specially or avoid object render crashes
 
                     if (field.depends_on) {
                       const parentVal = getFieldValueById(field.depends_on);
