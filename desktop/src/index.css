@@ -55,7 +55,7 @@ body {
   background-color: var(--bg-color);
   background-image: radial-gradient(#e5e7eb 1px, transparent 1px);
   background-size: 20px 20px;
-  color: var(--text-primary);
+  color: #1e293b;
   line-height: 1.6;
   padding: 30px 20px;
 }
@@ -224,7 +224,7 @@ body {
 .summary-card-val {
   font-size: 36px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #1e293b;
   line-height: 1.1;
   margin-bottom: 6px;
 }
@@ -392,7 +392,7 @@ body {
 .section-title {
   font-size: 16px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #1e293b;
   letter-spacing: 0.02em;
 }
 
@@ -427,8 +427,8 @@ body {
   font-size: 14px;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  background-color: #f9fafb;
-  color: var(--text-primary);
+  background-color: #ffffff;
+  color: #1e293b;
   outline: none;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -551,9 +551,9 @@ input[type="checkbox"]:active {
 }
 
 .btn-secondary:hover {
-  background-color: #f9fafb;
+  background-color: #ffffff;
   border-color: #d1d5db;
-  color: var(--text-primary);
+  color: #1e293b;
 }
 
 .btn-danger {
@@ -600,7 +600,7 @@ input[type="checkbox"]:active {
 }
 
 .records-table th {
-  background-color: #f9fafb;
+  background-color: #ffffff;
   font-weight: 600;
   color: var(--text-secondary);
   text-transform: uppercase;
@@ -638,7 +638,7 @@ input[type="checkbox"]:active {
 
 .licensee-name {
   font-weight: 600;
-  color: var(--text-primary);
+  color: #1e293b;
   margin-bottom: 2px;
 }
 
@@ -808,7 +808,7 @@ input[type="radio"] {
 .modal-footer {
   padding: 16px 24px;
   border-top: 1px solid var(--bg-color);
-  background-color: #f9fafb;
+  background-color: #ffffff;
   display: flex;
   justify-content: flex-end;
   gap: 16px;
@@ -838,7 +838,7 @@ input[type="radio"] {
 .detail-value {
   font-size: 14px;
   font-weight: 600;
-  color: var(--text-primary);
+  color: #1e293b;
   background-color: var(--bg-color);
   padding: 10px 14px;
   border-radius: 6px;

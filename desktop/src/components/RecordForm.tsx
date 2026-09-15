@@ -575,7 +575,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
               className="form-input"
               value={sixtyFifthBirthday}
               readOnly
-              style={{ backgroundColor: '#f8fafc', cursor: 'not-allowed', fontWeight: 'bold', color: '#b45309' }}
+              style={{ backgroundColor: '#ffffff', cursor: 'not-allowed' }}
             />
             <span className="sub-text">{t('form.ageHint')}</span>
           </div>
@@ -672,7 +672,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                             }));
                           }}
                           placeholder={t('form.reasonPlaceholder')}
-                          style={{ maxWidth: '400px', backgroundColor: '#fef2f2', border: '1px solid #fca5a5' }}
+                          style={{ maxWidth: '400px', backgroundColor: '#ffffff' }}
                         />
                       </div>
                     )}
