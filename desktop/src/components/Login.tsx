@@ -41,17 +41,6 @@ const Login: React.FC = () => {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <div className="logo-container">
-            <img 
-              src="/favicon.svg" 
-              alt="System Logo" 
-              className="login-logo" 
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-                e.currentTarget.parentElement?.classList.add('fallback-icon');
-              }} 
-            />
-          </div>
           <h2 style={{fontSize: '22px'}}>{t('header.secretariat') || 'Panduwasnuwara Divisional Secretariat'}</h2>
           <p>{t('header.title') || 'Firearm License Data Management System'}</p>
         </div>
