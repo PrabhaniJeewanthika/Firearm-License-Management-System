@@ -18,22 +18,8 @@ import Login from './components/Login';
 import api from './services/api';
 import { useAuth } from './context/AuthContext';
 
-const App: React.FC = () => {
-  const { isAuthenticated, loading: authLoading } = useAuth();
+const MainApp: React.FC = () => {
   const { t } = useTranslation();
-
-  if (authLoading) {
-    return <div className="app-container"><LoadingSpinner /></div>;
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="app-container">
-        <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-        <Login />
-      </div>
-    );
-  }
 
   // Navigation State
   const [activeTab, setActiveTab] = useState<'form' | 'table' | 'settings'>('form');
@@ -378,8 +364,6 @@ const App: React.FC = () => {
 
   return (
     <div className="app-container">
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-
       {/* Header */}
       <Header />
 
@@ -490,6 +474,30 @@ const App: React.FC = () => {
         </>
       )}
     </div>
+  );
+};
+
+const App: React.FC = () => {
+  const { isAuthenticated, loading: authLoading } = useAuth();
+
+  if (authLoading) {
+    return <div className="app-container"><LoadingSpinner /></div>;
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="app-container">
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+        <Login />
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+      <MainApp />
+    </>
   );
 };
 
