@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Shield } from 'lucide-react';
+
 
 import Header from './components/Header';
 import SummaryCards from './components/SummaryCards';
@@ -13,11 +13,28 @@ import RecordViewModal from './components/RecordViewModal';
 import DeleteConfirmModal from './components/DeleteConfirmModal';
 import LoadingSpinner from './components/LoadingSpinner';
 import SettingsLayout from './components/SettingsLayout';
+import Login from './components/Login';
 
 import api from './services/api';
+import { useAuth } from './context/AuthContext';
 
 const App: React.FC = () => {
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const { t } = useTranslation();
+
+  if (authLoading) {
+    return <div className="app-container"><LoadingSpinner /></div>;
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="app-container">
+        <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
+        <Login />
+      </div>
+    );
+  }
+
   // Navigation State
   const [activeTab, setActiveTab] = useState<'form' | 'table' | 'settings'>('form');
 

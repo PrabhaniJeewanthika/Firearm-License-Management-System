@@ -57,20 +57,7 @@ const resources = {
 
 
 
-      search: {
-        title: "தேடல் மற்றும் வடிகட்டிகள்",
-        button: "தேடு",
-        all: "அனைத்தும்",
-        renewed: "புதுப்பிக்கப்பட்டது",
-        pending: "புதுப்பிக்க நிலுவையில் உள்ளது",
-
-        title: "සෙවීම සහ පෙරහන්",
-        button: "සොයන්න",
-        all: "සියල්ල",
-        renewed: "අලුත් කර ඇත",
-        pending: "අලුත් කිරීමට නියමිතයි",
-
-        title: "Search & Filters",
+      search: {        title: "Search & Filters",
         button: "Search",
         all: "All",
         renewed: "Renewed",
@@ -111,9 +98,7 @@ const resources = {
         section3: "03 Firearm & License Info",
         section4: "04 Current Status & Other Info",
         photoLabel: "Upload Photo (JPG / PNG)",
-        changePhoto: "Change Photo",
         choosePhoto: "Choose Photo",
-        removePhoto: "Remove Photo",
         fullName: "Full Name *",
         nic: "NIC Number *",
         telephone: "Telephone Number",
@@ -131,7 +116,6 @@ const resources = {
         currentStatus: "Current Status",
         statusModificationDate: "Date of Modification",
         statusReason: "Description",
-        statusRemarks: "Status Remarks & Details",
         transferDetails: "Firearm Transfer Details",
         specialInfo: "Other Special Information",
         outsideResident: "Is the licensee a resident outside Panduwasnuwara but owns land here?",
@@ -145,10 +129,6 @@ const resources = {
 
 
       status: {
-        renewed: "புதுப்பிக்கப்பட்டது",
-
-        renewed: "අලුත් කර ඇත",
-
         renewed: "Renewed",
 
         active: "Active",
@@ -189,16 +169,7 @@ const resources = {
 
 
 
-      table: {
-        page: "பக்கம் {{current}} / {{total}}",
-        prev: "முந்தைய",
-        next: "அடுத்த",
-
-        page: "පිටුව {{current}} / {{total}}",
-        prev: "පෙර",
-        next: "ඊළඟ",
-
-        page: "Page {{current}} of {{total}}",
+      table: {        page: "Page {{current}} of {{total}}",
         prev: "Previous",
         next: "Next",
 
@@ -216,12 +187,7 @@ const resources = {
 
 
 
-      view: {
-        noPhoto: "புகைப்படம் இல்லை",
-
-        noPhoto: "ඡායාරූපයක් නොමැත",
-
-        noPhoto: "No Photo Available",
+      view: {        noPhoto: "No Photo Available",
 
         recordDetails: "Licensee Details",
         close: "Close"
@@ -343,9 +309,7 @@ const resources = {
         section3: "03 ගිනිඅවි සහ බලපත්‍ර තොරතුරු",
         section4: "04 වර්තමාන තත්ත්වය සහ වෙනත් තොරතුරු",
         photoLabel: "ඡායාරූපය ඇතුළත් කරන්න (JPG / PNG)",
-        changePhoto: "ඡායාරූපය වෙනස් කරන්න",
         choosePhoto: "ඡායාරූපයක් තෝරන්න",
-        removePhoto: "ඡායාරූපය ඉවත් කරන්න",
         fullName: "සම්පූර්ණ නම *",
         nic: "ජාතික හැඳුනුම්පත් අංකය *",
         telephone: "දුරකථන අංකය",
@@ -455,7 +419,7 @@ const resources = {
         authenticating: "அங்கீகரிக்கப்படுகிறது...",
         loginBtn: "உள்நுழைய",
         loginError: "தவறான பயனர்பெயர் அல்லது கடவுச்சொல்.",
-
+      },
       confirm: {
         discard: "சேமிக்கப்படாத மாற்றங்களை நிராகரிக்க விரும்புகிறீர்களா?",
         update: "இந்த பதிவை புதுப்பிக்க",
@@ -529,9 +493,7 @@ const resources = {
         section3: "03 துப்பாக்கி மற்றும் உரிம விபரம்",
         section4: "04 தற்போதைய நிலை மற்றும் பிற தகவல்",
         photoLabel: "புகைப்படத்தை பதிவேற்றவும் (JPG / PNG)",
-        changePhoto: "புகைப்படத்தை மாற்று",
         choosePhoto: "புகைப்படத்தை தேர்வு செய்",
-        removePhoto: "புகைப்படத்தை அகற்று",
         fullName: "முழு பெயர் *",
         nic: "தேசிய அடையாள அட்டை எண் *",
         telephone: "தொலைபேசி எண்",
@@ -628,6 +590,7 @@ const resources = {
       }
     }
   }
+}
 };
 
 i18n

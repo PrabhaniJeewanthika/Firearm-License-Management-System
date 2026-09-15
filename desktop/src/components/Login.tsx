@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
+import { User, Lock, LogIn } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import './Login.css';
@@ -40,7 +41,18 @@ const Login: React.FC = () => {
     <div className="login-container">
       <div className="login-card">
         <div className="login-header">
-          <img src="/police_logo.png" alt="Police Logo" className="login-logo" onError={(e) => (e.currentTarget.style.display = 'none')} />
+          <div className="logo-container">
+            <img 
+              src="/police_logo.png" 
+              alt="Police Logo" 
+              className="login-logo" 
+              onError={(e) => {
+                // Fallback icon if logo image fails to load
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement?.classList.add('fallback-icon');
+              }} 
+            />
+          </div>
           <h2>{t('login.title') || 'Sri Lanka Police'}</h2>
           <p>{t('login.subtitle') || 'Firearm License Management System'}</p>
         </div>
@@ -48,28 +60,36 @@ const Login: React.FC = () => {
         <form onSubmit={handleSubmit} className="login-form">
           <div className="form-group">
             <label htmlFor="username">{t('login.username') || 'Username'}</label>
-            <input
-              id="username"
-              type="text"
-              className="form-control"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              disabled={isLoading}
-              placeholder={t('login.usernamePlaceholder') || 'Enter username'}
-            />
+            <div className="input-wrapper">
+              <User className="input-icon" />
+              <input
+                id="username"
+                type="text"
+                className="form-control"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={isLoading}
+                placeholder={t('login.usernamePlaceholder') || 'Enter username'}
+                autoComplete="username"
+              />
+            </div>
           </div>
           
           <div className="form-group">
             <label htmlFor="password">{t('login.password') || 'Password'}</label>
-            <input
-              id="password"
-              type="password"
-              className="form-control"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
-              placeholder={t('login.passwordPlaceholder') || 'Enter password'}
-            />
+            <div className="input-wrapper">
+              <Lock className="input-icon" />
+              <input
+                id="password"
+                type="password"
+                className="form-control"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                placeholder={t('login.passwordPlaceholder') || 'Enter password'}
+                autoComplete="current-password"
+              />
+            </div>
           </div>
           
           <button 
@@ -77,7 +97,17 @@ const Login: React.FC = () => {
             className="btn btn-primary login-btn"
             disabled={isLoading || !username || !password}
           >
-            {isLoading ? (t('actions.saving') || 'Loading...') : (t('login.loginBtn') || 'Login')}
+            {isLoading ? (
+              <>
+                <div className="spinner"></div>
+                <span>{t('settings.authenticating') || 'Authenticating...'}</span>
+              </>
+            ) : (
+              <>
+                <LogIn size={20} />
+                <span>{t('login.loginBtn') || 'Login'}</span>
+              </>
+            )}
           </button>
         </form>
       </div>
