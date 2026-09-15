@@ -412,13 +412,13 @@ const RecordForm: React.FC<RecordFormProps> = ({
         {/* Section 1: Personal Details */}
         <div className="form-section-header">
           <span className="section-num">01</span>
-          <span className="section-title">{(customSections && customSections.length > 0) ? customSections[0]?.title_si : t('form.personalInfo')}</span>
+          <span className="section-title">{t('form.personalInfo')}</span>
         </div>
 
         {/* Photo Upload Section */}
         {fPhoto && (
         <div className="form-group">
-          <label className="form-label">{fPhoto.label_si} {fPhoto.is_required ? '*' : ''} (JPG / PNG)</label>
+          <label className="form-label">{t('form.photoLabel')}</label>
           <div className="photo-uploader">
             {photoPreview ? (
               <img src={photoPreview} alt="Preview" className="photo-preview" />
@@ -624,7 +624,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
           {fFyear && (
           <div className="form-group">
-            <label className="form-label">{fFyear.label_si} {fFyear.is_required ? '*' : ''}</label>
+            <label className="form-label">{t('form.firstLicenseYear')} {fFyear.is_required ? '*' : ''}</label>
             <input
               type="number"
               className="form-input"
@@ -637,7 +637,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
           {fRenew && (
           <div className="form-group form-grid-full">
-            <label className="form-label" style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--danger-color)' }}>{fRenew.label_si} {fRenew.is_required ? '*' : ''}</label>
+            <label className="form-label" style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--danger-color)' }}>{t('form.renewal').replace(' *', '')} {fRenew.is_required ? '*' : ''}</label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
               {(renewalYears && renewalYears.length > 0 ? renewalYears.map(ry => ry.year) : [2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030]).map(year => {
                 const yearStr = String(year);
@@ -687,13 +687,13 @@ const RecordForm: React.FC<RecordFormProps> = ({
         {/* Section 4: Current Status and Other Info */}
         <div className="form-section-header">
           <span className="section-num">04</span>
-          <span className="section-title">{(customSections && customSections.length > 3) ? customSections[3]?.title_si : t('form.currentStatusSection')}</span>
+          <span className="section-title">{t('form.currentStatusSection')}</span>
         </div>
 
         <div className="form-grid-2">
           {fStatus && (
           <div className="form-group form-grid-full">
-            <label className="form-label">{fStatus.label_si} {fStatus.is_required ? '*' : ''}</label>
+            <label className="form-label">{t('form.currentStatus')} {fStatus.is_required ? '*' : ''}</label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
               {['deceased', 'transferred', 'other'].map(statusKey => {
                 const info = currentStatusInfo[statusKey as keyof typeof currentStatusInfo];
@@ -763,7 +763,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
           {fSpecial && (
           <div className="form-group form-grid-full">
-            <label className="form-label">{fSpecial.label_si} {fSpecial.is_required ? '*' : ''}</label>
+            <label className="form-label">{t('form.specialInfo')} {fSpecial.is_required ? '*' : ''}</label>
             <textarea
               className="form-textarea"
               value={specialInformation}
@@ -776,7 +776,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
           {fOutside && (
           <div className="form-group form-grid-full">
             <label className="form-label">
-              {fOutside.label_si} {fOutside.is_required ? '*' : ''}
+              {t('form.outsideResident')} {fOutside.is_required ? '*' : ''}
             </label>
             <div className="radio-group">
               <label className="radio-option">
@@ -786,7 +786,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                   checked={outsideAreaHolder === true}
                   onChange={() => setOutsideAreaHolder(true)}
                 />
-                ඔව්
+                {t('form.yes')}
               </label>
               <label className="radio-option">
                 <input
@@ -795,7 +795,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                   checked={outsideAreaHolder === false}
                   onChange={() => setOutsideAreaHolder(false)}
                 />
-                නැත
+                {t('form.no')}
               </label>
             </div>
           </div>
@@ -806,7 +806,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
           <div className="form-grid-2" style={{ backgroundColor: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0', marginBottom: '20px' }}>
             {fOutAddr && (
             <div className="form-group form-grid-full">
-              <label className="form-label">{fOutAddr.label_si} {fOutAddr.is_required ? '*' : ''}</label>
+              <label className="form-label">{t('form.outsideAddress')} {fOutAddr.is_required ? '*' : ''}</label>
               <textarea
                 className="form-textarea"
                 value={outsideResidentialAddress}
@@ -817,7 +817,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
             )}
             {fOutLand && (
             <div className="form-group form-grid-full">
-              <label className="form-label">{fOutLand.label_si} {fOutLand.is_required ? '*' : ''}</label>
+              <label className="form-label">{t('form.landDetails')} {fOutLand.is_required ? '*' : ''}</label>
               <textarea
                 className="form-textarea"
                 value={landLocationDetails}
@@ -845,7 +845,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                   <div className="form-grid-2" style={{ padding: idx > 3 ? '0' : '20px', border: idx > 3 ? 'none' : '1px dashed #cbd5e1', borderRadius: '8px', marginTop: '10px' }}>
                     {customFields.map((field: any) => (
                       <div key={field.id} className="form-group">
-                        <label className="form-label">{field.label_si} {field.is_required ? '*' : ''}</label>
+                        <label className="form-label">{i18n.language === 'en' ? field.label_en : field.label_si} {field.is_required ? '*' : ''}</label>
                         {field.field_type === 'textarea' ? (
                           <textarea
                             className="form-textarea"
