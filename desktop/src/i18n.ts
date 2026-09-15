@@ -5,6 +5,21 @@ import { initReactI18next } from 'react-i18next';
 const resources = {
   en: {
     translation: {
+      confirm: {
+        discard: "Are you sure you want to discard unsaved changes?",
+        update: "To update this record",
+        save: "To save this new record",
+        areYouSure: "Are you sure?"
+      },
+      toast: {
+        updateSuccess: "Record updated successfully.",
+        saveSuccess: "Record saved successfully.",
+        nicExists: "This NIC is already in the system.",
+        firearmExists: "This Firearm Number is already in the system.",
+        saveFailed: "Failed to save record. Please try again.",
+        networkError: "Could not connect to data service."
+      },
+
       header: {
         republic: "Republic of Sri Lanka",
         secureSystem: "Secure Digital System",
@@ -68,6 +83,28 @@ const resources = {
         reset: "Reset Filters"
       },
       form: {
+        editRecordTitle: "01 Edit Record",
+        newRecordTitle: "01 New Licensee Record",
+        mandatoryInfo: "* Information with an asterisk is mandatory",
+        personalInfo: "Personal Information",
+        changePhoto: "Change Photo",
+        selectPhoto: "Select a Photo",
+        removePhoto: "Remove Photo",
+        firearmNumberPlaceholder: "Enter Firearm Number",
+        currentStatusSection: "Current Status & Other Info",
+        statusDate: "Date Status Changed",
+        statusRemarks: "Details and Remarks on Status",
+        detailsPlaceholder: "Enter details...",
+        currentAddressPlaceholder: "Enter current residential address",
+        landDetailsPlaceholder: "Enter details of lands or places in this jurisdiction",
+        selectEmpty: "-- Select --",
+        cancelEdit: "Cancel Edit",
+        updating: "Updating...",
+        updateRecord: "✓ Update Record",
+        delete: "Delete",
+        saving: "Saving...",
+        saveRecord: "✓ Save Record",
+
         mandatory: "* Mandatory fields",
         section1: "01 Personal Information",
         section2: "02 Birthdate & Age Info",
@@ -210,6 +247,21 @@ const resources = {
   },
   si: {
     translation: {
+      confirm: {
+        discard: "සුරැකී නොමැති වෙනස්කම් ඉවත් කිරීමට ඔබට විශ්වාසද?",
+        update: "මෙම වාර්තාව යාවත්කාලීන කිරීමට",
+        save: "මෙම නව වාර්තාව සුරැකීමට",
+        areYouSure: "ඔබට විශ්වාසද?"
+      },
+      toast: {
+        updateSuccess: "වාර්තාව සාර්ථකව යාවත්කාලීන කරන ලදී.",
+        saveSuccess: "වාර්තාව සාර්ථකව සුරකින ලදී.",
+        nicExists: "මෙම NIC අංකය දැනටමත් පද්ධතියේ ඇත.",
+        firearmExists: "මෙම ගිනිඅවි අංකය දැනටමත් පද්ධතියේ ඇත.",
+        saveFailed: "වාර්තාව සුරැකීමට නොහැකි විය. නැවත උත්සාහ කරන්න.",
+        networkError: "දත්ත සේවාව සමඟ සම්බන්ධ වීමට නොහැකි විය."
+      },
+
       header: {
         republic: "ශ්‍රී ලංකා ජනරජය | Republic of Sri Lanka",
         secureSystem: "ආරක්ෂිත ඩිජිටල් පද්ධතිය (Secure System)",
@@ -252,6 +304,28 @@ const resources = {
         reset: "Reset Filters"
       },
       form: {
+        editRecordTitle: "01 වාර්තාව සංස්කරණය",
+        newRecordTitle: "01 නව බලපත්‍රලාභී වාර්තාව",
+        mandatoryInfo: "* ලකුණ සහිත තොරතුරු අනිවාර්යයි",
+        personalInfo: "පුද්ගලික තොරතුරු",
+        changePhoto: "ඡායාරූපය වෙනස් කරන්න",
+        selectPhoto: "ඡායාරූපයක් තෝරන්න",
+        removePhoto: "ඡායාරූපය ඉවත් කරන්න",
+        firearmNumberPlaceholder: "ගිනිඅවි අංකය ඇතුළත් කරන්න",
+        currentStatusSection: "වර්තමාන තත්ත්වය සහ වෙනත් තොරතුරු",
+        statusDate: "තත්ත්වය වෙනස් වූ දිනය",
+        statusRemarks: "තත්ත්වය පිළිබඳ විස්තර සහ සටහන්",
+        detailsPlaceholder: "විස්තර ඇතුළත් කරන්න...",
+        currentAddressPlaceholder: "වර්තමාන පදිංචි ලිපිනය ඇතුළත් කරන්න",
+        landDetailsPlaceholder: "මෙම බලප්‍රදේශය තුළ පිහිටි ඉඩම් හෝ ස්ථාන විස්තර ඇතුළත් කරන්න",
+        selectEmpty: "-- තෝරන්න --",
+        cancelEdit: "සංස්කරණය අවලංගු කරන්න",
+        updating: "යාවත්කාලීන වෙමින් පවතී...",
+        updateRecord: "✓ වාර්තාව යාවත්කාලීන කරන්න",
+        delete: "මකන්න",
+        saving: "සුරැකෙමින් පවතී...",
+        saveRecord: "✓ වාර්තාව සුරකින්න",
+
         mandatory: "* ලකුණ සහිත තොරතුරු අනිවාර්යයි",
         section1: "01 පුද්ගලික තොරතුරු",
         section2: "02 උපන්දිනය සහ වයස් තොරතුරු",
@@ -360,6 +434,21 @@ const resources = {
   },
   ta: {
     translation: {
+      confirm: {
+        discard: "சேமிக்கப்படாத மாற்றங்களை நிராகரிக்க விரும்புகிறீர்களா?",
+        update: "இந்த பதிவை புதுப்பிக்க",
+        save: "இந்த புதிய பதிவை சேமிக்க",
+        areYouSure: "உறுதியாகவா?"
+      },
+      toast: {
+        updateSuccess: "பதிவு வெற்றிகரமாக புதுப்பிக்கப்பட்டது.",
+        saveSuccess: "பதிவு வெற்றிகரமாக சேமிக்கப்பட்டது.",
+        nicExists: "இந்த தேசிய அடையாள அட்டை எண் ஏற்கனவே সিস্টெமில் உள்ளது.",
+        firearmExists: "இந்த துப்பாக்கி எண் ஏற்கனவே সিস্টெமில் உள்ளது.",
+        saveFailed: "பதிவை சேமிக்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.",
+        networkError: "தரவு சேவையுடன் இணைக்க முடியவில்லை."
+      },
+
       header: {
         republic: "இலங்கை குடியரசு | Republic of Sri Lanka",
         secureSystem: "பாதுகாப்பான டிஜிட்டல் அமைப்பு",
@@ -390,6 +479,28 @@ const resources = {
         reset: "வடிகட்டிகளை மீட்டமை"
       },
       form: {
+        editRecordTitle: "01 பதிவை திருத்துக",
+        newRecordTitle: "01 புதிய உரிமதாரர் பதிவு",
+        mandatoryInfo: "* குறியிடப்பட்ட தகவல்கள் கட்டாயமாகும்",
+        personalInfo: "தனிப்பட்ட தகவல்கள்",
+        changePhoto: "புகைப்படத்தை மாற்றவும்",
+        selectPhoto: "புகைப்படத்தை தேர்ந்தெடுக்கவும்",
+        removePhoto: "புகைப்படத்தை அகற்றவும்",
+        firearmNumberPlaceholder: "துப்பாக்கி எண்ணை உள்ளிடுக",
+        currentStatusSection: "தற்போதைய நிலை மற்றும் பிற தகவல்கள்",
+        statusDate: "நிலை மாற்றப்பட்ட தேதி",
+        statusRemarks: "நிலை குறித்த விவரங்கள் மற்றும் குறிப்புகள்",
+        detailsPlaceholder: "விவரங்களை உள்ளிடுக...",
+        currentAddressPlaceholder: "தற்போதைய வசிப்பிட முகவரியை உள்ளிடுக",
+        landDetailsPlaceholder: "இந்த அதிகார வரம்பிற்கு உட்பட்ட நிலங்கள் அல்லது இடங்களின் விவரங்களை உள்ளிடுக",
+        selectEmpty: "-- தேர்ந்தெடுக்கவும் --",
+        cancelEdit: "திருத்தத்தை ரத்து செய்க",
+        updating: "புதுப்பிக்கப்படுகிறது...",
+        updateRecord: "✓ பதிவை புதுப்பிக்கவும்",
+        delete: "அழிக்கவும்",
+        saving: "சேமிக்கப்படுகிறது...",
+        saveRecord: "✓ பதிவை சேமிக்கவும்",
+
         mandatory: "* கட்டாய தகவல்கள்",
         section1: "01 தனிப்பட்ட தகவல்கள்",
         section2: "02 பிறந்த தேதி மற்றும் வயது விபரம்",

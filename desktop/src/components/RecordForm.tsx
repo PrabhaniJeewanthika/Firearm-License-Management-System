@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import api from '../services/api';
+import { useTranslation } from 'react-i18next';
 
 interface GNDivision {
   id: number;
@@ -32,6 +33,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
   onCancelEdit,
 }) => {
   // Form State
+  const { t, i18n } = useTranslation();
   const [fullName, setFullName] = useState('');
   const [nic, setNic] = useState('');
   const [address, setAddress] = useState('');
@@ -182,16 +184,16 @@ const RecordForm: React.FC<RecordFormProps> = ({
   const validate = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!fullName.trim()) newErrors.full_name = 'සම්පූර්ණ නම ඇතුළත් කරන්න.';
-    if (!nic.trim()) newErrors.nic = 'ජාතික හැඳුනුම්පත් අංකය ඇතුළත් කරන්න.';
-    if (!firearmNumber.trim()) newErrors.firearm_number = 'ගිනිඅවි අංකය ඇතුළත් කරන්න.';
-    if (!gnDivision) newErrors.gn_division = 'ග්‍රාම නිලධාරී කොට්ඨාසය තෝරන්න.';
-    if (!firearmType) newErrors.firearm_type = 'ගිනිඅවි වර්ගය තෝරන්න.';
+    if (!fullName.trim()) newErrors.full_name = t('errors.fullName');
+    if (!nic.trim()) newErrors.nic = t('errors.nic');
+    if (!firearmNumber.trim()) newErrors.firearm_number = t('errors.firearmNumber');
+    if (!gnDivision) newErrors.gn_division = t('errors.gnDivision');
+    if (!firearmType) newErrors.firearm_type = t('errors.firearmType');
 
     // Phone validation (SL format: 07XXXXXXXX)
     const phoneRegex = /^(?:0)\d{9}$/;
     if (telephone && !phoneRegex.test(telephone)) {
-      newErrors.telephone = 'වලංගු දුරකථන අංකයක් ඇතුළත් කරන්න. (උදා: 0771234567)';
+      newErrors.telephone = t('errors.telephone');
     }
 
     // DOB future date validation
@@ -199,10 +201,10 @@ const RecordForm: React.FC<RecordFormProps> = ({
       const dobDate = new Date(dateOfBirth);
       const today = new Date();
       if (dobDate > today) {
-        newErrors.date_of_birth = 'උපන්දිනය අනාගත දිනයක් විය නොහැක.';
+        newErrors.date_of_birth = t('errors.dobFuture');
       }
     } else {
-      newErrors.date_of_birth = 'උපන්දිනය ඇතුළත් කරන්න.';
+      newErrors.date_of_birth = t('errors.dob');
     }
 
     setErrors(newErrors);
@@ -211,7 +213,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
   const resetForm = (askConfirmation = true) => {
     if (askConfirmation && (fullName || nic || firearmNumber || photoPreview)) {
-      const confirmClear = window.confirm('සුරැකී නොමැති වෙනස්කම් ඉවත් කිරීමට ඔබට විශ්වාසද?');
+      const confirmClear = window.confirm(t('confirm.discard'));
       if (!confirmClear) return;
     }
 
@@ -270,8 +272,8 @@ const RecordForm: React.FC<RecordFormProps> = ({
       return;
     }
 
-    const actionText = editingRecord ? 'මෙම වාර්තාව යාවත්කාලීන කිරීමට' : 'මෙම නව වාර්තාව සුරැකීමට';
-    if (!window.confirm(`${actionText} ඔබට විශ්වාසද? (Are you sure you want to save this record?)`)) {
+    const actionText = editingRecord ? t('confirm.update') : t('confirm.save');
+    if (!window.confirm(`${actionText} ${t('confirm.areYouSure')}`)) {
       return;
     }
 
@@ -317,7 +319,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
         await api.put(`/records/${editingRecord.id}/`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        setSubmitSuccess('වාර්තාව සාර්ථකව යාවත්කාලීන කරන ලදී.');
+        setSubmitSuccess(t('toast.updateSuccess'));
         setTimeout(() => {
           onSaveSuccess();
         }, 1000);
@@ -325,7 +327,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
         await api.post('/records/', formData, {
           headers: { 'Content-Type': 'multipart/form-data' },
         });
-        setSubmitSuccess('වාර්තාව සාර්ථකව සුරකින ලදී.');
+        setSubmitSuccess(t('toast.saveSuccess'));
         resetForm(false);
         setTimeout(() => {
           onSaveSuccess();
@@ -336,14 +338,14 @@ const RecordForm: React.FC<RecordFormProps> = ({
       if (err.response?.data) {
         const data = err.response.data;
         if (data.nic) {
-          setSubmitError('මෙම NIC අංකය දැනටමත් පද්ධතියේ ඇත.');
+          setSubmitError(t('toast.nicExists'));
         } else if (data.firearm_number) {
-          setSubmitError('මෙම ගිනිඅවි අංකය දැනටමත් පද්ධතියේ ඇත.');
+          setSubmitError(t('toast.firearmExists'));
         } else {
-          setSubmitError('වාර්තාව සුරැකීමට නොහැකි විය. නැවත උත්සාහ කරන්න.');
+          setSubmitError(t('toast.saveFailed'));
         }
       } else {
-        setSubmitError('දත්ත සේවාව සමඟ සම්බන්ධ වීමට නොහැකි විය.');
+        setSubmitError(t('toast.networkError'));
       }
     } finally {
       setIsSubmitting(false);
@@ -354,9 +356,9 @@ const RecordForm: React.FC<RecordFormProps> = ({
     <div className="card" ref={formRef}>
       <div className="card-header-area">
         <div className="card-title">
-          {editingRecord ? '01 වාර්තාව සංස්කරණය' : '01 නව බලපත්‍රලාභී වාර්තාව'}
+          {editingRecord ? t('form.editRecordTitle') : t('form.newRecordTitle')}
         </div>
-        <div className="card-subtitle">* ලකුණ සහිත තොරතුරු අනිවාර්යයි</div>
+        <div className="card-subtitle">{t('form.mandatoryInfo')}</div>
       </div>
 
       {submitError && (
@@ -410,7 +412,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
         {/* Section 1: Personal Details */}
         <div className="form-section-header">
           <span className="section-num">01</span>
-          <span className="section-title">{(customSections && customSections.length > 0) ? customSections[0]?.title_si : 'පුද්ගලික තොරතුරු (Personal Information)'}</span>
+          <span className="section-title">{(customSections && customSections.length > 0) ? customSections[0]?.title_si : t('form.personalInfo')}</span>
         </div>
 
         {/* Photo Upload Section */}
@@ -440,7 +442,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 onClick={() => fileInputRef.current?.click()}
                 style={{ padding: '6px 12px', fontSize: '12px' }}
               >
-                {photoPreview ? 'ඡායාරූපය වෙනස් කරන්න' : 'ඡායාරූපයක් තෝරන්න'}
+                {photoPreview ? t('form.changePhoto') : t('form.selectPhoto')}
               </button>
               {photoPreview && (
                 <button
@@ -449,7 +451,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                   onClick={removePhoto}
                   style={{ padding: '6px 12px', fontSize: '12px', marginTop: '4px' }}
                 >
-                  ඡායාරූපය ඉවත් කරන්න
+                  {t('form.removePhoto')}
                 </button>
               )}
             </div>
@@ -460,13 +462,13 @@ const RecordForm: React.FC<RecordFormProps> = ({
         <div className="form-grid-2">
           {fFullName && (
           <div className="form-group form-grid-full">
-            <label className="form-label">{fFullName.label_si} {fFullName.is_required ? '*' : ''}</label>
+            <label className="form-label">{t('form.fullName').replace(' *', '')} {fFullName.is_required ? '*' : ''}</label>
             <input
               type="text"
               className="form-input"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              placeholder="උදා: කේ. ඒ. පෙරේරා"
+              placeholder={t('form.fullName').replace(' *', '')}
             />
             {errors.full_name && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.full_name}</span>}
           </div>
@@ -474,7 +476,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
           {fNic && (
           <div className="form-group">
-            <label className="form-label">{fNic.label_si} {fNic.is_required ? '*' : ''}</label>
+            <label className="form-label">{t('form.nic').replace(' *', '')} {fNic.is_required ? '*' : ''}</label>
             <input
               type="text"
               className="form-input"
@@ -488,7 +490,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
           {fTel && (
           <div className="form-group">
-            <label className="form-label">{fTel.label_si} {fTel.is_required ? '*' : ''}</label>
+            <label className="form-label">{t('form.telephone')} {fTel.is_required ? '*' : ''}</label>
             <input
               type="text"
               className="form-input"
@@ -502,7 +504,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
           {fWa && (
           <div className="form-group">
-            <label className="form-label">{fWa.label_si} {fWa.is_required ? '*' : ''}</label>
+            <label className="form-label">{t('form.whatsapp')} {fWa.is_required ? '*' : ''}</label>
             <input
               type="text"
               className="form-input"
@@ -515,25 +517,25 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
           {fAddr && (
           <div className="form-group form-grid-full">
-            <label className="form-label">{fAddr.label_si} {fAddr.is_required ? '*' : ''}</label>
+            <label className="form-label">{t('form.address')} {fAddr.is_required ? '*' : ''}</label>
             <textarea
               className="form-textarea"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="සම්පූර්ණ ලිපිනය ඇතුළත් කරන්න"
+              placeholder={t('form.address')}
             />
           </div>
           )}
 
           {fGn && (
           <div className="form-group">
-            <label className="form-label">{fGn.label_si} {fGn.is_required ? '*' : ''}</label>
+            <label className="form-label">{t('form.gnDivision').replace(' *', '')} {fGn.is_required ? '*' : ''}</label>
             <select
               className="form-select"
               value={gnDivision}
               onChange={(e) => setGnDivision(e.target.value)}
             >
-              <option value="">තෝරන්න</option>
+              <option value="">{t('form.select')}</option>
               {gnDivisions.map((gn) => (
                 <option key={gn.id} value={gn.id}>
                   {gn.name}
@@ -548,13 +550,13 @@ const RecordForm: React.FC<RecordFormProps> = ({
         {/* Section 2: Birthdate and Age */}
         <div className="form-section-header">
           <span className="section-num">02</span>
-          <span className="section-title">{(customSections && customSections.length > 1) ? customSections[1]?.title_si : 'උපන්දිනය සහ වයස් තොරතුරු (DOB & Age Info)'}</span>
+          <span className="section-title">{t('form.section2')}</span>
         </div>
         
         <div className="form-grid-2">
           {fDob && (
           <div className="form-group">
-            <label className="form-label">{fDob.label_si} {fDob.is_required ? '*' : ''}</label>
+            <label className="form-label">{t('form.dob').replace(' *', '')} {fDob.is_required ? '*' : ''}</label>
             <input
               type="date"
               className="form-input"
@@ -567,7 +569,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
           {f65 && (
           <div className="form-group">
-            <label className="form-label">{f65.label_si} {f65.is_required ? '*' : ''}</label>
+            <label className="form-label">{t('form.age65')} {f65.is_required ? '*' : ''}</label>
             <input
               type="date"
               className="form-input"
@@ -575,7 +577,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
               readOnly
               style={{ backgroundColor: '#f8fafc', cursor: 'not-allowed', fontWeight: 'bold', color: '#b45309' }}
             />
-            <span className="sub-text">ⓘ උපන්දිනය අනුව මෙම දිනය ස්වයංක්‍රීයව ගණනය වේ.</span>
+            <span className="sub-text">{t('form.ageHint')}</span>
           </div>
           )}
         </div>
@@ -583,22 +585,22 @@ const RecordForm: React.FC<RecordFormProps> = ({
         {/* Section 3: Firearm and License Info */}
         <div className="form-section-header">
           <span className="section-num">03</span>
-          <span className="section-title">{(customSections && customSections.length > 2) ? customSections[2]?.title_si : 'ගිනිඅවි සහ බලපත්‍ර තොරතුරු (Firearm & License Info)'}</span>
+          <span className="section-title">{t('form.section3')}</span>
         </div>
         
         <div className="form-grid-2">
           {fFtype && (
           <div className="form-group">
-            <label className="form-label">{fFtype.label_si} {fFtype.is_required ? '*' : ''}</label>
+            <label className="form-label">{t('form.firearmType').replace(' *', '')} {fFtype.is_required ? '*' : ''}</label>
             <select
               className="form-select"
               value={firearmType}
               onChange={(e) => setFirearmType(e.target.value)}
             >
-              <option value="">තෝරන්න</option>
+              <option value="">{t('form.select')}</option>
               {firearmTypes.map((ft) => (
                 <option key={ft.id} value={ft.id}>
-                  {ft.name_si}
+                  {i18n.language === 'en' ? ft.name_en : ft.name_si}
                 </option>
               ))}
             </select>
@@ -608,13 +610,13 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
           {fFnum && (
           <div className="form-group">
-            <label className="form-label">{fFnum.label_si} {fFnum.is_required ? '*' : ''}</label>
+            <label className="form-label">{t('form.firearmNumber').replace(' *', '')} {fFnum.is_required ? '*' : ''}</label>
             <input
               type="text"
               className="form-input"
               value={firearmNumber}
               onChange={(e) => setFirearmNumber(e.target.value)}
-              placeholder="ගිනිඅවි අංකය ඇතුළත් කරන්න"
+              placeholder={t('form.firearmNumberPlaceholder')}
             />
             {errors.firearm_number && <span style={{ color: 'var(--danger-color)', fontSize: '11px', marginTop: '4px' }}>{errors.firearm_number}</span>}
           </div>
@@ -669,7 +671,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                               [yearStr]: { ...prev[yearStr], renewed: false, reason: e.target.value }
                             }));
                           }}
-                          placeholder="අලුත් නොකිරීමට හේතුව මෙහි ඇතුළත් කරන්න (Reason for not renewing)"
+                          placeholder={t('form.reasonPlaceholder')}
                           style={{ maxWidth: '400px', backgroundColor: '#fef2f2', border: '1px solid #fca5a5' }}
                         />
                       </div>
@@ -685,7 +687,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
         {/* Section 4: Current Status and Other Info */}
         <div className="form-section-header">
           <span className="section-num">04</span>
-          <span className="section-title">{(customSections && customSections.length > 3) ? customSections[3]?.title_si : 'වර්තමාන තත්ත්වය සහ වෙනත් තොරතුරු (Current Status & Other Info)'}</span>
+          <span className="section-title">{(customSections && customSections.length > 3) ? customSections[3]?.title_si : t('form.currentStatusSection')}</span>
         </div>
 
         <div className="form-grid-2">
@@ -696,9 +698,9 @@ const RecordForm: React.FC<RecordFormProps> = ({
               {['deceased', 'transferred', 'other'].map(statusKey => {
                 const info = currentStatusInfo[statusKey as keyof typeof currentStatusInfo];
                 const labels: any = {
-                  deceased: 'මියගොස් ඇත',
-                  transferred: 'පවරා ඇත',
-                  other: 'වෙනත්'
+                  deceased: t('status.deceased'),
+                  transferred: t('status.transferred'),
+                  other: t('status.other')
                 };
                 return (
                   <div key={statusKey} style={{ border: '1px solid var(--border-color)', padding: '16px', borderRadius: '8px', backgroundColor: info.selected ? 'rgba(153, 27, 27, 0.05)' : 'transparent' }}>
@@ -720,7 +722,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                       <div style={{ display: 'grid', gridTemplateColumns: statusKey === 'deceased' ? '1fr' : '1fr 2fr', gap: '16px', marginTop: '12px', marginLeft: '32px' }}>
                         {statusKey !== 'deceased' && (
                           <div className="form-group" style={{ marginBottom: 0 }}>
-                            <label className="form-label" style={{ fontSize: '13px' }}>තත්ත්වය වෙනස් වූ දිනය</label>
+                            <label className="form-label" style={{ fontSize: '13px' }}>{t('form.statusDate')}</label>
                             <input
                               type="date"
                               className="form-input"
@@ -735,7 +737,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                           </div>
                         )}
                         <div className="form-group" style={{ marginBottom: 0 }}>
-                          <label className="form-label" style={{ fontSize: '13px' }}>තත්ත්වය පිළිබඳ විස්තර සහ සටහන්</label>
+                          <label className="form-label" style={{ fontSize: '13px' }}>{t('form.statusRemarks')}</label>
                           <input
                             type="text"
                             className="form-input"
@@ -746,7 +748,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                                 [statusKey]: { ...prev[statusKey as keyof typeof currentStatusInfo], reason: e.target.value }
                               }));
                             }}
-                            placeholder="විස්තර ඇතුළත් කරන්න..."
+                            placeholder={t('form.detailsPlaceholder')}
                           />
                         </div>
                       </div>
@@ -766,7 +768,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
               className="form-textarea"
               value={specialInformation}
               onChange={(e) => setSpecialInformation(e.target.value)}
-              placeholder="අවශ්‍ය වෙනත් නිල තොරතුරු මෙහි ඇතුළත් කරන්න..."
+              placeholder={t('form.specialInfo')}
             />
           </div>
           )}
@@ -809,7 +811,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 className="form-textarea"
                 value={outsideResidentialAddress}
                 onChange={(e) => setOutsideResidentialAddress(e.target.value)}
-                placeholder="වර්තමාන පදිංචි ලිපිනය ඇතුළත් කරන්න"
+                placeholder={t('form.currentAddressPlaceholder')}
               />
             </div>
             )}
@@ -820,7 +822,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 className="form-textarea"
                 value={landLocationDetails}
                 onChange={(e) => setLandLocationDetails(e.target.value)}
-                placeholder="මෙම බලප්‍රදේශය තුළ පිහිටි ඉඩම් හෝ ස්ථාන විස්තර ඇතුළත් කරන්න"
+                placeholder={t('form.landDetailsPlaceholder')}
               />
             </div>
             )}
@@ -852,8 +854,8 @@ const RecordForm: React.FC<RecordFormProps> = ({
                           />
                         ) : field.field_type === 'boolean' ? (
                           <div style={{ display: 'flex', gap: '16px' }}>
-                            <label><input type="radio" checked={customData[field.id] === true} onChange={() => setCustomData({...customData, [field.id]: true})} /> ඔව්</label>
-                            <label><input type="radio" checked={customData[field.id] === false} onChange={() => setCustomData({...customData, [field.id]: false})} /> නැත</label>
+                            <label><input type="radio" checked={customData[field.id] === true} onChange={() => setCustomData({...customData, [field.id]: true})} /> {t('form.yes')}</label>
+                            <label><input type="radio" checked={customData[field.id] === false} onChange={() => setCustomData({...customData, [field.id]: false})} /> {t('form.no')}</label>
                           </div>
                         ) : field.field_type === 'select' ? (
                           <select
@@ -861,7 +863,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                             value={customData[field.id] || ''}
                             onChange={(e) => setCustomData({...customData, [field.id]: e.target.value})}
                           >
-                            <option value="">-- තෝරන්න --</option>
+                            <option value="">{t('form.selectEmpty')}</option>
                             {(Array.isArray(field.options) ? field.options : []).map((opt: string, i: number) => (
                               <option key={i} value={opt}>{opt}</option>
                             ))}
@@ -932,14 +934,14 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 className="btn btn-secondary"
                 onClick={onCancelEdit}
               >
-                සංස්කරණය අවලංගු කරන්න
+                {t('form.cancelEdit')}
               </button>
               <button
                 type="submit"
                 className="btn btn-primary"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'යාවත්කාලීන වෙමින් පවතී...' : '✓ වාර්තාව යාවත්කාලීන කරන්න'}
+                {isSubmitting ? t('form.updating') : t('form.updateRecord')}
               </button>
             </>
           ) : (
@@ -949,14 +951,14 @@ const RecordForm: React.FC<RecordFormProps> = ({
                 className="btn btn-secondary"
                 onClick={() => resetForm(true)}
               >
-                මකන්න
+                {t('form.delete')}
               </button>
               <button
                 type="submit"
                 className="btn btn-primary"
                 disabled={isSubmitting}
               >
-                {isSubmitting ? 'සුරැකෙමින් පවතී...' : '✓ වාර්තාව සුරකින්න'}
+                {isSubmitting ? t('form.saving') : t('form.saveRecord')}
               </button>
             </>
           )}
