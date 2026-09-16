@@ -70,3 +70,6 @@ desktop/dist/
 
 # Media Files
 backend/media/
+
+# Google Cloud Credentials
+backend/google_credentials.json
