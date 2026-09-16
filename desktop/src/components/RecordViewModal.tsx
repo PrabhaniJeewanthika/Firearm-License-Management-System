@@ -189,6 +189,59 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
             );
           })}
 
+          {/* Attachments */}
+          {record.attachments && record.attachments.length > 0 && (
+            <>
+              <div className="form-section-divider">{t('form.attachmentsSection')} / Attachments</div>
+              <div className="detail-grid">
+                <div className="detail-item detail-value-full">
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
+                    {record.attachments.map((att: any) => {
+                      const fileUrl = att.file_url || att.file;
+                      const ext = (fileUrl || '').split('.').pop()?.toLowerCase();
+                      const icon = ['jpg','jpeg','png','gif','webp','bmp'].includes(ext || '') ? '🖼️'
+                        : ['pdf'].includes(ext || '') ? '📕'
+                        : ['doc','docx'].includes(ext || '') ? '📘'
+                        : ['xls','xlsx'].includes(ext || '') ? '📗'
+                        : '📎';
+                      return (
+                        <div key={att.id} style={{ border: '1px solid var(--border-color)', borderRadius: '8px', padding: '14px', backgroundColor: '#f8fafc' }}>
+                          <div style={{ fontSize: '24px', marginBottom: '6px' }}>{icon}</div>
+                          <div style={{ fontWeight: '600', fontSize: '13px', color: 'var(--text-primary)', marginBottom: '4px', wordBreak: 'break-word' }}>
+                            {att.file_name}
+                          </div>
+                          {att.uploaded_at && (
+                            <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                              {new Date(att.uploaded_at).toLocaleDateString()}
+                            </div>
+                          )}
+                          {fileUrl && (
+                            <a
+                              href={fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                display: 'inline-block',
+                                padding: '4px 12px',
+                                backgroundColor: 'var(--primary-color)',
+                                color: '#fff',
+                                borderRadius: '4px',
+                                fontSize: '12px',
+                                textDecoration: 'none',
+                                fontWeight: '600'
+                              }}
+                            >
+                              ⬇ {t('form.downloadAttachment')}
+                            </a>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
 
         </div>
         <div className="modal-footer">
