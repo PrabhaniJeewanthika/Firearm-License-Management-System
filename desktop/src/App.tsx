@@ -23,11 +23,9 @@ const MainApp: React.FC = () => {
 
   // Force Sinhala as the default language on mount if it's not set properly
   useEffect(() => {
-    const currentLang = i18n.language as string;
-    if (currentLang !== 'si' && currentLang !== 'en' && currentLang !== 'ta') {
-      i18n.changeLanguage('si');
-    } else if (!currentLang) {
-      i18n.changeLanguage('si');
+    const savedLang = localStorage.getItem('app_lang') || 'si';
+    if (i18n.language !== savedLang) {
+      i18n.changeLanguage(savedLang);
     }
   }, []);
 

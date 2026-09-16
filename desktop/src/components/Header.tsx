@@ -5,6 +5,7 @@ const Header: React.FC = () => {
 
   const changeLanguage = (lng: string) => {
     i18n.changeLanguage(lng);
+    localStorage.setItem('app_lang', lng);
   };
 
   return (
