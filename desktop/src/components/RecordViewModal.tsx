@@ -23,6 +23,9 @@ const getImageUrl = (path: string | null) => {
   baseUrl = baseUrl.replace(/\/api\/?$/, '');
   if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
   if (!cleanPath.startsWith('/')) cleanPath = '/' + cleanPath;
+  if (!cleanPath.startsWith('/media/')) {
+    cleanPath = '/media' + cleanPath;
+  }
   return baseUrl ? `${baseUrl}${cleanPath}` : cleanPath;
 };
 
