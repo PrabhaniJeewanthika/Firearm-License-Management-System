@@ -75,6 +75,17 @@ const RecordForm: React.FC<RecordFormProps> = ({
   const [outsideResidentialAddress, setOutsideResidentialAddress] = useState('');
   const [landLocationDetails, setLandLocationDetails] = useState('');
 
+  // Attachments state
+  interface AttachmentRow {
+    id?: number;           // existing attachment id (edit mode)
+    name: string;          // user-typed display name
+    file: File | null;     // newly selected file
+    existingUrl?: string;  // URL of already-saved file
+    existingFileName?: string; // original filename on server
+    markedForDelete: boolean;
+  }
+  const [attachments, setAttachments] = useState<AttachmentRow[]>([]);
+
   // Dynamic Custom Fields State
   const [customData, setCustomData] = useState<Record<string, any>>({});
 
@@ -82,6 +93,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const attachmentFileRefs = useRef<(HTMLInputElement | null)[]>([]);
 
   // Errors State
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -134,6 +146,17 @@ const RecordForm: React.FC<RecordFormProps> = ({
       setOutsideAreaHolder(editingRecord.outside_area_holder || false);
       setOutsideResidentialAddress(editingRecord.outside_residential_address || '');
       setLandLocationDetails(editingRecord.land_location_details || '');
+
+      // Load existing attachments
+      const existingAtts: AttachmentRow[] = (editingRecord.attachments || []).map((att: any) => ({
+        id: att.id,
+        name: att.file_name,
+        file: null,
+        existingUrl: att.file_url,
+        existingFileName: att.file_name,
+        markedForDelete: false,
+      }));
+      setAttachments(existingAtts);
 
       setCustomData(editingRecord.custom_data || {});
 
@@ -250,6 +273,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
     setOutsideAreaHolder(false);
     setOutsideResidentialAddress('');
     setLandLocationDetails('');
+    setAttachments([]);
     setCustomData({});
     setPhotoFile(null);
     setPhotoPreview(null);
@@ -313,6 +337,23 @@ const RecordForm: React.FC<RecordFormProps> = ({
     formData.append('outside_residential_address', outsideResidentialAddress);
     formData.append('land_location_details', landLocationDetails);
     formData.append('custom_data', JSON.stringify(customData));
+
+    // Handle attachments: deletions + new uploads
+    const deleteIds = attachments
+      .filter(a => a.markedForDelete && a.id)
+      .map(a => a.id)
+      .join(',');
+    if (deleteIds) formData.append('delete_attachment_ids', deleteIds);
+
+    let attIdx = 0;
+    attachments.forEach(a => {
+      if (a.markedForDelete) return;
+      if (a.file) {
+        formData.append(`attachment_file_${attIdx}`, a.file);
+        formData.append(`attachment_name_${attIdx}`, a.name);
+        attIdx++;
+      }
+    });
 
     try {
       if (editingRecord) {
@@ -770,6 +811,104 @@ const RecordForm: React.FC<RecordFormProps> = ({
             />
           </div>
           )}
+
+          {/* Attachments Section */}
+          <div className="form-group form-grid-full">
+            <label className="form-label" style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '4px' }}>
+              📎 {t('form.attachmentsSection')}
+            </label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px' }}>
+              {attachments.map((att, idx) => {
+                if (att.markedForDelete) return null;
+                return (
+                  <div key={idx} style={{ border: '1px solid var(--border-color)', borderRadius: '8px', padding: '16px', backgroundColor: '#f8fafc', position: 'relative' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                      <span style={{ fontWeight: '600', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                        📎 {t('form.attachmentsSection')} {attachments.filter(a => !a.markedForDelete).indexOf(att) + 1}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setAttachments(prev => prev.map((a, i) => i === idx ? { ...a, markedForDelete: true } : a));
+                        }}
+                        style={{ background: 'none', border: '1px solid #fca5a5', color: '#dc2626', borderRadius: '4px', padding: '2px 10px', fontSize: '12px', cursor: 'pointer' }}
+                      >
+                        {t('form.removeAttachment')}
+                      </button>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="form-label" style={{ fontSize: '13px' }}>{t('form.attachmentName')}</label>
+                        <input
+                          type="text"
+                          className="form-input"
+                          value={att.name}
+                          onChange={(e) => setAttachments(prev => prev.map((a, i) => i === idx ? { ...a, name: e.target.value } : a))}
+                          placeholder={t('form.attachmentNamePlaceholder')}
+                        />
+                      </div>
+                      <div className="form-group" style={{ marginBottom: 0 }}>
+                        <label className="form-label" style={{ fontSize: '13px' }}>{t('form.attachmentFile')}</label>
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                          <input
+                            type="file"
+                            accept="*/*"
+                            ref={el => { attachmentFileRefs.current[idx] = el; }}
+                            style={{ display: 'none' }}
+                            onChange={(e) => {
+                              const f = e.target.files?.[0] || null;
+                              setAttachments(prev => prev.map((a, i) => i === idx ? { ...a, file: f } : a));
+                            }}
+                          />
+                          <button
+                            type="button"
+                            className="btn btn-secondary"
+                            onClick={() => attachmentFileRefs.current[idx]?.click()}
+                            style={{ padding: '6px 12px', fontSize: '12px' }}
+                          >
+                            {att.file ? t('form.attachmentFileChange') : att.existingUrl ? t('form.attachmentFileChange') : t('form.attachmentFile')}
+                          </button>
+                          {att.file && (
+                            <span style={{ fontSize: '12px', color: '#166534', fontWeight: '500' }}>✓ {att.file.name}</span>
+                          )}
+                          {!att.file && att.existingUrl && (
+                            <a
+                              href={att.existingUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{ fontSize: '12px', color: 'var(--primary-color)', textDecoration: 'underline' }}
+                            >
+                              📄 {t('form.attachmentExisting')}
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+              <button
+                type="button"
+                onClick={() => setAttachments(prev => [...prev, { name: '', file: null, markedForDelete: false }])}
+                style={{
+                  border: '2px dashed var(--border-color)',
+                  borderRadius: '8px',
+                  padding: '12px',
+                  background: 'none',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  color: 'var(--primary-color)',
+                  fontWeight: '600',
+                  width: '100%',
+                  transition: 'background 0.2s'
+                }}
+                onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#f0f9ff')}
+                onMouseLeave={e => (e.currentTarget.style.backgroundColor = 'transparent')}
+              >
+                {t('form.addAttachment')}
+              </button>
+            </div>
+          </div>
 
           {fOutside && (
           <div className="form-group form-grid-full">

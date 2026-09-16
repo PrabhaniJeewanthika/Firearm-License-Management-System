@@ -67,3 +67,18 @@ class LicenseRecord(models.Model):
 
     def __str__(self):
         return f"{self.full_name} ({self.nic}) - {self.firearm_number}"
+
+
+class RecordAttachment(models.Model):
+    """File attachments linked to a LicenseRecord."""
+    record = models.ForeignKey(
+        LicenseRecord,
+        on_delete=models.CASCADE,
+        related_name='attachments'
+    )
+    file_name = models.CharField(max_length=255)          # user-typed display name
+    file = models.FileField(upload_to='attachments/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.file_name} ({self.record.nic})"
