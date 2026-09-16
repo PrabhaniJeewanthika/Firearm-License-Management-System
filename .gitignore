@@ -67,3 +67,6 @@ dist-ssr/
 web-build/
 desktop/release/
 desktop/dist/
+
+# Media Files
+backend/media/
