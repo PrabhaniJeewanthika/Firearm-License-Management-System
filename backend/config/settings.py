@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'django_filters',
+    'cloudinary',
+    'cloudinary_storage',
     
     # Local apps
     'accounts',
@@ -172,3 +174,8 @@ SIMPLE_JWT = {
     'UPDATE_LAST_LOGIN': True,
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
+
+# Cloudinary Storage Configuration
+if os.getenv('CLOUDINARY_URL'):
+    DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
