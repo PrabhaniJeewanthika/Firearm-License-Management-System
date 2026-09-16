@@ -7,11 +7,16 @@ import { useAuth } from '../context/AuthContext';
 import './Login.css';
 
 const Login: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+    localStorage.setItem('language', lng);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +44,28 @@ const Login: React.FC = () => {
 
   return (
     <div className="login-container">
+      <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 10 }}>
+        <div className="language-selector">
+          <button 
+            className={`lang-btn ${i18n.language === 'en' ? 'active' : ''}`}
+            onClick={() => changeLanguage('en')}
+          >
+            EN
+          </button>
+          <button 
+            className={`lang-btn ${i18n.language === 'si' ? 'active' : ''}`}
+            onClick={() => changeLanguage('si')}
+          >
+            සිං
+          </button>
+          <button 
+            className={`lang-btn ${i18n.language === 'ta' ? 'active' : ''}`}
+            onClick={() => changeLanguage('ta')}
+          >
+            தமிழ்
+          </button>
+        </div>
+      </div>
       <div className="login-card">
         <div className="login-header">
           <h2 style={{fontSize: '22px'}}>{t('header.secretariat') || 'Panduwasnuwara Divisional Secretariat'}</h2>
