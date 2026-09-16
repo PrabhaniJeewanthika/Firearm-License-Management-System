@@ -12,13 +12,16 @@ interface RecordViewModalProps {
 
 const getImageUrl = (path: string | null) => {
   if (!path) return null;
+  // If it's a blob url for a newly selected file, don't modify it
+  if (path.startsWith('blob:')) return path;
+  
+  // If it's already a full HTTP URL (like Cloudinary), return it directly
+  if (path.startsWith('http://') || path.startsWith('https://')) {
+    // Exception: If the backend returns its own absolute URL, we might want to let it pass
+    return path;
+  }
+
   let cleanPath = path;
-  try {
-    if (path.startsWith('http')) {
-      const url = new URL(path);
-      cleanPath = url.pathname;
-    }
-  } catch (e) {}
   let baseUrl = api.defaults.baseURL || '';
   baseUrl = baseUrl.replace(/\/api\/?$/, '');
   if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
