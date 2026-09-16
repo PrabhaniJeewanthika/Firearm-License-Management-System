@@ -223,7 +223,7 @@ const resources = {
         authenticating: "තහවුරු කරමින්...",
         loginBtn: "ඇතුල් වන්න",
         loginError: "පරිශීලක නාමය හෝ මුරපදය වැරදියි.",
-
+      },
       confirm: {
         discard: "සුරැකී නොමැති වෙනස්කම් ඉවත් කිරීමට ඔබට විශ්වාසද?",
         update: "මෙම වාර්තාව යාවත්කාලීන කිරීමට",
@@ -590,7 +590,6 @@ const resources = {
       }
     }
   }
-}
 };
 
 i18n
