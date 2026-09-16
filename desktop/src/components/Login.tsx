@@ -67,9 +67,14 @@ const Login: React.FC = () => {
         </div>
       </div>
       <div className="login-card">
-        <div className="login-header">
-          <h2 style={{fontSize: '22px'}}>{t('header.secretariat') || 'Panduwasnuwara Divisional Secretariat'}</h2>
-          <p>{t('header.title') || 'Firearm License Data Management System'}</p>
+        <div className="login-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <img 
+            src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Emblem_of_Sri_Lanka.svg" 
+            alt="Sri Lanka State Emblem" 
+            style={{ width: '80px', marginBottom: '15px' }} 
+          />
+          <h2 style={{fontSize: '22px', textAlign: 'center'}}>{t('header.secretariat') || 'Panduwasnuwara Divisional Secretariat'}</h2>
+          <p style={{ textAlign: 'center' }}>{t('header.title') || 'Firearm License Data Management System'}</p>
         </div>
         
         <form onSubmit={handleSubmit} className="login-form">
