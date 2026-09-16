@@ -301,7 +301,9 @@ const MainApp: React.FC = () => {
       }));
 
       // Base URL for images
-      const baseUrl = api.defaults.baseURL?.replace('/api', '') || '';
+      let baseUrl = api.defaults.baseURL || '';
+      baseUrl = baseUrl.replace(/\/api\/?$/, '');
+      if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
 
       for (let i = 0; i < allRecords.length; i++) {
         const row = allRecords[i];
@@ -379,7 +381,19 @@ const MainApp: React.FC = () => {
         // Add Image
         if (row.photo) {
           try {
-            const photoUrl = row.photo.startsWith('http') ? row.photo : `${baseUrl}${row.photo.startsWith('/') ? '' : '/'}${row.photo}`;
+            let cleanPath = row.photo;
+            try {
+              if (row.photo.startsWith('http')) {
+                const urlObj = new URL(row.photo);
+                cleanPath = urlObj.pathname;
+              }
+            } catch (e) {}
+            
+            let photoUrl = cleanPath;
+            if (baseUrl) {
+              photoUrl = `${baseUrl}${cleanPath.startsWith('/') ? '' : '/'}${cleanPath}`;
+            }
+
             const response = await fetch(photoUrl);
             const blob = await response.blob();
             const arrayBuffer = await blob.arrayBuffer();
