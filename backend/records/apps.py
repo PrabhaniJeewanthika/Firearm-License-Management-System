@@ -5,4 +5,4 @@ class RecordsConfig(AppConfig):
     name = 'records'
 
     def ready(self):
-        import records.signals
+        from . import signals
