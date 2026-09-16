@@ -107,13 +107,12 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
                     // Dependency check
                     if (field.depends_on) {
                       const parentVal = getFieldValueById(field.depends_on);
-                      if (
-                        String(parentVal) !== String(field.depends_on_value) &&
-                        field.depends_on_value !== 'true'
-                      ) {
-                        if (!(field.depends_on_value === 'true' && parentVal === t('form.yes'))) {
-                          return null;
-                        }
+                      if (field.depends_on_value === 'true') {
+                        // Boolean field: parent must be truthy / Yes
+                        const isTruthy = parentVal === true || parentVal === t('form.yes') || parentVal === 'Yes' || parentVal === 'ඔව්' || parentVal === 'ஆம்';
+                        if (!isTruthy) return null;
+                      } else {
+                        if (String(parentVal) !== String(field.depends_on_value)) return null;
                       }
                     }
 
