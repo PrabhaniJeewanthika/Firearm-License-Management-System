@@ -12,7 +12,6 @@ interface RecordViewModalProps {
 
 const getImageUrl = (path: string | null) => {
   if (!path) return null;
-  
   let cleanPath = path;
   try {
     if (path.startsWith('http')) {
@@ -20,14 +19,23 @@ const getImageUrl = (path: string | null) => {
       cleanPath = url.pathname;
     }
   } catch (e) {}
-  
   let baseUrl = api.defaults.baseURL || '';
   baseUrl = baseUrl.replace(/\/api\/?$/, '');
   if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
   if (!cleanPath.startsWith('/')) cleanPath = '/' + cleanPath;
-  
   return baseUrl ? `${baseUrl}${cleanPath}` : cleanPath;
 };
+
+const SectionDivider: React.FC<{ label: string }> = ({ label }) => (
+  <div className="form-section-divider" style={{ marginTop: '20px', marginBottom: '10px' }}>{label}</div>
+);
+
+const DetailRow: React.FC<{ label: string; value: React.ReactNode; full?: boolean }> = ({ label, value, full }) => (
+  <div className={`detail-item${full ? ' detail-value-full' : ''}`}>
+    <div className="detail-label">{label}</div>
+    <div className="detail-value">{value}</div>
+  </div>
+);
 
 const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClose, renewalYears = [], customSections = [] }) => {
   const { t } = useTranslation();
@@ -37,19 +45,11 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
     if (field.system_name === 'gn_division') return record.gn_division_detail?.name;
     if (field.system_name === 'firearm_type') return record.firearm_type_detail?.name_si;
     if (field.system_name === 'outside_area_holder') return record.outside_area_holder ? t('form.yes') : t('form.no');
-    
-    if (field.system_name) {
-      return record[field.system_name];
-    }
-    
+    if (field.system_name) return record[field.system_name];
     let value = record.custom_data?.[field.id];
     if (value === undefined || value === null || value === '') return null;
-    
-    if (field.field_type === 'boolean') {
-      value = value ? t('form.yes') : t('form.no');
-    } else if (field.field_type === 'checkbox' && Array.isArray(value)) {
-      value = value.join(', ');
-    }
+    if (field.field_type === 'boolean') value = value ? t('form.yes') : t('form.no');
+    else if (field.field_type === 'checkbox' && Array.isArray(value)) value = value.join(', ');
     return value;
   };
 
@@ -63,15 +63,21 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
 
   if (!isOpen || !record) return null;
 
+  const hasStatusSelected = ['deceased', 'transferred', 'other'].some(
+    k => record.current_status_info?.[k]?.selected
+  );
+
   return (
     <div className="modal-overlay">
-      <div className="modal-content">
+      <div className="modal-content" style={{ maxWidth: '820px' }}>
         <div className="modal-header">
           <h2>{t('view.recordDetails')}</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer', color: '#64748b' }}>&times;</button>
         </div>
+
         <div className="modal-body">
-          {/* Photo Section */}
+
+          {/* ── Photo ── */}
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
             {record.photo ? (
               <img
@@ -87,23 +93,27 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
             )}
           </div>
 
-          {/* Personal Information */}
-           {customSections && customSections.map((section: any) => {
+          {/* ── Dynamic custom sections (all fields except specially-handled ones) ── */}
+          {customSections && customSections.map((section: any) => {
+            const regularFields = section.fields?.filter((f: any) =>
+              !['photo', 'renewal_history', 'current_status_info'].includes(f.system_name)
+            ) ?? [];
+
             return (
               <React.Fragment key={section.id}>
-                <div className="form-section-divider">{section.title_si} / {section.title_en}</div>
+                <SectionDivider label={`${section.title_si} / ${section.title_en}`} />
                 <div className="detail-grid">
-                  {section.fields?.map((field: any) => {
-                    if (['photo', 'renewal_history', 'current_status_info'].includes(field.system_name)) return null; // Handled specially or avoid object render crashes
-
+                  {regularFields.map((field: any) => {
+                    // Dependency check
                     if (field.depends_on) {
                       const parentVal = getFieldValueById(field.depends_on);
-                      // Exact string match for conditionals for view
-                      if (String(parentVal) !== String(field.depends_on_value) && field.depends_on_value !== 'true') {
-                          // Handle boolean special case
-                          if (!(field.depends_on_value === 'true' && parentVal === t('form.yes'))) {
-                             return null;
-                          }
+                      if (
+                        String(parentVal) !== String(field.depends_on_value) &&
+                        field.depends_on_value !== 'true'
+                      ) {
+                        if (!(field.depends_on_value === 'true' && parentVal === t('form.yes'))) {
+                          return null;
+                        }
                       }
                     }
 
@@ -111,7 +121,10 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
                     if (value === null || value === '' || value === undefined) return null;
 
                     return (
-                      <div key={field.id} className={`detail-item ${['textarea', 'image'].includes(field.field_type) ? 'detail-value-full' : ''}`}>
+                      <div
+                        key={field.id}
+                        className={`detail-item ${['textarea', 'image'].includes(field.field_type) ? 'detail-value-full' : ''}`}
+                      >
                         <div className="detail-label">{field.label_si} / {field.label_en}</div>
                         <div className="detail-value" style={{ whiteSpace: ['textarea'].includes(field.field_type) ? 'pre-wrap' : 'normal' }}>
                           {value}
@@ -121,78 +134,175 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
                   })}
                 </div>
 
-                {/* Special injections */}
-                {section.title_en === 'Firearm and License Information' && (
+                {/* ── Renewal History Table (injected after Firearm section) ── */}
+                {section.title_en === 'Firearm and License Information' && renewalYears.length > 0 && (
                   <>
-                    <div className="form-section-divider">{t('form.renewal').replace(' *', '')}</div>
+                    <SectionDivider label={`${t('form.renewal').replace(' *', '')} / License Renewal`} />
                     <div className="detail-grid">
                       <div className="detail-item detail-value-full">
-                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '16px' }}>
-                          {renewalYears.map(ry => {
-                            const yearStr = String(ry.year);
-                            const info = record.renewal_history?.[yearStr];
-                            const isRenewed = info?.renewed ?? false;
-                            const reason = info?.reason ?? '';
-                            return (
-                              <div key={ry.id} style={{ padding: '12px', border: '1px solid var(--border-color)', borderRadius: '6px', backgroundColor: isRenewed ? '#f0fdf4' : '#fafaf9' }}>
-                                <div style={{ fontWeight: 'bold', fontSize: '14px', color: isRenewed ? '#166534' : '#57534e' }}>
-                                    {ry.year} - {isRenewed ? t('status.renewed') : t('status.not_renewed')}
-                                </div>
-                                {!isRenewed && reason && (
-                                  <div style={{ marginTop: '8px', fontSize: '12px', color: '#991b1b' }}>
-                                    <strong>{t('form.statusReason')}:</strong> {reason}
-                                  </div>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
+                        <table style={{
+                          width: '100%',
+                          borderCollapse: 'collapse',
+                          fontSize: '14px',
+                          border: '1px solid var(--border-color)',
+                          borderRadius: '8px',
+                          overflow: 'hidden'
+                        }}>
+                          <thead>
+                            <tr style={{ backgroundColor: 'var(--bg-secondary, #f1f5f9)' }}>
+                              <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: '600', borderBottom: '1px solid var(--border-color)', width: '120px' }}>
+                                වර්ෂය / Year
+                              </th>
+                              <th style={{ padding: '10px 16px', textAlign: 'center', fontWeight: '600', borderBottom: '1px solid var(--border-color)', width: '100px' }}>
+                                තත්ත්වය / Status
+                              </th>
+                              <th style={{ padding: '10px 16px', textAlign: 'left', fontWeight: '600', borderBottom: '1px solid var(--border-color)' }}>
+                                හේතුව / Reason
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {renewalYears.map((ry, idx) => {
+                              const yearStr = String(ry.year);
+                              const info = record.renewal_history?.[yearStr];
+                              const isRenewed = info?.renewed ?? false;
+                              const reason = info?.reason ?? '';
+                              return (
+                                <tr
+                                  key={ry.id}
+                                  style={{
+                                    backgroundColor: isRenewed
+                                      ? 'rgba(22, 101, 52, 0.04)'
+                                      : idx % 2 === 0 ? '#fff' : '#fafaf9',
+                                    borderBottom: '1px solid var(--border-color)'
+                                  }}
+                                >
+                                  <td style={{ padding: '10px 16px', fontWeight: '600', color: 'var(--text-primary)' }}>
+                                    {ry.year}
+                                  </td>
+                                  <td style={{ padding: '10px 16px', textAlign: 'center' }}>
+                                    {isRenewed ? (
+                                      <span style={{
+                                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                                        width: '28px', height: '28px', borderRadius: '50%',
+                                        backgroundColor: '#dcfce7', color: '#166534',
+                                        fontSize: '16px', fontWeight: 'bold'
+                                      }}>✓</span>
+                                    ) : (
+                                      <span style={{
+                                        display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                                        width: '28px', height: '28px', borderRadius: '50%',
+                                        backgroundColor: '#fee2e2', color: '#991b1b',
+                                        fontSize: '16px', fontWeight: 'bold'
+                                      }}>✗</span>
+                                    )}
+                                  </td>
+                                  <td style={{ padding: '10px 16px', color: isRenewed ? '#166534' : '#991b1b', fontSize: '13px' }}>
+                                    {isRenewed
+                                      ? t('status.renewed')
+                                      : reason
+                                        ? reason
+                                        : <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>—</span>
+                                    }
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
                       </div>
                     </div>
                   </>
                 )}
 
+                {/* ── Current Status (injected after status section) ── */}
                 {section.title_en === 'Current Status and Other Information' && (
                   <>
-                    <div className="form-section-divider">{t('form.section4').replace('04 ', '')}</div>
+                    <SectionDivider label={`${t('form.currentStatus')} / Current Status`} />
                     <div className="detail-grid">
-                      {['deceased', 'transferred', 'other'].map((statusKey) => {
-                        const info = record.current_status_info?.[statusKey];
-                        if (!info || !info.selected) return null;
-                        return (
-                          <React.Fragment key={statusKey}>
-                            <div className="detail-item detail-value-full" style={{ backgroundColor: 'var(--bg-color)', padding: '16px', borderRadius: '8px', border: '1px solid var(--border-color)' }}>
-                              <div className="detail-label" style={{ fontSize: '15px', color: 'var(--state-maroon)', marginBottom: '12px' }}>{t(`status.${statusKey}`)}</div>
+                      {hasStatusSelected ? (
+                        ['deceased', 'transferred', 'other'].map(statusKey => {
+                          const info = record.current_status_info?.[statusKey];
+                          if (!info || !info.selected) return null;
+                          const statusColors: Record<string, string> = {
+                            deceased: '#991b1b',
+                            transferred: '#1e40af',
+                            other: '#92400e'
+                          };
+                          const statusBg: Record<string, string> = {
+                            deceased: '#fff1f2',
+                            transferred: '#eff6ff',
+                            other: '#fffbeb'
+                          };
+                          return (
+                            <div
+                              key={statusKey}
+                              className="detail-item detail-value-full"
+                              style={{
+                                backgroundColor: statusBg[statusKey] || '#f8fafc',
+                                padding: '16px',
+                                borderRadius: '8px',
+                                border: `1px solid ${statusColors[statusKey]}40`
+                              }}
+                            >
+                              <div style={{ fontWeight: '700', fontSize: '15px', color: statusColors[statusKey], marginBottom: '12px' }}>
+                                ⚑ {t(`status.${statusKey}`)}
+                              </div>
                               <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px' }}>
                                 <div>
                                   <div className="detail-label" style={{ fontSize: '12px' }}>{t('form.statusModificationDate')}</div>
-                                  <div className="detail-value">{info.date || '-'}</div>
+                                  <div className="detail-value">{info.date || '—'}</div>
                                 </div>
                                 <div>
                                   <div className="detail-label" style={{ fontSize: '12px' }}>{t('form.statusReason')}</div>
-                                  <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{info.reason || '-'}</div>
+                                  <div className="detail-value" style={{ whiteSpace: 'pre-wrap' }}>{info.reason || '—'}</div>
                                 </div>
                               </div>
                             </div>
-                          </React.Fragment>
-                        );
-                      })}
-                      {(!record.current_status_info || !['deceased', 'transferred', 'other'].some(k => record.current_status_info?.[k]?.selected)) && (
-                         <div className="detail-item detail-value-full">
-                            <div className="detail-value" style={{ fontWeight: '600' }}>{t('status.active')}</div>
-                         </div>
+                          );
+                        })
+                      ) : (
+                        <div className="detail-item detail-value-full">
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '8px 16px', backgroundColor: '#dcfce7', borderRadius: '6px', color: '#166534', fontWeight: '600', fontSize: '14px' }}>
+                            <span>✓</span> {t('status.active')}
+                          </div>
+                        </div>
                       )}
                     </div>
+
+                    {/* Outside area holder */}
+                    {record.outside_area_holder && (
+                      <>
+                        <SectionDivider label={`${t('form.outsideResident')}`} />
+                        <div className="detail-grid">
+                          {record.outside_residential_address && (
+                            <DetailRow
+                              label={`${t('form.outsideAddress')}`}
+                              value={<span style={{ whiteSpace: 'pre-wrap' }}>{record.outside_residential_address}</span>}
+                              full
+                            />
+                          )}
+                          {record.land_location_details && (
+                            <DetailRow
+                              label={`${t('form.landDetails')}`}
+                              value={<span style={{ whiteSpace: 'pre-wrap' }}>{record.land_location_details}</span>}
+                              full
+                            />
+                          )}
+                        </div>
+                      </>
+                    )}
                   </>
                 )}
+
               </React.Fragment>
             );
           })}
 
-          {/* Attachments */}
+          {/* ── Attachments ── */}
           {record.attachments && record.attachments.length > 0 && (
             <>
-              <div className="form-section-divider">{t('form.attachmentsSection')} / Attachments</div>
+              <SectionDivider label={`${t('form.attachmentsSection')} / Attachments`} />
               <div className="detail-grid">
                 <div className="detail-item detail-value-full">
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
@@ -244,6 +354,7 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
           )}
 
         </div>
+
         <div className="modal-footer">
           <button className="btn btn-secondary" onClick={onClose}>
             {t('view.close')}
