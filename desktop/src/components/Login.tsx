@@ -7,11 +7,16 @@ import { useAuth } from '../context/AuthContext';
 import './Login.css';
 
 const Login: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { login } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const changeLanguage = (lng: string) => {
+    i18n.changeLanguage(lng);
+    localStorage.setItem('language', lng);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,6 +44,20 @@ const Login: React.FC = () => {
 
   return (
     <div className="login-container">
+      <div style={{ position: 'absolute', top: '20px', right: '20px', display: 'flex', gap: '10px' }}>
+        <button 
+          onClick={() => changeLanguage('si')} 
+          style={{ background: i18n.language === 'si' ? '#0f172a' : '#e2e8f0', color: i18n.language === 'si' ? 'white' : '#0f172a', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+        >
+          සිංහල
+        </button>
+        <button 
+          onClick={() => changeLanguage('en')} 
+          style={{ background: i18n.language === 'en' ? '#0f172a' : '#e2e8f0', color: i18n.language === 'en' ? 'white' : '#0f172a', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
+        >
+          English
+        </button>
+      </div>
       <div className="login-card">
         <div className="login-header">
           <h2 style={{fontSize: '22px'}}>{t('header.secretariat') || 'Panduwasnuwara Divisional Secretariat'}</h2>
