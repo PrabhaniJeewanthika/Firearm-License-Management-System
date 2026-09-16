@@ -23,6 +23,24 @@ interface RecordFormProps {
   onCancelEdit: () => void;
 }
 
+const getImageUrl = (path: string | null) => {
+  if (!path) return null;
+  let cleanPath = path;
+  // If it's a blob url for a newly selected file, don't modify it
+  if (path.startsWith('blob:')) return path;
+  try {
+    if (path.startsWith('http')) {
+      const url = new URL(path);
+      cleanPath = url.pathname;
+    }
+  } catch (e) {}
+  let baseUrl = api.defaults.baseURL || '';
+  baseUrl = baseUrl.replace(/\/api\/?$/, '');
+  if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
+  if (!cleanPath.startsWith('/')) cleanPath = '/' + cleanPath;
+  return baseUrl ? `${baseUrl}${cleanPath}` : cleanPath;
+};
+
 const RecordForm: React.FC<RecordFormProps> = ({
   gnDivisions,
   firearmTypes,
@@ -462,7 +480,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
           <label className="form-label">{t('form.photoLabel')}</label>
           <div className="photo-uploader">
             {photoPreview ? (
-              <img src={photoPreview} alt="Preview" className="photo-preview" />
+              <img src={getImageUrl(photoPreview) || undefined} alt="Preview" className="photo-preview" />
             ) : (
               <div className="photo-placeholder" style={{ fontSize: '24px' }}>
                 📷
