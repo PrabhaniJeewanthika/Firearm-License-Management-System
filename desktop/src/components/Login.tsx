@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'react-toastify';
-import { User, Lock, LogIn } from 'lucide-react';
+import { User, Lock, LogIn, Shield } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import './Login.css';
@@ -68,11 +68,9 @@ const Login: React.FC = () => {
       </div>
       <div className="login-card">
         <div className="login-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/5/5f/Emblem_of_Sri_Lanka.svg" 
-            alt="Sri Lanka State Emblem" 
-            style={{ width: '80px', marginBottom: '15px' }} 
-          />
+          <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.1)', padding: '16px', borderRadius: '50%', marginBottom: '16px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Shield size={48} color="#f8fafc" strokeWidth={1.5} />
+          </div>
           <h2 style={{fontSize: '22px', textAlign: 'center'}}>{t('header.secretariat') || 'Panduwasnuwara Divisional Secretariat'}</h2>
           <p style={{ textAlign: 'center' }}>{t('header.title') || 'Firearm License Data Management System'}</p>
         </div>
