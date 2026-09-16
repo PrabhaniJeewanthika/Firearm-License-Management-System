@@ -44,19 +44,27 @@ const Login: React.FC = () => {
 
   return (
     <div className="login-container">
-      <div style={{ position: 'absolute', top: '20px', right: '20px', display: 'flex', gap: '10px' }}>
-        <button 
-          onClick={() => changeLanguage('si')} 
-          style={{ background: i18n.language === 'si' ? '#0f172a' : '#e2e8f0', color: i18n.language === 'si' ? 'white' : '#0f172a', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-        >
-          සිංහල
-        </button>
-        <button 
-          onClick={() => changeLanguage('en')} 
-          style={{ background: i18n.language === 'en' ? '#0f172a' : '#e2e8f0', color: i18n.language === 'en' ? 'white' : '#0f172a', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}
-        >
-          English
-        </button>
+      <div style={{ position: 'absolute', top: '20px', right: '20px', zIndex: 10 }}>
+        <div className="language-selector">
+          <button 
+            className={`lang-btn ${i18n.language === 'en' ? 'active' : ''}`}
+            onClick={() => changeLanguage('en')}
+          >
+            EN
+          </button>
+          <button 
+            className={`lang-btn ${i18n.language === 'si' ? 'active' : ''}`}
+            onClick={() => changeLanguage('si')}
+          >
+            සිං
+          </button>
+          <button 
+            className={`lang-btn ${i18n.language === 'ta' ? 'active' : ''}`}
+            onClick={() => changeLanguage('ta')}
+          >
+            தமிழ்
+          </button>
+        </div>
       </div>
       <div className="login-card">
         <div className="login-header">
