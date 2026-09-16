@@ -9,7 +9,7 @@ const Header: React.FC = () => {
 
   return (
     <header className="main-header">
-      <div className="header-meta" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+      <div className="header-meta" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', position: 'relative', zIndex: 10 }}>
         
         {/* Language Switcher */}
         <div className="language-selector">

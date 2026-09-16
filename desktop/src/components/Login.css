@@ -110,7 +110,7 @@
   position: relative;
 }
 
-.form-group label {
+.login-form .form-group label {
   display: block;
   margin-bottom: 8px;
   font-size: 14px;
@@ -119,13 +119,13 @@
   transition: color 0.2s;
 }
 
-.input-wrapper {
+.login-form .input-wrapper {
   position: relative;
   display: flex;
   align-items: center;
 }
 
-.input-icon {
+.login-form .input-icon {
   position: absolute;
   left: 16px;
   color: #94a3b8;
@@ -135,7 +135,7 @@
   pointer-events: none;
 }
 
-.form-control {
+.login-form .form-control {
   width: 100%;
   padding: 14px 16px 14px 48px;
   background: rgba(0, 0, 0, 0.25);
@@ -148,24 +148,24 @@
   box-sizing: border-box;
 }
 
-.form-control::placeholder {
+.login-form .form-control::placeholder {
   color: #94a3b8;
 }
 
-.form-control:hover {
+.login-form .form-control:hover {
   background: rgba(0, 0, 0, 0.35);
   border-color: rgba(251, 191, 36, 0.3);
 }
 
-.form-control:focus {
+.login-form .form-control:focus {
   outline: none;
   background: rgba(0, 0, 0, 0.5);
   border-color: #fbbf24; /* State gold */
   box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.15);
 }
 
-.form-control:focus + .input-icon,
-.form-group:focus-within .input-icon {
+.login-form .form-control:focus + .input-icon,
+.login-form .form-group:focus-within .input-icon {
   color: #fbbf24;
 }
 

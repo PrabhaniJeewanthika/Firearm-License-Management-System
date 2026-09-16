@@ -19,7 +19,17 @@ import api from './services/api';
 import { useAuth } from './context/AuthContext';
 
 const MainApp: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  // Force Sinhala as the default language on mount if it's not set properly
+  useEffect(() => {
+    const currentLang = i18n.language as string;
+    if (currentLang !== 'si' && currentLang !== 'en' && currentLang !== 'ta') {
+      i18n.changeLanguage('si');
+    } else if (!currentLang) {
+      i18n.changeLanguage('si');
+    }
+  }, []);
 
   // Navigation State
   const [activeTab, setActiveTab] = useState<'form' | 'table' | 'settings'>('form');
