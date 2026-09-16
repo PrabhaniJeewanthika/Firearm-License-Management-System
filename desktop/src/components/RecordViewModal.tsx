@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import api from '../services/api';
 
 interface RecordViewModalProps {
   record: any | null;
@@ -8,6 +9,13 @@ interface RecordViewModalProps {
   renewalYears?: any[];
   customSections?: any[];
 }
+
+const getImageUrl = (path: string | null) => {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  const baseUrl = api.defaults.baseURL?.replace('/api', '') || '';
+  return `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
+};
 
 const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClose, renewalYears = [], customSections = [] }) => {
   const { t } = useTranslation();
@@ -55,7 +63,7 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '24px' }}>
             {record.photo ? (
               <img
-                src={record.photo}
+                src={getImageUrl(record.photo) || ''}
                 alt="License Holder"
                 style={{ width: '150px', height: '150px', borderRadius: '8px', objectFit: 'cover', border: '2px solid #cbd5e1' }}
               />

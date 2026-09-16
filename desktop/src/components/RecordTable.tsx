@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import api from '../services/api';
 
 interface GNDivisionDetail {
   id: number;
@@ -26,6 +27,13 @@ interface RecordData {
   current_status: string;
   sixty_fifth_birthday: string | null;
 }
+
+const getImageUrl = (path: string | null) => {
+  if (!path) return null;
+  if (path.startsWith('http')) return path;
+  const baseUrl = api.defaults.baseURL?.replace('/api', '') || '';
+  return `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
+};
 
 interface RecordTableProps {
   records: RecordData[];
@@ -107,7 +115,7 @@ const RecordTable: React.FC<RecordTableProps> = ({
                     <div className="licensee-cell" onClick={() => onView(record)}>
                       <div className="avatar-circle" style={{ overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         {record.photo ? (
-                          <img src={record.photo} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          <img src={getImageUrl(record.photo) || ''} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         ) : (
                           <span style={{ fontSize: '16px' }}>👤</span>
                         )}

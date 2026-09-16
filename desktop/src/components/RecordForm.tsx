@@ -425,13 +425,13 @@ const RecordForm: React.FC<RecordFormProps> = ({
             ) : (
               <div className="photo-placeholder" style={{ fontSize: '24px' }}>
                 📷
-                <span style={{ fontSize: '10px', marginTop: '4px', fontWeight: 'bold' }}>JPG / PNG</span>
+                <span style={{ fontSize: '10px', marginTop: '4px', fontWeight: 'bold' }}>IMAGE</span>
               </div>
             )}
             <div className="photo-controls">
               <input
                 type="file"
-                accept="image/png, image/jpeg, image/jpg"
+                accept="image/*"
                 onChange={handlePhotoChange}
                 ref={fileInputRef}
                 style={{ display: 'none' }}

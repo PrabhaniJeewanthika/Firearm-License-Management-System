@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
 
 
 import Header from './components/Header';
@@ -241,7 +243,7 @@ const MainApp: React.FC = () => {
     });
   };
 
-  // Excel CSV Export Logic with Sinhala character support (BOM prefix)
+  // Excel Export Logic with ExcelJS
   const handleExportToExcel = async () => {
     try {
       toast.info(t('table.exporting'));
@@ -272,7 +274,11 @@ const MainApp: React.FC = () => {
         });
       });
 
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Licenses');
+
       const headers = [
+        'Photo',
         'සම්පූර්ණ නම (Full Name)', 'ජාතික හැඳුනුම්පත් අංකය (NIC)', 'දුරකථන අංකය (Phone)', 'WhatsApp අංකය',
         'ලිපිනය (Address)', 'ග්‍රාම නිලධාරී කොට්ඨාසය (GN Division)', 'උපන්දිනය (DOB)',
         '65 සම්පූර්ණ වන දිනය (65th Birthday)', 'ගිනිඅවි වර්ගය (Firearm Type)',
@@ -282,10 +288,24 @@ const MainApp: React.FC = () => {
         ...customFieldHeaders
       ];
 
-      const csvRows = [];
-      csvRows.push(headers.join(','));
+      worksheet.addRow(headers);
+      
+      // Style headers
+      const headerRow = worksheet.getRow(1);
+      headerRow.font = { bold: true };
+      headerRow.alignment = { horizontal: 'center' };
+      
+      // Set column widths
+      worksheet.columns = headers.map(h => ({
+        width: h === 'Photo' ? 15 : 25
+      }));
 
-      for (const row of allRecords) {
+      // Base URL for images
+      const baseUrl = api.defaults.baseURL?.replace('/api', '') || '';
+
+      for (let i = 0; i < allRecords.length; i++) {
+        const row = allRecords[i];
+        
         // Parse renewal history
         let renewalText = '';
         if (row.renewal_history) {
@@ -322,42 +342,73 @@ const MainApp: React.FC = () => {
           if (value === undefined || value === null) value = '';
           if (field.field_type === 'boolean') value = value ? 'ඔව්' : 'නැත';
           if (field.field_type === 'checkbox' && Array.isArray(value)) value = value.join(', ');
-          return `"${String(value).replace(/"/g, '""').replace(/\n/g, ' ')}"`;
+          return value;
         });
 
-        const values = [
-          `"${(row.full_name || '').replace(/"/g, '""')}"`,
-          `"${(row.nic || '').replace(/"/g, '""')}"`,
-          `"${(row.telephone || '').replace(/"/g, '""')}"`,
-          `"${(row.whatsapp_number || '').replace(/"/g, '""')}"`,
-          `"${(row.address || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
-          `"${(row.gn_division_detail?.name || '').replace(/"/g, '""')}"`,
-          `"${row.date_of_birth || ''}"`,
-          `"${row.sixty_fifth_birthday || ''}"`,
-          `"${(row.firearm_type_detail?.name_si || '').replace(/"/g, '""')}"`,
-          `"${(row.firearm_number || '').replace(/"/g, '""')}"`,
-          `"${row.first_licensed_year || ''}"`,
-          `"${renewalText.replace(/"/g, '""')}"`,
-          `"${statusText.replace(/"/g, '""')}"`,
-          `"${(row.special_information || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
-          `"${row.outside_area_holder ? 'ඔව්' : 'නැත'}"`,
-          `"${(row.outside_residential_address || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
-          `"${(row.land_location_details || '').replace(/"/g, '""').replace(/\n/g, ' ')}"`,
+        const rowValues = [
+          '', // Empty cell for Photo, we will add the image separately
+          row.full_name || '',
+          row.nic || '',
+          row.telephone || '',
+          row.whatsapp_number || '',
+          row.address || '',
+          row.gn_division_detail?.name || '',
+          row.date_of_birth || '',
+          row.sixty_fifth_birthday || '',
+          row.firearm_type_detail?.name_si || '',
+          row.firearm_number || '',
+          row.first_licensed_year || '',
+          renewalText,
+          statusText,
+          row.special_information || '',
+          row.outside_area_holder ? 'ඔව්' : 'නැත',
+          row.outside_residential_address || '',
+          row.land_location_details || '',
           ...customFieldValues
         ];
-        csvRows.push(values.join(','));
+
+        const excelRow = worksheet.addRow(rowValues);
+        const rowNumber = excelRow.number;
+        excelRow.alignment = { vertical: 'middle', wrapText: true };
+
+        // Make row height larger for the image
+        if (row.photo) {
+           excelRow.height = 80;
+        }
+
+        // Add Image
+        if (row.photo) {
+          try {
+            const photoUrl = row.photo.startsWith('http') ? row.photo : `${baseUrl}${row.photo.startsWith('/') ? '' : '/'}${row.photo}`;
+            const response = await fetch(photoUrl);
+            const blob = await response.blob();
+            const arrayBuffer = await blob.arrayBuffer();
+            
+            let ext = row.photo.split('.').pop()?.toLowerCase();
+            if (ext === 'jpg') ext = 'jpeg';
+            if (!['jpeg', 'png', 'gif'].includes(ext)) ext = 'jpeg'; // Fallback
+            
+            const imageId = workbook.addImage({
+              buffer: arrayBuffer,
+              extension: ext as 'jpeg' | 'png' | 'gif',
+            });
+            
+            worksheet.addImage(imageId, {
+              tl: { col: 0, row: rowNumber - 1 },
+              ext: { width: 100, height: 100 },
+              editAs: 'oneCell'
+            });
+          } catch (imgErr) {
+            console.error('Error embedding image for row ' + rowNumber, imgErr);
+            worksheet.getCell(`A${rowNumber}`).value = 'Image Error';
+          }
+        }
       }
 
-      // Add UTF-8 Byte Order Mark (BOM) to support Sinhala in Excel
-      const csvContent = "\uFEFF" + csvRows.join("\n");
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.setAttribute("href", url);
-      link.setAttribute("download", `Firearm_Licenses_${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      // Save the workbook
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      saveAs(blob, `Firearm_Licenses_${new Date().toISOString().split('T')[0]}.xlsx`);
       
       toast.success(t('table.exportSuccess'));
     } catch (err) {
