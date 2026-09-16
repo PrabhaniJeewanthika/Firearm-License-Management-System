@@ -123,7 +123,16 @@ const resources = {
         no: "No",
         outsideAddress: "Current Residential Address",
         landDetails: "Land/Location Details in this Division",
-        select: "Select"
+        select: "Select",
+        attachmentsSection: "Attachments",
+        attachmentName: "File Name / Description",
+        attachmentNamePlaceholder: "e.g. Court Order, Medical Certificate...",
+        attachmentFile: "Select File",
+        attachmentFileChange: "Change File",
+        addAttachment: "+ Add Attachment",
+        removeAttachment: "Remove",
+        downloadAttachment: "Download",
+        attachmentExisting: "Existing file"
       },
 
 
@@ -334,7 +343,16 @@ const resources = {
         no: "නැත",
         outsideAddress: "වර්තමාන පදිංචි ලිපිනය",
         landDetails: "මෙම බලප්‍රදේශය තුළ ඉඩම් / ස්ථාන විස්තර",
-        select: "තෝරන්න"
+        select: "තෝරන්න",
+        attachmentsSection: "ඇමුණුම්",
+        attachmentName: "ගොනු නම / විස්තරය",
+        attachmentNamePlaceholder: "උදා: අධිකරණ නියෝගය, වෛද්‍ය සහතිකය...",
+        attachmentFile: "ගොනුවක් තෝරන්න",
+        attachmentFileChange: "ගොනුව වෙනස් කරන්න",
+        addAttachment: "+ ඇමුණුමක් එකතු කරන්න",
+        removeAttachment: "ඉවත් කරන්න",
+        downloadAttachment: "බාගත කරන්න",
+        attachmentExisting: "දැනට ඇති ගොනුව"
       },
       status: {
         active: "සක්‍රීය",
@@ -517,7 +535,16 @@ const resources = {
         no: "இல்லை",
         outsideAddress: "தற்போதைய குடியிருப்பு முகவரி",
         landDetails: "இந்த பிரிவில் உள்ள நிலம் / இருப்பிட விவரங்கள்",
-        select: "தேர்வு செய்க"
+        select: "தேர்வு செய்க",
+        attachmentsSection: "இணைப்புகள்",
+        attachmentName: "கோப்பு பெயர் / விளக்கம்",
+        attachmentNamePlaceholder: "எ.கா. நீதிமன்ற உத்தரவு, மருத்துவ சான்றிதழ்...",
+        attachmentFile: "கோப்பை தேர்வு செய்க",
+        attachmentFileChange: "கோப்பை மாற்றவும்",
+        addAttachment: "+ இணைப்பைச் சேர்",
+        removeAttachment: "நீக்கு",
+        downloadAttachment: "பதிவிறக்கம்",
+        attachmentExisting: "தற்போதுள்ள கோப்பு"
       },
       status: {
         active: "செயலில்",
