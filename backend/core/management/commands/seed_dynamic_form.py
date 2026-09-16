@@ -58,7 +58,7 @@ class Command(BaseCommand):
         fields_sec4 = [
             {"system_name": "current_status_info", "label_si": "වර්තමාන තත්ත්වය", "label_en": "Current Status", "field_type": "current_status_checkboxes", "is_required": False},
             {"system_name": "special_information", "label_si": "වෙනත් විශේෂ තොරතුරු", "label_en": "Special Information", "field_type": "textarea", "is_required": False},
-            {"system_name": "outside_area_holder", "label_si": "පඬුවස්නුවරින් පිටත පදිංචි, මෙම බලප්‍රදේශය තුළ ඉඩම් හිමි අයෙක්ද?", "label_en": "Outside Area Holder?", "field_type": "boolean", "is_required": False},
+            {"system_name": "outside_area_holder", "label_si": "පඬුවස්නුවර නැගෙනහිරින් පිටත පදිංචි, මෙම බලප්‍රදේශය තුළ ඉඩම් හිමි අයෙක්ද?", "label_en": "Outside Area Holder?", "field_type": "boolean", "is_required": False},
             # Conditional fields based on outside_area_holder
             {"system_name": "outside_residential_address", "label_si": "පදිංචි ලිපිනය", "label_en": "Residential Address", "field_type": "textarea", "is_required": False, "depends_on_sys": "outside_area_holder", "depends_on_value": "true"},
             {"system_name": "land_location_details", "label_si": "පඬුවස්නුවර ඉඩමේ පිහිටීම", "label_en": "Land Location Details", "field_type": "textarea", "is_required": False, "depends_on_sys": "outside_area_holder", "depends_on_value": "true"},
