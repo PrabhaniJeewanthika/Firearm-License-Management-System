@@ -12,9 +12,21 @@ interface RecordViewModalProps {
 
 const getImageUrl = (path: string | null) => {
   if (!path) return null;
-  if (path.startsWith('http')) return path;
-  const baseUrl = api.defaults.baseURL?.replace('/api', '') || '';
-  return `${baseUrl}${path.startsWith('/') ? '' : '/'}${path}`;
+  
+  let cleanPath = path;
+  try {
+    if (path.startsWith('http')) {
+      const url = new URL(path);
+      cleanPath = url.pathname;
+    }
+  } catch (e) {}
+  
+  let baseUrl = api.defaults.baseURL || '';
+  baseUrl = baseUrl.replace(/\/api\/?$/, '');
+  if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
+  if (!cleanPath.startsWith('/')) cleanPath = '/' + cleanPath;
+  
+  return baseUrl ? `${baseUrl}${cleanPath}` : cleanPath;
 };
 
 const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClose, renewalYears = [], customSections = [] }) => {
