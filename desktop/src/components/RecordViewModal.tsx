@@ -140,7 +140,7 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
                 </div>
 
                 {/* ── Renewal History Table (injected after Firearm section) ── */}
-                {section.title_en === 'Firearm and License Information' && renewalYears.length > 0 && (
+                {section.title_en === 'Firearm and License Information' && (
                   <>
                     <SectionDivider label={`${t('form.renewal').replace(' *', '')} / License Renewal`} />
                     <div className="detail-grid">
@@ -167,14 +167,28 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
                             </tr>
                           </thead>
                           <tbody>
-                            {renewalYears.map((ry, idx) => {
-                              const yearStr = String(ry.year);
-                              const info = record.renewal_history?.[yearStr];
-                              const isRenewed = info?.renewed ?? false;
+                            {(() => {
+                              const historyKeys = Object.keys(record.renewal_history || {});
+                              const ryKeys = (renewalYears || []).map(ry => String(ry.year));
+                              const allYears = Array.from(new Set([...historyKeys, ...ryKeys])).sort((a, b) => Number(b) - Number(a));
+                              
+                              if (allYears.length === 0) {
+                                return (
+                                  <tr>
+                                    <td colSpan={3} style={{ padding: '16px', textAlign: 'center', color: '#64748b' }}>
+                                      No renewal history available.
+                                    </td>
+                                  </tr>
+                                );
+                              }
+
+                              return allYears.map((yearStr, idx) => {
+                                const info = record.renewal_history?.[yearStr];
+                                const isRenewed = info?.renewed ?? false;
                               const reason = info?.reason ?? '';
                               return (
                                 <tr
-                                  key={ry.id}
+                                  key={yearStr}
                                   style={{
                                     backgroundColor: isRenewed
                                       ? 'rgba(22, 101, 52, 0.04)'
@@ -183,7 +197,7 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
                                   }}
                                 >
                                   <td style={{ padding: '10px 16px', fontWeight: '600', color: 'var(--text-primary)' }}>
-                                    {ry.year}
+                                    {yearStr}
                                   </td>
                                   <td style={{ padding: '10px 16px', textAlign: 'center' }}>
                                     {isRenewed ? (
@@ -212,7 +226,7 @@ const RecordViewModal: React.FC<RecordViewModalProps> = ({ record, isOpen, onClo
                                   </td>
                                 </tr>
                               );
-                            })}
+                            })})()}
                           </tbody>
                         </table>
                       </div>

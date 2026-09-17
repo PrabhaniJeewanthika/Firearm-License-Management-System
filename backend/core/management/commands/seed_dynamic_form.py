@@ -31,7 +31,7 @@ class Command(BaseCommand):
 
         fields_sec2 = [
             {"system_name": "date_of_birth", "label_si": "උපන්දිනය", "label_en": "Date of Birth", "field_type": "date", "is_required": True},
-            {"system_name": "sixty_fifth_birthday", "label_si": "අවුරුදු 65 සම්පූර්ණ වන දිනය", "label_en": "65th Birthday", "field_type": "autocalc_65", "is_required": False},
+            {"system_name": "sixty_fifth_birthday", "label_si": "අවුරුදු 70 සම්පූර්ණ වන දිනය", "label_en": "70th Birthday", "field_type": "autocalc_65", "is_required": False},
         ]
 
         # Section 3: Firearm and License Info

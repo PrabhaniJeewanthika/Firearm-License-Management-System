@@ -202,7 +202,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
     if (dateOfBirth) {
       const parts = dateOfBirth.split('-');
       if (parts.length === 3) {
-        const year = parseInt(parts[0]);
+        const year = parseInt(parts[0], 10);
         setSixtyFifthBirthday(`${year + 70}-${parts[1]}-${parts[2]}`);
       }
     } else {
