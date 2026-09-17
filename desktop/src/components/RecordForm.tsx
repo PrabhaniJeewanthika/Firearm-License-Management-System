@@ -700,7 +700,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
           {fRenew && (
           <div className="form-group form-grid-full">
-            <label className="form-label" style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--text-primary)' }}>{t('form.renewal').replace(' *', '')} {fRenew.is_required ? '*' : ''}</label>
+            <label className="form-label" style={{ fontWeight: 'bold', color: 'var(--text-primary)' }}>{t('form.renewal').replace(' *', '')} {fRenew.is_required ? '*' : ''}</label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '12px' }}>
               {(renewalYears && renewalYears.length > 0 ? renewalYears.map(ry => ry.year) : [2022, 2023, 2024, 2025, 2026, 2027, 2028, 2029, 2030]).map(year => {
                 const yearStr = String(year);
@@ -784,7 +784,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                     {info.selected && (
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px', marginTop: '12px', marginLeft: '32px' }}>
                         <div className="form-group" style={{ marginBottom: 0 }}>
-                          <label className="form-label" style={{ fontSize: '13px' }}>{t('form.statusDate')}</label>
+                          <label className="form-label">{t('form.statusDate')}</label>
                           <input
                             type="date"
                             className="form-input"
@@ -798,7 +798,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                           />
                         </div>
                         <div className="form-group" style={{ marginBottom: 0 }}>
-                          <label className="form-label" style={{ fontSize: '13px' }}>{t('form.statusRemarks')}</label>
+                          <label className="form-label">{t('form.statusRemarks')}</label>
                           <input
                             type="text"
                             className="form-input"
@@ -836,7 +836,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
 
           {/* Attachments Section */}
           <div className="form-group form-grid-full">
-            <label className="form-label" style={{ fontSize: '16px', fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '4px' }}>
+            <label className="form-label" style={{ fontWeight: 'bold', color: 'var(--text-primary)', marginBottom: '4px' }}>
               📎 {t('form.attachmentsSection')}
             </label>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '8px' }}>
@@ -860,7 +860,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
                       <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label className="form-label" style={{ fontSize: '13px' }}>{t('form.attachmentName')}</label>
+                        <label className="form-label">{t('form.attachmentName')}</label>
                         <input
                           type="text"
                           className="form-input"
@@ -870,7 +870,7 @@ const RecordForm: React.FC<RecordFormProps> = ({
                         />
                       </div>
                       <div className="form-group" style={{ marginBottom: 0 }}>
-                        <label className="form-label" style={{ fontSize: '13px' }}>{t('form.attachmentFile')}</label>
+                        <label className="form-label">{t('form.attachmentFile')}</label>
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                           <input
                             type="file"
