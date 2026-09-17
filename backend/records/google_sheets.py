@@ -47,20 +47,20 @@ def sync_record_to_sheet(record):
         worksheet = spreadsheet.sheet1
         
         # Format the date properly if it exists
-        date_issue = record.date_of_issue.strftime('%Y-%m-%d') if record.date_of_issue else ''
+        date_issue = str(record.first_licensed_year) if record.first_licensed_year else ''
         
         # Prepare the row data
         row_data = [
             str(record.id),
-            record.license_no or '',
+            record.firearm_number or '',
             record.full_name or '',
             record.nic or '',
-            record.contact_no or '',
+            record.telephone or '',
             record.address or '',
             date_issue,
-            record.get_license_type_display() or '',
-            record.get_status_display() or '',
-            json.dumps(record.dynamic_data, ensure_ascii=False) if record.dynamic_data else ''
+            record.firearm_type.name_en if record.firearm_type else '',
+            record.renewal_status or '',
+            json.dumps(record.dynamic_field_data, ensure_ascii=False) if getattr(record, 'dynamic_field_data', None) else ''
         ]
 
         # Get all IDs in the first column
