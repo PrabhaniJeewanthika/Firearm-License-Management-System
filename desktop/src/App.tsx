@@ -134,8 +134,17 @@ const MainApp: React.FC = () => {
       }
 
       setSummary(summaryRes.data);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Data load error:', err);
+      
+      // If we requested a page > 1 and got a 404 (likely because the page is out of bounds after a deletion),
+      // fallback to page 1 automatically.
+      if (err.response && err.response.status === 404 && page > 1) {
+        setCurrentPage(1);
+        fetchRecordsAndSummary(1, query, currentFilters);
+        return;
+      }
+      
       setApiError(true);
     } finally {
       setLoading(false);
