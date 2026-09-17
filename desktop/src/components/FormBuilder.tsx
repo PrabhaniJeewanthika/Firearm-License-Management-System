@@ -41,7 +41,7 @@ const FIELD_TYPES = [
   { value: 'checkbox', label: 'Checkbox (Multiple)' },
   { value: 'boolean', label: 'Yes/No (Boolean)' },
   { value: 'image', label: 'Image Upload' },
-  { value: 'autocalc_65', label: 'Auto Calculated (65th BDay)' },
+  { value: 'autocalc_65', label: 'Auto Calculated (70th BDay)' },
   { value: 'renewal_history_grid', label: 'Renewal History Grid (Special)' },
   { value: 'current_status_checkboxes', label: 'Current Status Checkboxes (Special)' },
 ];
