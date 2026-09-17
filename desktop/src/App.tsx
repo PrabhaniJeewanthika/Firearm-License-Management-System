@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+// @ts-ignore
 import ExcelJS from 'exceljs';
+// @ts-ignore
 import { saveAs } from 'file-saver';
 
 

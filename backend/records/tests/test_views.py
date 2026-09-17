@@ -13,7 +13,7 @@ def api_client():
 
 @pytest.fixture
 def test_user():
-    return User.objects.create_user(username='testadmin', password='testpassword123')
+    return User.objects.create_user(username='testadmin', password='testpassword123')  # type: ignore
 
 @pytest.fixture
 def authenticated_client(api_client, test_user):
